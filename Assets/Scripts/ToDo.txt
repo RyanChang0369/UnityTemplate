@@ -1,0 +1,3 @@
+Split helpers into general classes and monobehaviors.
+Merge all versions of the templates.
+Split ExtensionMethods as much as possible.
