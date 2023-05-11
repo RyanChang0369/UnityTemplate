@@ -210,11 +210,11 @@ public static class ExtensionMethods
     /// <param name="key">The key that holds the list to add addition to.</param>
     /// <param name="addition">What to add to the internal list.</param>
     /// </summary>
-    public static void AddToDictList<TKey,TMem>(this Dictionary<TKey, List<TMem>> dict, TKey key, TMem addition)
+    public static void AddToDictList<TKey, TMem>(this Dictionary<TKey, List<TMem>> dict, TKey key, TMem addition)
     {
         if (!dict.ContainsKey(key))
             dict[key] = new List<TMem>();
-        
+
         dict[key].Add(addition);
     }
 
@@ -223,15 +223,16 @@ public static class ExtensionMethods
     /// </summary>
     /// <typeparam name="T">Any type.</typeparam>
     /// <param name="list">List to shuffle.</param>
-    public static void Shuffle<T>(this IList<T> list)  
-    {  
-        int n = list.Count;  
-        while (n > 1) {  
-            n--;  
-            int k = RNG.GetRandomInteger(n + 1);  
-            T value = list[k];  
-            list[k] = list[n];  
-            list[n] = value;  
-        }  
+    public static void Shuffle<T>(this IList<T> list)
+    {
+        int n = list.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = RNG.GetRandomInteger(n + 1);
+            T value = list[k];
+            list[k] = list[n];
+            list[n] = value;
+        }
     }
 }
