@@ -1,7 +1,10 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class CursorAdditions : MonoBehaviour
+/// <summary>
+/// A StandAlone that hides or shows the cursor when called.
+/// </summary>
+public class CursorVisibilityToggle : MonoBehaviour
 {
     public bool showOnStart = false;
 
@@ -9,7 +12,7 @@ public class CursorAdditions : MonoBehaviour
     {
         if (showOnStart)
         {
-            Cursor.visible = true; 
+            Cursor.visible = true;
         }
     }
 
