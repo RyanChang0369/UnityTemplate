@@ -9,7 +9,7 @@ using UnityEditor;
 public static class ExtensionMethods
 {
     private const string PROJECT_NAME = "Sunder";
-        
+
     /// <summary>
     /// Checks if an object either
     /// - is null
@@ -178,27 +178,6 @@ public static class ExtensionMethods
         croppedTexture.SetPixels(pixels);
         croppedTexture.Apply();
         return croppedTexture;
-    }
-
-    /// <summary>
-    /// Returns true if a is approximately b
-    /// </summary>
-    /// <param name="a">First vector</param>
-    /// <param name="b">Second vector</param>
-    /// <returns>True if a is approximately b, false otherwise</returns>
-    public static bool Approx(this Vector3 a, Vector3 b)
-    {
-        return a.x.Approx(b.x) && a.y.Approx(b.y) && a.z.Approx(b.z);
-    }
-
-    /// <summary>
-    /// Returns true if a is approximately zero.
-    /// </summary>
-    /// <param name="a">Vector</param>
-    /// <returns>True if a is approximately zero, false otherwise.</returns>
-    public static bool ApproxZero(this Vector3 a)
-    {
-        return a.Approx(Vector3.zero);
     }
 
     /// <summary>
