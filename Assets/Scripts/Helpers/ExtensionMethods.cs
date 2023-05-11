@@ -79,15 +79,18 @@ public static class ExtensionMethods
     /// https://docs.unity3d.com/ScriptReference/Vector3.SmoothDamp.html
     /// </summary>
     /// <returns></returns>
-    public static Quaternion SmoothDampQuaternion(Quaternion current, Quaternion target, ref Vector3 currentVelocity, float smoothTime,
+    public static Quaternion SmoothDampQuaternion(Quaternion current,
+        Quaternion target, ref Vector3 currentVelocity, float smoothTime,
         float maxSpeed, float deltaTime)
     {
         Vector3 c = current.eulerAngles;
         Vector3 t = target.eulerAngles;
-        return Quaternion.Euler(
-          0,
-          0,
-          Mathf.SmoothDampAngle(c.z, t.z, ref currentVelocity.z, smoothTime, maxSpeed, deltaTime)
+        return Quaternion.Euler
+        (
+            0,
+            0,
+            Mathf.SmoothDampAngle(c.z, t.z, ref currentVelocity.z, smoothTime,
+                maxSpeed, deltaTime)
         );
     }
 
