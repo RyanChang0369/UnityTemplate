@@ -1,1 +1,2 @@
-CSClasses are Helpers that are not extensions.
+CSClasses are Helpers that are not extensions. They can be thought of as
+"regular" C# classes.
