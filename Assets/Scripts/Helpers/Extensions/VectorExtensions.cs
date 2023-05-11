@@ -99,4 +99,22 @@ public static class VectorExtensions
         return a.Approx(Vector2.zero);
     }
     #endregion
+
+    #region Other Operations
+    /// <summary>
+    /// Rotates a vector by theta degrees
+    /// </summary>
+    /// <param name="vec"></param>
+    /// <param name="theta">In degrees</param>
+    /// <returns></returns>
+    public static Vector2 RotateVector2(this Vector2 vec, float theta)
+    {
+        float sin = Mathf.Sin(theta * Mathf.Deg2Rad);
+        float cos = Mathf.Cos(theta * Mathf.Deg2Rad);
+
+        float oldX = vec.x, oldY = vec.y;
+
+        return new Vector2(cos * oldX - sin * oldY, sin * oldX + cos * oldY);
+    }
+    #endregion
 }

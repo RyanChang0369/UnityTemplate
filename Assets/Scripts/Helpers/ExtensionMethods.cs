@@ -61,22 +61,6 @@ public static class ExtensionMethods
     }
 
     /// <summary>
-    /// Rotates a vector by theta degrees
-    /// </summary>
-    /// <param name="vec"></param>
-    /// <param name="theta">In degrees</param>
-    /// <returns></returns>
-    public static Vector2 RotateVector2(this Vector2 vec, float theta)
-    {
-        float sin = Mathf.Sin(theta * Mathf.Deg2Rad);
-        float cos = Mathf.Cos(theta * Mathf.Deg2Rad);
-
-        float oldX = vec.x, oldY = vec.y;
-
-        return new Vector2(cos * oldX - sin * oldY, sin * oldX + cos * oldY);
-    }
-
-    /// <summary>
     /// Converts from polar coordinates
     /// </summary>
     /// <param name="r">Radius</param>
@@ -91,7 +75,8 @@ public static class ExtensionMethods
     }
 
     /// <summary>
-    /// See documentation for https://docs.unity3d.com/ScriptReference/Vector3.SmoothDamp.html?_ga=2.103801094.784080732.1641080817-863246645.1620669234
+    /// See documentation for
+    /// https://docs.unity3d.com/ScriptReference/Vector3.SmoothDamp.html
     /// </summary>
     /// <returns></returns>
     public static Quaternion SmoothDampQuaternion(Quaternion current, Quaternion target, ref Vector3 currentVelocity, float smoothTime,
@@ -139,19 +124,6 @@ public static class ExtensionMethods
     public static bool Contains(this string string1, string string2, StringComparison stringComparison)
     {
         return string1.IndexOf(string2, stringComparison) >= 0;
-    }
-
-    /// <summary>
-    /// Returns value such that the change of value is towards target and is no greater than margin;
-    /// </summary>
-    /// <param name="value">The value to change.</param>
-    /// <param name="target">The number to change towards.</param>
-    /// <param name="margin">The maximal change.</param>
-    /// <returns></returns>
-    public static float GetMinimumChange(this float value, float target, float margin)
-    {
-        value += Mathf.Sign(target) * Mathf.Min(Mathf.Abs(target), Mathf.Abs(margin));
-        return value;
     }
 
     public static Color GetColorFromHEX(this string hexCode)

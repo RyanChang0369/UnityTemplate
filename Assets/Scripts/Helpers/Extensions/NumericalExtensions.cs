@@ -68,4 +68,19 @@ public static class NumericalExtensions
     {
         return number == 0 ? 0 : number.Sign();
     }
+
+    /// <summary>
+    /// Returns value such that the change of value is towards target and is no
+    /// greater than margin;
+    /// </summary>
+    /// <param name="value">The value to change.</param>
+    /// <param name="target">The number to change towards.</param>
+    /// <param name="margin">The maximal change.</param>
+    /// <returns></returns>
+    public static float GetMinimumChange(this float value, float target,
+    float margin)
+    {
+        return value + Mathf.Sign(target)
+            * Mathf.Min(Mathf.Abs(target), Mathf.Abs(margin));
+    }
 }
