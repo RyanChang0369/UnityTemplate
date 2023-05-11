@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Xml.Serialization;
 using UnityEngine;
-using UnityEditor;
 
+/// <summary>
+/// Contains methods pertaining to miscellaneous thingies.
+/// </summary>
 public static class ExtensionMethods
 {
-    private const string PROJECT_NAME = "Sunder";
-
     /// <summary>
     /// Checks if an object either
     /// - is null
@@ -94,87 +92,9 @@ public static class ExtensionMethods
         );
     }
 
-    public static void WriteSaveFile(string output, string fileName)
-    {
-        string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), PROJECT_NAME, fileName);
-
-        if (!File.Exists(filePath))
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), PROJECT_NAME));
-        }
-
-        using (StreamWriter sw = new(filePath))
-        {
-            sw.Write(output);
-        }
-    }
-
-    public static string ReadSaveFile(string fileName)
-    {
-        string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), PROJECT_NAME, fileName);
-
-        if (!File.Exists(filePath))
-        {
-            throw new FileNotFoundException("Cannot find " + fileName);
-        }
-
-        using (StreamReader sr = new(filePath))
-        {
-            return sr.ReadToEnd();
-        }
-    }
-
     public static bool Contains(this string string1, string string2, StringComparison stringComparison)
     {
         return string1.IndexOf(string2, stringComparison) >= 0;
-    }
-
-    public static Color GetColorFromHEX(this string hexCode)
-    {
-        if (!hexCode.Contains("#"))
-        {
-            hexCode = "#" + hexCode;
-        }
-
-        Color color;
-
-        ColorUtility.TryParseHtmlString(hexCode, out color);
-
-        return color;
-    }
-
-    public static Texture2D GetTexture(this Sprite sprite)
-    {
-        Texture2D croppedTexture = new Texture2D((int)sprite.rect.width, (int)sprite.rect.height);
-        Color[] pixels = sprite.texture.GetPixels((int)sprite.textureRect.x,
-                                                (int)sprite.textureRect.y,
-                                                (int)sprite.textureRect.width,
-                                                (int)sprite.textureRect.height);
-        croppedTexture.SetPixels(pixels);
-        croppedTexture.Apply();
-        return croppedTexture;
-    }
-
-    /// <summary>
-    /// Returns true if a and b have the same root
-    /// </summary>
-    /// <param name="a">A</param>
-    /// <param name="b">B</param>
-    /// <returns>True if a and b have the same root, false otherwise.</returns>
-    public static bool HasSameRoot(this Transform a, Transform b)
-    {
-        return a.root == b.root;
-    }
-
-    /// <summary>
-    /// Returns true if a and b have different roots
-    /// </summary>
-    /// <param name="a">A</param>
-    /// <param name="b">B</param>
-    /// <returns>False if a and b have the same root, true otherwise.</returns>
-    public static bool HasDifferentRoot(this Transform a, Transform b)
-    {
-        return !HasSameRoot(a, b);
     }
 
     /// <summary>
