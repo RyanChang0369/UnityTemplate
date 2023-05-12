@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// Contains methods pertaining to angles represented as simple floats.
 /// </summary>
-public static class AngleExtensions
+public static class AngleExt
 {
     public const float PI2 = Mathf.PI * 2;
 

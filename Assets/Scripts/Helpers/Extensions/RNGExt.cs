@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public static class RNG
+public static class RNGExt
 {
     private static System.Random RNGNum = new System.Random();
 

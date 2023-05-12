@@ -124,7 +124,7 @@ public static class ExtensionMethods
         while (n > 1)
         {
             n--;
-            int k = RNG.GetRandomInteger(n + 1);
+            int k = RNGExt.GetRandomInteger(n + 1);
             T value = list[k];
             list[k] = list[n];
             list[n] = value;

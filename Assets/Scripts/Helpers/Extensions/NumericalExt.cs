@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Contains methods pertaining to C# floats, doubles, and ints.
 /// </summary>
-public static class NumericalExtensions
+public static class NumericalExt
 {
     /// <summary>
     /// True if a differs from b by no more than margin

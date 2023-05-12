@@ -78,15 +78,15 @@ public class Spawner : MonoBehaviour
     {
         enemyObj.SetActive(true);
 
-        Vector3 offset = new(0, 0, RNG.GetRandomFloat(0, spawnRadius));
-        offset = Quaternion.Euler(0, RNG.GetRandomFloat(0, 360), 0) * offset;
+        Vector3 offset = new(0, 0, RNGExt.GetRandomFloat(0, spawnRadius));
+        offset = Quaternion.Euler(0, RNGExt.GetRandomFloat(0, 360), 0) * offset;
 
         if (enemyObj.HasComponent(out NavMeshAgent nma))
         {
             nma.Warp(transform.position + offset);
             enemyObj.transform.rotation =
                 Quaternion.Euler(0, startRotation +
-                RNG.GetRandomFloat(
+                RNGExt.GetRandomFloat(
                     -rotationDeviation, rotationDeviation), 0
                     );
         }
@@ -95,7 +95,7 @@ public class Spawner : MonoBehaviour
             enemyObj.transform.SetPositionAndRotation(
                 transform.position + offset,
                 Quaternion.Euler(0, startRotation +
-                RNG.GetRandomFloat(
+                RNGExt.GetRandomFloat(
                     -rotationDeviation, rotationDeviation), 0
                     )
             );

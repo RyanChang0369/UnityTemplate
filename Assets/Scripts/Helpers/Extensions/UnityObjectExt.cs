@@ -6,7 +6,7 @@ using System.Linq;
 /// <summary>
 /// Contains methods that extend game objects or other unity objects.
 /// </summary>
-public static class UnityObjectExtensions
+public static class UnityObjectExt
 {
     #region Query
     #region Query Single

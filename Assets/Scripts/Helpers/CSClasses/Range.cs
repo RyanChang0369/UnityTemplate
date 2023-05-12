@@ -34,8 +34,8 @@ public class Range
 
     // [Header("Option 4: Specify forces with Perlin Noise")]
     public float perlinCrawlSpeed = 0.1f;
-    private Vector2 crawlPos = RNG.GetRandomVector2(1000);
-    private Vector2 crawlDir = RNG.OnUnitCircle();
+    private Vector2 crawlPos = RNGExt.GetRandomVector2(1000);
+    private Vector2 crawlDir = RNGExt.OnUnitCircle();
 
     // [Header("Common to Options 2 and 3")]
     [Tooltip("Modifies the base range to include a multiplication followed by an addition.")]
@@ -70,8 +70,8 @@ public class Range
     {
         singleValue = value;
         rangePattern = RangePattern.Linear;
-        crawlPos = RNG.GetRandomVector2(1000);
-        crawlDir = RNG.OnUnitCircle();
+        crawlPos = RNGExt.GetRandomVector2(1000);
+        crawlDir = RNGExt.OnUnitCircle();
     }
 
     /// <summary>
@@ -84,8 +84,8 @@ public class Range
         scalarMax = max;
         scalarMin = min;
         rangePattern = RangePattern.Linear;
-        crawlPos = RNG.GetRandomVector2(1000);
-        crawlDir = RNG.OnUnitCircle();
+        crawlPos = RNGExt.GetRandomVector2(1000);
+        crawlDir = RNGExt.OnUnitCircle();
     }
 
     /// <summary>
@@ -95,8 +95,8 @@ public class Range
     public Range(RangePattern pattern)
     {
         rangePattern = pattern;
-        crawlPos = RNG.GetRandomVector2(1000);
-        crawlDir = RNG.OnUnitCircle();
+        crawlPos = RNGExt.GetRandomVector2(1000);
+        crawlDir = RNGExt.OnUnitCircle();
     }
 
     /// <summary>
@@ -120,9 +120,9 @@ public class Range
             case RangePattern.Single:
                 return singleValue;
             case RangePattern.Linear:
-                return RNG.GetRandomFloat(scalarMin, scalarMax);
+                return RNGExt.GetRandomFloat(scalarMin, scalarMax);
             case RangePattern.Curves:
-                return modifer.Modify(curve.Evaluate(RNG.GetRandomFloat()));
+                return modifer.Modify(curve.Evaluate(RNGExt.GetRandomFloat()));
             case RangePattern.Perlin:
                 crawlPos += crawlDir * perlinCrawlSpeed;
                 return modifer.Modify(Mathf.PerlinNoise(crawlPos.x, crawlPos.y));

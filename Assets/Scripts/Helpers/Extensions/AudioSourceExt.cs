@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Contains methods pertaining to audio sources.
 /// </summary>
-public static class AudioSourceExtensions
+public static class AudioSourceExt
 {
     /// <summary>
     /// Plays a sound using clip.

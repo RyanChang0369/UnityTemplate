@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public static class DebugExtensions
+public static class DebugExt
 {
     /// <summary>
     /// Draws a crosshair at position.

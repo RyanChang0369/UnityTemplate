@@ -1,7 +1,10 @@
 using System;
 using System.IO;
 
-public static class SaveFileExtensions
+/// <summary>
+/// Contains methods pertaining to file IO.
+/// </summary>
+public static class FileIOExt
 {
     /// <summary>
     /// Name of project, to be used to name the save files folder.

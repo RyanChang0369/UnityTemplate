@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Contains methods pertaining to transforms.
 /// </summary>
-public static class TransformExtensions
+public static class TransformExt
 {
     /// <summary>
     /// Returns true if a and b have the same root

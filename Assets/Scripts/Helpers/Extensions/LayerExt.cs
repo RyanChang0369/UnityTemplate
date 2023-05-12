@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Contains methods that pertain to Unity layers.
 /// </summary>
-public static class LayerExtensions
+public static class LayerExt
 {
     /// <summary>
     /// Returns true if layer is in mask.

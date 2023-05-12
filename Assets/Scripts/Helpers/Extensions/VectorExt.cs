@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Contains methods pertaining to Vector3 and Vector2.
 /// </summary>
-public static class VectorExtensions
+public static class VectorExt
 {
     #region Conversion
     /// <summary>

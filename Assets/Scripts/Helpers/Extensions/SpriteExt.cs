@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Contains methods pertaining to sprites, sprite renderers, and colors.
 /// </summary>
-public static class SpriteExtensions
+public static class SpriteExt
 {
     /// <summary>
     /// Gets Unity color from a hex code.
