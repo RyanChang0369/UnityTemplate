@@ -112,22 +112,4 @@ public static class ExtensionMethods
 
         dict[key].Add(addition);
     }
-
-    /// <summary>
-    /// Shuffles the list in place. Adapted from https://stackoverflow.com/a/1262619.
-    /// </summary>
-    /// <typeparam name="T">Any type.</typeparam>
-    /// <param name="list">List to shuffle.</param>
-    public static void Shuffle<T>(this IList<T> list)
-    {
-        int n = list.Count;
-        while (n > 1)
-        {
-            n--;
-            int k = RNGExt.GetRandomInteger(n + 1);
-            T value = list[k];
-            list[k] = list[n];
-            list[n] = value;
-        }
-    }
 }

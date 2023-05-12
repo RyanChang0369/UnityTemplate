@@ -34,7 +34,7 @@ public class Range
 
     // [Header("Option 4: Specify forces with Perlin Noise")]
     public float perlinCrawlSpeed = 0.1f;
-    private Vector2 crawlPos = RNGExt.GetRandomVector2(1000);
+    private Vector2 crawlPos = RNGExt.RandomVector2(1000);
     private Vector2 crawlDir = RNGExt.OnUnitCircle();
 
     // [Header("Common to Options 2 and 3")]
@@ -70,7 +70,7 @@ public class Range
     {
         singleValue = value;
         rangePattern = RangePattern.Linear;
-        crawlPos = RNGExt.GetRandomVector2(1000);
+        crawlPos = RNGExt.RandomVector2(1000);
         crawlDir = RNGExt.OnUnitCircle();
     }
 
@@ -84,7 +84,7 @@ public class Range
         scalarMax = max;
         scalarMin = min;
         rangePattern = RangePattern.Linear;
-        crawlPos = RNGExt.GetRandomVector2(1000);
+        crawlPos = RNGExt.RandomVector2(1000);
         crawlDir = RNGExt.OnUnitCircle();
     }
 
@@ -95,7 +95,7 @@ public class Range
     public Range(RangePattern pattern)
     {
         rangePattern = pattern;
-        crawlPos = RNGExt.GetRandomVector2(1000);
+        crawlPos = RNGExt.RandomVector2(1000);
         crawlDir = RNGExt.OnUnitCircle();
     }
 
@@ -120,9 +120,9 @@ public class Range
             case RangePattern.Single:
                 return singleValue;
             case RangePattern.Linear:
-                return RNGExt.GetRandomFloat(scalarMin, scalarMax);
+                return RNGExt.RandomFloat(scalarMin, scalarMax);
             case RangePattern.Curves:
-                return modifer.Modify(curve.Evaluate(RNGExt.GetRandomFloat()));
+                return modifer.Modify(curve.Evaluate(RNGExt.RandomFloat()));
             case RangePattern.Perlin:
                 crawlPos += crawlDir * perlinCrawlSpeed;
                 return modifer.Modify(Mathf.PerlinNoise(crawlPos.x, crawlPos.y));
