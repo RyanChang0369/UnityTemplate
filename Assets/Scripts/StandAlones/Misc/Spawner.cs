@@ -85,13 +85,19 @@ public class Spawner : MonoBehaviour
         {
             nma.Warp(transform.position + offset);
             enemyObj.transform.rotation =
-                Quaternion.Euler(0, startRotation + RNG.GetRandomFloat(-rotationDeviation, rotationDeviation), 0);
+                Quaternion.Euler(0, startRotation +
+                RNG.GetRandomFloat(
+                    -rotationDeviation, rotationDeviation), 0
+                    );
         }
         else
         {
             enemyObj.transform.SetPositionAndRotation(
                 transform.position + offset,
-                Quaternion.Euler(0, startRotation + RNG.GetRandomFloat(-rotationDeviation, rotationDeviation), 0)
+                Quaternion.Euler(0, startRotation +
+                RNG.GetRandomFloat(
+                    -rotationDeviation, rotationDeviation), 0
+                    )
             );
         }
 

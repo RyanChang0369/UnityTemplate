@@ -171,16 +171,6 @@ public static class RNG
         return GetRandomVector2(minVal, minVal, maxVal, maxVal);
     }
 
-    ///// <summary>
-    ///// Returns a random Vector2 ranging from +bound to -bound
-    ///// </summary>
-    ///// <param name="bound"></param>
-    ///// <returns></returns>
-    //public static Vector2 GetRandomVector2(Vector2 bound)
-    //{
-    //    return GetRandomVector2(bound.x, bound.y);
-    //}
-
     /// <summary>
     /// Returns a random Vector2 ranging from min to max
     /// </summary>
@@ -222,25 +212,6 @@ public static class RNG
         return values.ElementAt(GetRandomInteger(length));
     }
 
-    ///// <summary>
-    ///// Returns a random value along with its index in the enum.
-    ///// </summary>
-    ///// <param name="defaultOK">If true, then return default value if values length is 0. Else throw an error.</param>
-    ///// <returns>(index, value)</returns>
-    //public static Tuple<int, T> GetRandomValuePair<T>(this IEnumerable<T> values, bool defaultOK = true)
-    //{
-    //    int length = values.Count();
-
-    //    if (length < 1 && defaultOK)
-    //    {
-    //        return default;
-    //    }
-
-    //    int randI = GetRandomInteger(length);
-
-    //    return new(randI, values.ElementAt(randI));
-    //}
-
     /// <summary>
     /// Selects multiple items from an IEnumerable. Can also select none.
     /// </summary>
@@ -262,32 +233,6 @@ public static class RNG
 
         return selected;
     }
-
-    ///// <summary>
-    ///// Selects multiple items from an IEnumerable. Can also select none.
-    ///// </summary>
-    ///// <typeparam name="T"></typeparam>
-    ///// <param name="objs"></param>
-    ///// <param name="key">How to get to the percentage [0-1] from any obj.</param>
-    ///// <returns>(index, value)</returns>
-    //public static IEnumerable<Tuple<int, T>> RandomSelectManyPairs<T>(this IEnumerable<T> objs, Func<T, float> key)
-    //{
-    //    List<Tuple<int, T>> selected = new List<Tuple<int, T>>();
-
-    //    int i = 0;
-
-    //    foreach (T obj in objs)
-    //    {
-    //        if (PercentChance(key(obj)))
-    //        {
-    //            selected.Add(new(i, obj));
-    //        }
-
-    //        i++;
-    //    }
-
-    //    return selected;
-    //}
 
     /// <summary>
     /// Randomly selects multiple items from an IEnumerable. Guarenteed to select at least one
@@ -351,28 +296,4 @@ public static class RNG
             return selected.GetRandomValue();
         }
     }
-
-    ///// <summary>
-    ///// Selects one item pair from an IEnumerable
-    ///// </summary>
-    ///// <typeparam name="T"></typeparam>
-    ///// <param name="objs"></param>
-    ///// <param name="key">How to get to the percentage [0-1] from any obj.</param>
-    ///// <returns>(index, value)</returns>
-    //public static Tuple<int, T> RandomSelectOnePair<T>(this IEnumerable<T> objs, Func<T, float> key)
-    //{
-    //    IEnumerable<T> selected = objs.RandomSelectMany(key);
-
-    //    if (selected.Count() < 1)
-    //    {
-    //        return objs.GetRandomValuePair();
-    //    }
-    //    else
-    //    {
-    //        return selected.GetRandomValuePair();
-    //    }
-    //}
-
-    
 }
-

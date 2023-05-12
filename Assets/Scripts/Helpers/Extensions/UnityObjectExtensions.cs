@@ -398,4 +398,18 @@ public static class UnityObjectExtensions
         }
         return dst;
     }
+
+    public static void InstantiateSingleton<T>(this T self, ref T singleton)
+        where T : MonoBehaviour
+    {
+        if (singleton)
+        {
+            GameObject.Destroy(self);
+            throw new ArgumentException($"Multiple instances of {typeof(T)}.");
+        }
+        else
+        {
+            singleton = self;
+        }
+    }
 }
