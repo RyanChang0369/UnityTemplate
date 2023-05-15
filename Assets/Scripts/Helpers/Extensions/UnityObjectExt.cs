@@ -372,6 +372,45 @@ public static class UnityObjectExt
     #endregion
     #endregion
 
+    #region Other
+    /// <summary>
+    /// Checks if an object either
+    /// - is null
+    /// - is a UnityEngine.Object that is == null, meaning that's invalid - ie.
+	/// Destroyed, not assigned, or created with new
+    ///
+    /// Unity overloads the == operator for UnityEngine.Object, and returns true
+	/// for a == null both if a is null, or if
+    /// it doesn't exist in the c++ engine. This method is for checking for
+	/// either of those being the case
+    /// for objects that are not necessarily UnityEngine.Objects.
+	/// This is useful when you're using interfaces, since ==
+    /// is a static method, so if you check if a member of an interface == null,
+	/// it will hit the default C# == check instead
+    /// of the overridden Unity check.
+    /// 
+    /// Source:
+	/// https://forum.unity.com/threads/when-a-rigid-body-is-not-attached-component-getcomponent-rigidbody-returns-null-as-a-string.521633/
+    /// </summary>
+    /// <param name="obj">Object to check</param>
+    /// <returns>True if the object is null, or if it's a UnityEngine.Object that has been destroyed</returns>
+    public static bool IsNullOrUnityNull(this object obj)
+    {
+        if (obj == null)
+        {
+            return true;
+        }
+
+        if (obj is UnityEngine.Object @object)
+        {
+            if (@object == null)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /// <summary>
     /// Copies a component and adds it to destination.
     /// Adapted from http://answers.unity.com/answers/1118416/view.html
@@ -412,4 +451,5 @@ public static class UnityObjectExt
             singleton = self;
         }
     }
+    #endregion
 }

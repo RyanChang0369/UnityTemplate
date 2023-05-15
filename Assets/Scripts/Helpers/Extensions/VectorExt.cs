@@ -27,6 +27,20 @@ public static class VectorExt
     {
         return new(v.x, v.z);
     }
+
+    /// <summary>
+    /// Converts from polar coordinates
+    /// </summary>
+    /// <param name="r">Radius</param>
+    /// <param name="theta">Angle, in radians</param>
+    /// <returns></returns>
+    public static Vector2 FromPolar(float r, float theta)
+    {
+        float x = r * Mathf.Cos(theta);
+        float y = r * Mathf.Sin(theta);
+
+        return new Vector2(x, y);
+    }
     #endregion
 
     #region Comparison
