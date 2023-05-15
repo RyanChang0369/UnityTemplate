@@ -136,6 +136,7 @@ public static class VectorExt
     #endregion
 
     #region Component-Wise
+    #region Min
     /// <summary>
     /// Returns the minimum component in v.
     /// </summary>
@@ -175,7 +176,9 @@ public static class VectorExt
     {
         return Mathf.Min(v.x, v.y, v.z);
     }
+    #endregion
 
+    #region Max
     /// <summary>
     /// Returns the maximum component in v.
     /// </summary>
@@ -215,6 +218,49 @@ public static class VectorExt
     {
         return Mathf.Max(v.x, v.y, v.z);
     }
+    #endregion
+
+    #region Abs
+    /// <summary>
+    /// Returns the maximum component in v.
+    /// </summary>
+    /// <param name="v">The Vector2 to evaluate.</param>
+    /// <returns></returns>
+    public static Vector2 Abs(this Vector2 v)
+    {
+        return new(Mathf.Abs(v.x), Mathf.Abs(v.y));
+    }
+
+    /// <summary>
+    /// Returns the maximum component in v.
+    /// </summary>
+    /// <param name="v">The Vector3 to evaluate.</param>
+    /// <returns></returns>
+    public static Vector3 Abs(this Vector3 v)
+    {
+        return new(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
+    }
+
+    /// <summary>
+    /// Returns the maximum component in v.
+    /// </summary>
+    /// <param name="v">The Vector2Int to evaluate.</param>
+    /// <returns></returns>
+    public static Vector2Int Abs(this Vector2Int v)
+    {
+        return new(Mathf.Abs(v.x), Mathf.Abs(v.y));
+    }
+
+    /// <summary>
+    /// Returns the maximum component in v.
+    /// </summary>
+    /// <param name="v">The Vector3Int to evaluate.</param>
+    /// <returns></returns>
+    public static Vector3Int Abs(this Vector3Int v)
+    {
+        return new(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
+    }
+    #endregion
     #endregion
 
     #region Other Operations
