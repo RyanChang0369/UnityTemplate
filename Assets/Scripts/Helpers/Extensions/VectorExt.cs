@@ -135,6 +135,88 @@ public static class VectorExt
     }
     #endregion
 
+    #region Component-Wise
+    /// <summary>
+    /// Returns the minimum component in v.
+    /// </summary>
+    /// <param name="v">The Vector2 to evaluate.</param>
+    /// <returns></returns>
+    public static float MinComponent(this Vector2 v)
+    {
+        return Mathf.Min(v.x, v.y);
+    }
+
+    /// <summary>
+    /// Returns the minimum component in v.
+    /// </summary>
+    /// <param name="v">The Vector3 to evaluate.</param>
+    /// <returns></returns>
+    public static float MinComponent(this Vector3 v)
+    {
+        return Mathf.Min(v.x, v.y, v.z);
+    }
+
+    /// <summary>
+    /// Returns the minimum component in v.
+    /// </summary>
+    /// <param name="v">The Vector2Int to evaluate.</param>
+    /// <returns></returns>
+    public static float MinComponent(this Vector2Int v)
+    {
+        return Mathf.Min(v.x, v.y);
+    }
+
+    /// <summary>
+    /// Returns the minimum component in v.
+    /// </summary>
+    /// <param name="v">The Vector3Int to evaluate.</param>
+    /// <returns></returns>
+    public static float MinComponent(this Vector3Int v)
+    {
+        return Mathf.Min(v.x, v.y, v.z);
+    }
+
+    /// <summary>
+    /// Returns the maximum component in v.
+    /// </summary>
+    /// <param name="v">The Vector2 to evaluate.</param>
+    /// <returns></returns>
+    public static float MaxComponent(this Vector2 v)
+    {
+        return Mathf.Max(v.x, v.y);
+    }
+
+    /// <summary>
+    /// Returns the maximum component in v.
+    /// </summary>
+    /// <param name="v">The Vector3 to evaluate.</param>
+    /// <returns></returns>
+    public static float MaxComponent(this Vector3 v)
+    {
+        return Mathf.Max(v.x, v.y, v.z);
+    }
+
+    /// <summary>
+    /// Returns the maximum component in v.
+    /// </summary>
+    /// <param name="v">The Vector2Int to evaluate.</param>
+    /// <returns></returns>
+    public static float MaxComponent(this Vector2Int v)
+    {
+        return Mathf.Max(v.x, v.y);
+    }
+
+    /// <summary>
+    /// Returns the maximum component in v.
+    /// </summary>
+    /// <param name="v">The Vector3Int to evaluate.</param>
+    /// <returns></returns>
+    public static float MaxComponent(this Vector3Int v)
+    {
+        return Mathf.Max(v.x, v.y, v.z);
+    }
+    #endregion
+
     #region Other Operations
     /// <summary>
     /// Rotates a vector by theta degrees
