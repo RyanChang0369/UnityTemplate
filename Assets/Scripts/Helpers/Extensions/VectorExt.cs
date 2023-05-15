@@ -10,8 +10,8 @@ public static class VectorExt
     /// Converts from a Vector2, v2, to a Vector3, v3, such that
     /// v3.x == v2.x and v3.z == v2.y and v3.y == 0
     /// </summary>
-    /// <param name="v"></param>
-    /// <returns></returns>
+    /// <param name="v">The Vector2 to convert.</param>
+    /// <returns>The converted Vector3.</returns>
     public static Vector3 ToVector3(this Vector2 v)
     {
         return new(v.x, 0, v.y);
@@ -21,11 +21,32 @@ public static class VectorExt
     /// Converts from a Vector3, v3, to a Vector2, v2, such that
     /// v2.x == v3.x and v2.y == v3.z
     /// </summary>
-    /// <param name="v"></param>
-    /// <returns></returns>
+    /// <param name="v">The Vector3 to convert.</param>
+    /// <returns>The converted Vector2.</returns>
     public static Vector2 ToVector2(this Vector3 v)
     {
         return new(v.x, v.z);
+    }
+
+    /// <summary>
+    /// Converts from a Vector3 to a Vector3Int. Rounds all components.
+    /// </summary>
+    /// <param name="v">The Vector3 to convert.</param>
+    /// <returns>The converted Vector3Int.</returns>
+    public static Vector3Int ToVector3Int(this Vector3 v)
+    {
+        return new(Mathf.RoundToInt(v.x), Mathf.RoundToInt(v.y),
+            Mathf.RoundToInt(v.z));
+    }
+
+    /// <summary>
+    /// Converts from a Vector2 to a Vector2Int. Rounds all components.
+    /// </summary>
+    /// <param name="v">The Vector2 to convert.</param>
+    /// <returns>The converted Vector2Int.</returns>
+    public static Vector2Int ToVector2Int(this Vector2 v)
+    {
+        return new(Mathf.RoundToInt(v.x), Mathf.RoundToInt(v.y));
     }
 
     /// <summary>
