@@ -18,6 +18,16 @@ public static class VectorExt
     }
 
     /// <summary>
+    /// Converts from a Vector3Int to a Vector3.
+    /// </summary>
+    /// <param name="v">The Vecto3Int to convert.</param>
+    /// <returns>The converted Vector3.</returns>
+    public static Vector3 ToVector3(this Vector3Int v)
+    {
+        return new(v.x, v.y, v.z);
+    }
+
+    /// <summary>
     /// Converts from a Vector3, v3, to a Vector2, v2, such that
     /// v2.x == v3.x and v2.y == v3.z
     /// </summary>
@@ -26,6 +36,16 @@ public static class VectorExt
     public static Vector2 ToVector2(this Vector3 v)
     {
         return new(v.x, v.z);
+    }
+
+    /// <summary>
+    /// Converts from a Vector2Int to a Vector2.
+    /// </summary>
+    /// <param name="v">The Vector2Int to convert.</param>
+    /// <returns>The converted Vector2.</returns>
+    public static Vector2 ToVector2(this Vector2Int v)
+    {
+        return new(v.x, v.y);
     }
 
     /// <summary>
