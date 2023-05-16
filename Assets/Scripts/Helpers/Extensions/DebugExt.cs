@@ -3,6 +3,7 @@ using UnityEngine;
 
 public static class DebugExt
 {
+    #region Cross Hair
     /// <summary>
     /// Draws a crosshair at position.
     /// </summary>
@@ -15,6 +16,7 @@ public static class DebugExt
         Debug.DrawLine(position + Vector3.down * half, position + Vector3.up * half, color);
         Debug.DrawLine(position + Vector3.left * half, position + Vector3.right * half, color);
     }
+    #endregion
 
     #region Cross Square
     /// <summary>
