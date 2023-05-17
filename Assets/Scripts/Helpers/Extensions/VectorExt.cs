@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Linq;
 
 /// <summary>
 /// Contains methods pertaining to Vector3 and Vector2.
@@ -279,6 +280,156 @@ public static class VectorExt
     public static Vector3Int Abs(this Vector3Int v)
     {
         return new(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
+    }
+    #endregion
+    
+    #region Average
+    /// <summary>
+    /// Returns a vector whose components are the arithmetic average of all of
+    /// the individual components in v1 and v2. This is the center of v1 and v2.
+    /// </summary>
+    /// <param name="v1">The first vector.</param>
+    /// <param name="v2">The second vector.</param>
+    /// <returns></returns>
+    public static Vector2 Average(this Vector2 v1, Vector2 v2)
+    {
+        return new Vector2(v1.x + v2.x, v1.y + v2.y) / 2f;
+    }
+
+    /// <summary>
+    /// Returns a vector whose components are the arithmetic average of all of
+    /// the individual components specified in vectors.
+    /// </summary>
+    /// <param name="vectors">List of vectors.</param>
+    /// <returns></returns>
+    /// <exception cref="System.ArgumentException">
+    /// If passed an empty list of params.
+    /// </exception>
+    public static Vector2 Average(params Vector2[] vectors)
+    {
+        if (vectors.Length > 0)
+        {
+            Vector2 sum = new();
+
+            foreach (var v in vectors) sum += v;
+
+            return sum / vectors.Length;
+        }
+        else
+        {
+            throw new System.ArgumentException("Cannot provide empty params");
+        }
+    }
+
+    /// <summary>
+    /// Returns a vector whose components are the arithmetic average of all of
+    /// the individual components in v1 and v2. This is the center of v1 and v2.
+    /// </summary>
+    /// <param name="v1">The first vector.</param>
+    /// <param name="v2">The second vector.</param>
+    /// <returns></returns>
+    public static Vector2Int Average(this Vector2Int v1, Vector2Int v2)
+    {
+        return new Vector2Int(v1.x + v2.x, v1.y + v2.y) / 2;
+    }
+
+    /// <summary>
+    /// Returns a vector whose components are the arithmetic average of all of
+    /// the individual components specified in vectors.
+    /// </summary>
+    /// <param name="vectors">List of vectors.</param>
+    /// <returns></returns>
+    /// <exception cref="System.ArgumentException">
+    /// If passed an empty list of params.
+    /// </exception>
+    public static Vector2Int Average(params Vector2Int[] vectors)
+    {
+        if (vectors.Length > 0)
+        {
+            Vector2Int sum = new();
+
+            foreach (var v in vectors) sum += v;
+
+            return sum / vectors.Length;
+        }
+        else
+        {
+            throw new System.ArgumentException("Cannot provide empty params");
+        }
+    }
+
+    /// <summary>
+    /// Returns a vector whose components are the arithmetic average of all of
+    /// the individual components in v1 and v2. This is the center of v1 and v2.
+    /// </summary>
+    /// <param name="v1">The first vector.</param>
+    /// <param name="v2">The second vector.</param>
+    /// <returns></returns>
+    public static Vector3 Average(this Vector3 v1, Vector3 v2)
+    {
+        return new Vector3(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z) / 2f;
+    }
+
+    /// <summary>
+    /// Returns a vector whose components are the arithmetic average of all of
+    /// the individual components specified in vectors.
+    /// </summary>
+    /// <param name="vectors">List of vectors.</param>
+    /// <returns></returns>
+    /// <exception cref="System.ArgumentException">
+    /// If passed an empty list of params.
+    /// </exception>
+    public static Vector3 Average(params Vector3[] vectors)
+    {
+        if (vectors.Length > 0)
+        {
+            Vector3 sum = new();
+
+            foreach (var v in vectors) sum += v;
+
+            return sum / vectors.Length;
+        }
+        else
+        {
+            throw new System.ArgumentException("Cannot provide empty params");
+        }
+    }
+
+    /// <summary>
+    /// Returns a vector whose components are the arithmetic average of all of
+    /// the individual components in v1 and v2. This is the center of v1 and v2.
+    /// </summary>
+    /// <param name="v1">The first vector.</param>
+    /// <param name="v2">The second vector.</param>
+    /// <returns></returns>
+    public static Vector3Int Average(this Vector3Int v1, Vector3Int v2)
+    {
+        return new Vector3Int(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z) / 2;
+    }
+
+    /// <summary>
+    /// Returns a vector whose components are the arithmetic average of all of
+    /// the individual components specified in vectors.
+    /// </summary>
+    /// <param name="vectors">List of vectors.</param>
+    /// <returns></returns>
+    /// <exception cref="System.ArgumentException">
+    /// If passed an empty list of params.
+    /// </exception>
+    public static Vector3Int Average(params Vector3Int[] vectors)
+    {
+        if (vectors.Length > 0)
+        {
+            Vector3Int sum = new();
+
+            foreach (var v in vectors) sum += v;
+
+            return sum / vectors.Length;
+        }
+        else
+        {
+            throw new System.ArgumentException("Cannot provide empty params");
+        }
     }
     #endregion
     #endregion
