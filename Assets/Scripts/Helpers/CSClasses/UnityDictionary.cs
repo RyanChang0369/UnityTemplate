@@ -1,6 +1,11 @@
 using System;
 using System.Collections.Generic;
 
+/// <summary>
+/// Used to display a dictionary in the unity inspector.
+/// </summary>
+/// <typeparam name="Key">A unity-serializable value.</typeparam>
+/// <typeparam name="Value">A unity-serializable value.</typeparam>
 [Serializable]
 public class UnityDictionary<Key, Value>
 {

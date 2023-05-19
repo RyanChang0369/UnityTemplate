@@ -35,5 +35,10 @@ public class Modifier
     {
         return input * multiplier + addition;
     }
+
+    public override int GetHashCode()
+    {
+        return Tuple.Create(addition, multiplier).GetHashCode();
+    }
 }
 

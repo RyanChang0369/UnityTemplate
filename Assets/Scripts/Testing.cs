@@ -2,16 +2,20 @@ using UnityEngine;
 
 public class Testing : MonoBehaviour
 {
+    public ModifierChain test;
+
     private void Start()
     {
-        DebugExt.UseDebug(Color.blue, Color.green, 10);
-        DebugExt.DrawCrossCube(Vector3.zero,
-            Quaternion.Euler(0, 45, 45), 4);
-    }
+        test = new();
+        test.Add(new(15, this, "Start"), new(17));
+        test.Add(new(0, this, "Important"), new(0.5f, 0.5f));
+        test.Add(new(0, 17, "Important"), new(50, 0.2f));
+        
+        test.Remove(new(0, this, "Important"));
 
-    private void OnDrawGizmos()
-    {
-        DebugExt.UseGizmos(Color.red);
-        DebugExt.DrawCrossRect(new Rect(5, 6, 10, 15));
+        foreach (var item in test.chain)
+        {
+            print(item.Key);
+        }
     }
 }

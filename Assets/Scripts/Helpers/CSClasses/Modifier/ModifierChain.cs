@@ -1,19 +1,42 @@
+using System;
 using System.Collections.Generic;
+using UnityEngine;
 
+[System.Serializable]
 public class ModifierChain
 {
-    public Dictionary<string, Modifier> chain = new();
+    public SortedDictionary<PriorityKey, Modifier> chain = new();
 
-    public void Add(string key, Modifier modifier)
+    /// <summary>
+    /// Adds a modifier to the chain.
+    /// </summary>
+    /// <param name="key">Key to add.</param>
+    /// <param name="modifier">Modifier to add.</param>
+    /// <returns>True if key successfully added, false otherwise</returns>
+    public bool Add(PriorityKey key, Modifier modifier)
     {
+        if (chain.ContainsKey(key))
+            return false;
+        
         chain.Add(key, modifier);
+        return true;
     }
 
-    public bool Remove(string key)
+    /// <summary>
+    /// Removes a modifier from the chain.
+    /// </summary>
+    /// <param name="key">Key to remove.</param>
+    /// <returns></returns>
+    public bool Remove(PriorityKey key)
     {
         return chain.Remove(key);
     }
 
+    /// <summary>
+    /// Modifies the input using the chain.
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
     public float Modify(float input)
     {
         foreach (var pair in chain)
