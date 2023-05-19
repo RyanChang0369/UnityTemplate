@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 
 /// <summary>
-/// Used to display a dictionary in the unity inspector.
+/// Used to display a dictionary in the unity inspector. Use if you want to
+/// allow the user to modify a dictionary that won't be changed anywhere else.
 /// </summary>
 /// <typeparam name="Key">A unity-serializable value.</typeparam>
 /// <typeparam name="Value">A unity-serializable value.</typeparam>
