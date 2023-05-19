@@ -1,6 +1,10 @@
 using System;
 using System.Collections.Generic;
 
+/// <summary>
+/// Can be used in a sorted list or dictionary in order to
+/// define priority for its values.
+/// </summary>
 [Serializable]
 public class PriorityKey : IComparable<PriorityKey>
 {
