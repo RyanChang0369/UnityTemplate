@@ -241,48 +241,6 @@ public static class VectorExt
     }
     #endregion
 
-    #region Abs
-    /// <summary>
-    /// Returns the maximum component in v.
-    /// </summary>
-    /// <param name="v">The Vector2 to evaluate.</param>
-    /// <returns></returns>
-    public static Vector2 Abs(this Vector2 v)
-    {
-        return new(Mathf.Abs(v.x), Mathf.Abs(v.y));
-    }
-
-    /// <summary>
-    /// Returns the maximum component in v.
-    /// </summary>
-    /// <param name="v">The Vector3 to evaluate.</param>
-    /// <returns></returns>
-    public static Vector3 Abs(this Vector3 v)
-    {
-        return new(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
-    }
-
-    /// <summary>
-    /// Returns the maximum component in v.
-    /// </summary>
-    /// <param name="v">The Vector2Int to evaluate.</param>
-    /// <returns></returns>
-    public static Vector2Int Abs(this Vector2Int v)
-    {
-        return new(Mathf.Abs(v.x), Mathf.Abs(v.y));
-    }
-
-    /// <summary>
-    /// Returns the maximum component in v.
-    /// </summary>
-    /// <param name="v">The Vector3Int to evaluate.</param>
-    /// <returns></returns>
-    public static Vector3Int Abs(this Vector3Int v)
-    {
-        return new(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
-    }
-    #endregion
-    
     #region Average
     /// <summary>
     /// Returns a vector whose components are the arithmetic average of all of
@@ -432,9 +390,140 @@ public static class VectorExt
         }
     }
     #endregion
+
+    #region Sum
+    /// <summary>
+    /// Returns the sum of all components in the vector.
+    /// </summary>
+    /// <param name="v">The vector to evaluate.</param>
+    /// <returns>The sum of all components.</returns>
+    public static float SumComponents(this Vector2 v)
+    {
+        return v.x + v.y;
+    }
+
+    /// <summary>
+    /// Returns the sum of all components in the vector.
+    /// </summary>
+    /// <param name="v">The vector to evaluate.</param>
+    /// <returns>The sum of all components.</returns>
+    public static float SumComponents(this Vector3 v)
+    {
+        return v.x + v.y + v.z;
+    }
+
+    /// <summary>
+    /// Returns the sum of all components in the vector.
+    /// </summary>
+    /// <param name="v">The vector to evaluate.</param>
+    /// <returns>The sum of all components.</returns>
+    public static int SumComponents(this Vector2Int v)
+    {
+        return v.x + v.y;
+    }
+
+    /// <summary>
+    /// Returns the sum of all components in the vector.
+    /// </summary>
+    /// <param name="v">The vector to evaluate.</param>
+    /// <returns>The sum of all components.</returns>
+    public static int SumComponents(this Vector3Int v)
+    {
+        return v.x + v.y + v.z;
+    }
+    #endregion
     #endregion
 
-    #region Other Operations
+    #region Distance
+    /// <summary>
+    /// Gets the taxicab distance between two vectors.
+    /// </summary>
+    /// <param name="v1">The first vector.</param>
+    /// <param name="v2">The second vector.</param>
+    /// <returns>The taxicab distance.</returns>
+    public static float TaxicabDistance(this Vector2 v1, Vector2 v2)
+    {
+        return (v1 - v2).Abs().SumComponents();
+    }
+
+    /// <summary>
+    /// Gets the taxicab distance between two vectors.
+    /// </summary>
+    /// <param name="v1">The first vector.</param>
+    /// <param name="v2">The second vector.</param>
+    /// <returns>The taxicab distance.</returns>
+    public static int TaxicabDistance(this Vector2Int v1, Vector2Int v2)
+    {
+        return (v1 - v2).Abs().SumComponents();
+    }
+
+    /// <summary>
+    /// Gets the taxicab distance between two vectors.
+    /// </summary>
+    /// <param name="v1">The first vector.</param>
+    /// <param name="v2">The second vector.</param>
+    /// <returns>The taxicab distance.</returns>
+    public static float TaxicabDistance(this Vector3 v1, Vector3 v2)
+    {
+        return (v1 - v2).Abs().SumComponents();
+    }
+
+    /// <summary>
+    /// Gets the taxicab distance between two vectors.
+    /// </summary>
+    /// <param name="v1">The first vector.</param>
+    /// <param name="v2">The second vector.</param>
+    /// <returns>The taxicab distance.</returns>
+    public static int TaxicabDistance(this Vector3Int v1, Vector3Int v2)
+    {
+        return (v1 - v2).Abs().SumComponents();
+    }
+    #endregion
+
+    #region Operations
+    #region Abs
+    /// <summary>
+    /// Returns the vector with all components positive.
+    /// </summary>
+    /// <param name="v">The Vector2 to evaluate.</param>
+    /// <returns></returns>
+    public static Vector2 Abs(this Vector2 v)
+    {
+        return new(Mathf.Abs(v.x), Mathf.Abs(v.y));
+    }
+
+    /// <summary>
+    /// Returns the vector with all components positive.
+    /// </summary>
+    /// <param name="v">The Vector3 to evaluate.</param>
+    /// <returns></returns>
+    public static Vector3 Abs(this Vector3 v)
+    {
+        return new(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
+    }
+
+    /// <summary>
+    /// Returns the vector with all components positive.
+    /// </summary>
+    /// <param name="v">The Vector2Int to evaluate.</param>
+    /// <returns></returns>
+    public static Vector2Int Abs(this Vector2Int v)
+    {
+        return new(Mathf.Abs(v.x), Mathf.Abs(v.y));
+    }
+
+    /// <summary>
+    /// Returns the vector with all components positive.
+    /// </summary>
+    /// <param name="v">The Vector3Int to evaluate.</param>
+    /// <returns></returns>
+    public static Vector3Int Abs(this Vector3Int v)
+    {
+        return new(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
+    }
+    #endregion
+
+    #region Trig
     /// <summary>
     /// Rotates a vector by theta degrees
     /// </summary>
@@ -450,5 +539,6 @@ public static class VectorExt
 
         return new Vector2(cos * oldX - sin * oldY, sin * oldX + cos * oldY);
     }
+    #endregion
     #endregion
 }
