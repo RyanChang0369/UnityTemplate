@@ -1,5 +1,5 @@
 using UnityEngine;
-using System.Linq;
+using System.Collections.Generic;
 
 /// <summary>
 /// Contains methods pertaining to Vector3 and Vector2.
@@ -434,52 +434,6 @@ public static class VectorExt
     #endregion
     #endregion
 
-    #region Distance
-    /// <summary>
-    /// Gets the taxicab distance between two vectors.
-    /// </summary>
-    /// <param name="v1">The first vector.</param>
-    /// <param name="v2">The second vector.</param>
-    /// <returns>The taxicab distance.</returns>
-    public static float TaxicabDistance(this Vector2 v1, Vector2 v2)
-    {
-        return (v1 - v2).Abs().SumComponents();
-    }
-
-    /// <summary>
-    /// Gets the taxicab distance between two vectors.
-    /// </summary>
-    /// <param name="v1">The first vector.</param>
-    /// <param name="v2">The second vector.</param>
-    /// <returns>The taxicab distance.</returns>
-    public static int TaxicabDistance(this Vector2Int v1, Vector2Int v2)
-    {
-        return (v1 - v2).Abs().SumComponents();
-    }
-
-    /// <summary>
-    /// Gets the taxicab distance between two vectors.
-    /// </summary>
-    /// <param name="v1">The first vector.</param>
-    /// <param name="v2">The second vector.</param>
-    /// <returns>The taxicab distance.</returns>
-    public static float TaxicabDistance(this Vector3 v1, Vector3 v2)
-    {
-        return (v1 - v2).Abs().SumComponents();
-    }
-
-    /// <summary>
-    /// Gets the taxicab distance between two vectors.
-    /// </summary>
-    /// <param name="v1">The first vector.</param>
-    /// <param name="v2">The second vector.</param>
-    /// <returns>The taxicab distance.</returns>
-    public static int TaxicabDistance(this Vector3Int v1, Vector3Int v2)
-    {
-        return (v1 - v2).Abs().SumComponents();
-    }
-    #endregion
-
     #region Operations
     #region Abs
     /// <summary>
@@ -538,6 +492,102 @@ public static class VectorExt
         float oldX = vec.x, oldY = vec.y;
 
         return new Vector2(cos * oldX - sin * oldY, sin * oldX + cos * oldY);
+    }
+    #endregion
+    
+    
+    #region Distance
+    /// <summary>
+    /// Gets the taxicab distance between two vectors.
+    /// </summary>
+    /// <param name="v1">The first vector.</param>
+    /// <param name="v2">The second vector.</param>
+    /// <returns>The taxicab distance.</returns>
+    public static float TaxicabDistance(this Vector2 v1, Vector2 v2)
+    {
+        return (v1 - v2).Abs().SumComponents();
+    }
+
+    /// <summary>
+    /// Gets the taxicab distance between two vectors.
+    /// </summary>
+    /// <param name="v1">The first vector.</param>
+    /// <param name="v2">The second vector.</param>
+    /// <returns>The taxicab distance.</returns>
+    public static int TaxicabDistance(this Vector2Int v1, Vector2Int v2)
+    {
+        return (v1 - v2).Abs().SumComponents();
+    }
+
+    /// <summary>
+    /// Gets the taxicab distance between two vectors.
+    /// </summary>
+    /// <param name="v1">The first vector.</param>
+    /// <param name="v2">The second vector.</param>
+    /// <returns>The taxicab distance.</returns>
+    public static float TaxicabDistance(this Vector3 v1, Vector3 v2)
+    {
+        return (v1 - v2).Abs().SumComponents();
+    }
+
+    /// <summary>
+    /// Gets the taxicab distance between two vectors.
+    /// </summary>
+    /// <param name="v1">The first vector.</param>
+    /// <param name="v2">The second vector.</param>
+    /// <returns>The taxicab distance.</returns>
+    public static int TaxicabDistance(this Vector3Int v1, Vector3Int v2)
+    {
+        return (v1 - v2).Abs().SumComponents();
+    }
+    #endregion
+
+    #region Kernel
+    /// <summary>
+    /// Returns a list of vectors that contains every vector within an area
+    /// of (2 r + 1) by (2 r + 1) of the vector at.
+    /// </summary>
+    /// <param name="at">Center of the kernel.</param>
+    /// <param name="r">Kernel radius.</param>
+    /// <returns></returns>
+    public static List<Vector2Int> SquareKernel(this Vector2Int at, int r)
+    {
+        List<Vector2Int> list = new();
+
+        for (int x = -r; x <= r; x++)
+        {
+            for (int y = -r; y <= r; y++)
+            {
+                list.Add(at + new Vector2Int(x, y));
+            }
+        }
+
+        return list;
+    }
+
+    /// <summary>
+    /// Returns a list of vectors that contains every vector within an volume
+    /// of (2 r + 1) by (2 r + 1) by (2 r + 1) of the vector at.
+    /// </summary>
+    /// <param name="at">Center of the kernel.</param>
+    /// <param name="r">Kernel radius.</param>
+    /// <returns></returns>
+    public static List<Vector3Int> CubeKernel(this Vector3Int at, int r)
+    {
+        List<Vector3Int> list = new();
+
+        for (int x = -r; x <= r; x++)
+        {
+            for (int y = -r; y <= r; y++)
+            {
+                for (int z = -r; z <= r; z++)
+                {
+                    list.Add(at + new Vector3Int(x, y, z));
+                }
+            }
+        }
+
+        return list;
     }
     #endregion
     #endregion
