@@ -83,4 +83,24 @@ public static class NumericalExt
         return value + Mathf.Sign(target)
             * Mathf.Min(Mathf.Abs(target), Mathf.Abs(margin));
     }
+
+    /// <summary>
+    /// Returns the square of value.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static float Squared(this float value)
+    {
+        return value * value;
+    }
+
+    /// <summary>
+    /// Returns the square of value.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static int Squared(this int value)
+    {
+        return value * value;
+    }
 }
