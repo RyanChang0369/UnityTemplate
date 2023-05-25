@@ -1,8 +1,12 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 
+/// <summary>
+/// Contains methods pertaining to debug drawing, gizmos drawing, and other
+/// methods that may be useful for debugging.
+/// </summary>
 public static class DebugExt
 {
+    #region Drawing
     #region Variables
     public static Color primaryColor;
     public static Color secondaryColor;
@@ -437,5 +441,6 @@ public static class DebugExt
     {
         DrawCrossBounds(bounds, Quaternion.identity);
     }
+    #endregion
     #endregion
 }
