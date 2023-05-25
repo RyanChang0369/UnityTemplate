@@ -186,6 +186,31 @@ public static class DebugExt
         DrawLine(corners[1], corners[3], secondaryColor);
     }
 
+    /// <summary>
+    /// Draws a rectangular prism.
+    /// </summary>
+    /// <param name="corners"></param>
+    private static void Draw8Face(Vector3[] corners)
+    {
+        // Draw outer box
+        for (int i = 1; i < corners.Length; i++)
+        {
+            DrawLine(corners[i - 1], corners[i], primaryColor);
+        }
+        DrawLine(corners[0], corners[corners.Length - 1], primaryColor);
+
+        // Other corners
+        DrawLine(corners[1], corners[6], primaryColor);
+        DrawLine(corners[2], corners[7], primaryColor);
+        DrawLine(corners[3], corners[8], primaryColor);
+
+        // Draw cross
+        DrawLine(corners[0], corners[7], secondaryColor);
+        DrawLine(corners[1], corners[8], secondaryColor);
+        DrawLine(corners[2], corners[9], secondaryColor);
+        DrawLine(corners[3], corners[6], secondaryColor);
+    }
+
     private static void DrawLine(Vector3 from, Vector3 to, Color color)
     {
         switch (drawingMode)
@@ -277,23 +302,7 @@ public static class DebugExt
             corners[i] = rotation * corners[i] + position;
         }
 
-        // Draw outer box
-        for (int i = 1; i < corners.Length; i++)
-        {
-            DrawLine(corners[i - 1], corners[i], primaryColor);
-        }
-        DrawLine(corners[0], corners[corners.Length - 1], primaryColor);
-
-        // Other corners
-        DrawLine(corners[1], corners[6], primaryColor);
-        DrawLine(corners[2], corners[7], primaryColor);
-        DrawLine(corners[3], corners[8], primaryColor);
-
-        // Draw cross
-        DrawLine(corners[0], corners[7], secondaryColor);
-        DrawLine(corners[1], corners[8], secondaryColor);
-        DrawLine(corners[2], corners[9], secondaryColor);
-        DrawLine(corners[3], corners[6], secondaryColor);
+        Draw8Face(corners);
     }
 
     /// <summary>
@@ -363,10 +372,10 @@ public static class DebugExt
 
         // Center rect at origin, rotate, then transform back to original
         // position.
-        Vector3 trans = rect.center.ToVector3();
+        Vector3 center = rect.center.ToVector3();
         for (int i = 0; i < corners.Length; i++)
         {
-            corners[i] = rotation * (corners[i] - trans) + trans;
+            corners[i] = rotation * (corners[i] - center) + center;
         }
 
         DrawFace(corners);
@@ -379,6 +388,54 @@ public static class DebugExt
     public static void DrawCrossRect(Rect rect)
     {
         DrawCrossRect(rect, Quaternion.identity);
+    }
+    #endregion
+
+    #region Cross Bounds
+    /// <summary>
+    /// Draws a crossed bound.
+    /// </summary>
+    /// <param name="bounds">Bounds to draw.</param>
+    /// <param name="rotation">Rotation of the drawn item.</param>
+    public static void DrawCrossBounds(Bounds bounds, Quaternion rotation)
+    {
+        Vector3 max = bounds.max;
+        Vector3 min = bounds.min;
+
+        // Define corners
+        Vector3[] corners = {
+            // First face
+            new Vector3(max.x, max.y, max.z),
+            new Vector3(min.x, max.y, max.z),
+            new Vector3(min.x, min.y, max.z),
+            new Vector3(max.x, min.y, max.z),
+            new Vector3(max.x, max.y, max.z),
+            //Cross over to other face
+            new Vector3(max.x, max.y, min.z),
+            new Vector3(min.x, max.y, min.z),
+            new Vector3(min.x, min.y, min.z),
+            new Vector3(max.x, min.y, min.z),
+            new Vector3(max.x, max.y, min.z),
+        };
+
+        // Center rect at origin, rotate, then transform back to original
+        // position.
+        Vector3 center = bounds.center;
+        for (int i = 0; i < corners.Length; i++)
+        {
+            corners[i] = rotation * (corners[i] - center) + center;
+        }
+
+        Draw8Face(corners);
+    }
+
+    /// <summary>
+    /// Draws a crossed bound.
+    /// </summary>
+    /// <param name="bounds">Bounds to draw.</param>
+    public static void DrawCrossBounds(Bounds bounds)
+    {
+        DrawCrossBounds(bounds, Quaternion.identity);
     }
     #endregion
 }
