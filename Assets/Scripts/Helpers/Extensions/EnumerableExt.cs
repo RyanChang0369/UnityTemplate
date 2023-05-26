@@ -33,4 +33,36 @@ public static class EnumerableExt
 
         dict[key].Add(addition);
     }
+
+    #region List
+    /// <summary>
+    /// Removes everything past (and including) index from.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list">List to modify.</param>
+    /// <param name="from">Index to remove from.</param>
+    public static void TrimToEnd<T>(this IList<T> list, int from)
+    {
+        while (from < list.Count)
+        {
+            list.RemoveAt(from);
+        }
+    }
+
+    /// <summary>
+    /// If index is a valid index in list, then replace the element at index
+    /// with obj. Otherwise, add obj to the list.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list">List to modify.</param>
+    /// <param name="obj">Object to add.</param>
+    /// <param name="index">Index to add th object at.</param>
+    public static void AddOrReplace<T>(this IList<T> list, T obj, int index)
+    {
+        if (index < list.Count)
+            list[index] = obj;
+        else
+            list.Add(obj);
+    }
+    #endregion
 }
