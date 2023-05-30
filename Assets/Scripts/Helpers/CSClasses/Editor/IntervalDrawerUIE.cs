@@ -6,18 +6,7 @@ public class IntervalDrawerUIE : PropertyDrawer
 {
     private Interval GetIntervalObject(SerializedProperty property)
     {
-        var targetObject = property.serializedObject.targetObject;
-        var targetObjectClassType = targetObject.GetType();
-        var field = targetObjectClassType.GetField(property.propertyPath);
-        
-        if (field != null)
-        {
-            return (Interval)field.GetValue(targetObject);
-        }
-        else
-        {
-            throw new System.ArgumentNullException($"Field is null, targetObjectClassType is {targetObjectClassType}.");
-        }
+        return (Interval)property.GetObjectFromReflection();
     }
 
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)

@@ -1,8 +1,25 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Testing : MonoBehaviour
 {
     public ModifierChain test;
+
+    // [FixedList, NonReorderable]
+    public FixedList<Modifier> testFixedList = new()
+    {
+        new(15, 62),
+        new(14, 98),
+        new(0, 1),
+        new(15, 62),
+        new(14, 98),
+        new(0, 1),
+        new(15, 62),
+        new(14, 98),
+        new(0, 1),
+    };
+
+    public Range testRange = new(69, 420);
 
     private void Start()
     {

@@ -246,6 +246,169 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af1e5b9f37a5293cbb26bfc2b918609c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  testFixedList:
+    internalList:
+    - rangePattern: 1
+      singleValue: 0
+      scalarMin: 15
+      scalarMax: 62
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      perlinCrawlSpeed: 0.1
+      modifer:
+        addition: 0
+        multiplier: 1
+      unfoldedInInspector: 0
+      fixedSelectionInInspector: 0
+    - rangePattern: 1
+      singleValue: 0
+      scalarMin: 14
+      scalarMax: 98
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      perlinCrawlSpeed: 0.1
+      modifer:
+        addition: 0
+        multiplier: 1
+      unfoldedInInspector: 0
+      fixedSelectionInInspector: 0
+    - rangePattern: 1
+      singleValue: 0
+      scalarMin: 0
+      scalarMax: 1
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      perlinCrawlSpeed: 0.1
+      modifer:
+        addition: 0
+        multiplier: 1
+      unfoldedInInspector: 0
+      fixedSelectionInInspector: 0
+    - rangePattern: 1
+      singleValue: 0
+      scalarMin: 15
+      scalarMax: 62
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      perlinCrawlSpeed: 0.1
+      modifer:
+        addition: 0
+        multiplier: 1
+      unfoldedInInspector: 0
+      fixedSelectionInInspector: 0
+    - rangePattern: 1
+      singleValue: 0
+      scalarMin: 14
+      scalarMax: 98
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      perlinCrawlSpeed: 0.1
+      modifer:
+        addition: 0
+        multiplier: 1
+      unfoldedInInspector: 0
+      fixedSelectionInInspector: 0
+    - rangePattern: 1
+      singleValue: 0
+      scalarMin: 0
+      scalarMax: 1
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      perlinCrawlSpeed: 0.1
+      modifer:
+        addition: 0
+        multiplier: 1
+      unfoldedInInspector: 0
+      fixedSelectionInInspector: 0
+    - rangePattern: 1
+      singleValue: 0
+      scalarMin: 15
+      scalarMax: 62
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      perlinCrawlSpeed: 0.1
+      modifer:
+        addition: 0
+        multiplier: 1
+      unfoldedInInspector: 0
+      fixedSelectionInInspector: 0
+    - rangePattern: 1
+      singleValue: 0
+      scalarMin: 14
+      scalarMax: 98
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      perlinCrawlSpeed: 0.1
+      modifer:
+        addition: 0
+        multiplier: 1
+      unfoldedInInspector: 0
+      fixedSelectionInInspector: 0
+    - rangePattern: 1
+      singleValue: 0
+      scalarMin: 0
+      scalarMax: 1
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      perlinCrawlSpeed: 0.1
+      modifer:
+        addition: 0
+        multiplier: 1
+      unfoldedInInspector: 0
+      fixedSelectionInInspector: 0
+  testRange:
+    rangePattern: 1
+    singleValue: 0
+    scalarMin: 69
+    scalarMax: 420
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    perlinCrawlSpeed: 0.1
+    modifer:
+      addition: 0
+      multiplier: 1
+    unfoldedInInspector: 0
+    fixedSelectionInInspector: 0
 --- !u!4 &848942548
 Transform:
   m_ObjectHideFlags: 0
