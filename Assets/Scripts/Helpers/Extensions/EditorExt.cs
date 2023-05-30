@@ -104,7 +104,9 @@ public static class EditorExt
         {
             // Found a custom property drawer. Use found drawer.
             position.height = drawer.GetPropertyHeight(property, label);
+            EditorGUI.BeginProperty(position, label, property);
             drawer.OnGUI(position, property, label);
+            EditorGUI.EndProperty();
         }
         else
         {

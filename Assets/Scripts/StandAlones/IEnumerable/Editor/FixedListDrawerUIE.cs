@@ -1,24 +1,22 @@
-using System;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 [CustomPropertyDrawer(typeof(FixedList<>), true)]
 public class FixedListDrawerUIE : PropertyDrawer
 {
-    private bool unfolded = true;
-
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
-        unfolded = EditorGUI.BeginFoldoutHeaderGroup(position, unfolded, label.text);
+        property.isExpanded = EditorGUI.Foldout(position,
+            property.isExpanded, label.text, EditorStyles.foldoutHeader);
 
-        if (unfolded)
+        if (property.isExpanded)
         {
             // Enter child, which is internalList.
             property.Next(true);
             int arrLen = property.arraySize;
 
             // Collapsable section
+            EditorGUI.indentLevel++;
 
             position.xMin += EditorGUIUtility.singleLineHeight;  // Some padding
             position.Translate(new(0,
@@ -31,14 +29,13 @@ public class FixedListDrawerUIE : PropertyDrawer
                 var elem = property.GetArrayElementAtIndex(i);
                 elem.DrawSerializedProperty(ref position, new($"Element {i}"));
             }
+            EditorGUI.indentLevel--;
         }
-
-        EditorGUI.EndFoldoutHeaderGroup();
     }
 
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
-        if (unfolded)
+        if (property.isExpanded)
         {
             float height = base.GetPropertyHeight(property, label);
 

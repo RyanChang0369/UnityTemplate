@@ -19,6 +19,19 @@ public class Testing : MonoBehaviour
         new(0, 1),
     };
 
+    public List<Modifier> testActualList = new()
+    {
+        new(15, 62),
+        new(14, 98),
+        new(0, 1),
+        new(15, 62),
+        new(14, 98),
+        new(0, 1),
+        new(15, 62),
+        new(14, 98),
+        new(0, 1),
+    };
+
     public Range testRange = new(69, 420);
 
     private void Start()
