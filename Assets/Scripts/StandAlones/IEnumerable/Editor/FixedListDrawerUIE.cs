@@ -20,8 +20,10 @@ public class FixedListDrawerUIE : PropertyDrawer
 
             // Collapsable section
 
-            position.xMin += 16;    // Some padding
-            position.Translate(new(0, 24));
+            position.xMin += EditorGUIUtility.singleLineHeight;  // Some padding
+            position.Translate(new(0,
+                EditorGUIUtility.singleLineHeight
+                + EditorGUIUtility.standardVerticalSpacing));
 
             for (int i = 0; i < arrLen; i++)
             {
@@ -50,9 +52,9 @@ public class FixedListDrawerUIE : PropertyDrawer
                 height += EditorGUI.GetPropertyHeight(elem);
             }
 
-            return height + 8;
+            return height + EditorGUIUtility.standardVerticalSpacing;
         }
 
-        return 18;
+        return EditorGUIUtility.singleLineHeight;
     }
 }
