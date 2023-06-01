@@ -21,7 +21,7 @@ public static class VectorExt
     /// <summary>
     /// Converts from a Vector3Int to a Vector3.
     /// </summary>
-    /// <param name="v">The Vecto3Int to convert.</param>
+    /// <param name="v">The Vector3Int to convert.</param>
     /// <returns>The converted Vector3.</returns>
     public static Vector3 ToVector3(this Vector3Int v)
     {
