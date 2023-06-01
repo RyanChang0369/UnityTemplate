@@ -155,6 +155,18 @@ public static class RNGExt
     }
 
     /// <summary>
+    /// Returns a random Vector2 with its respective components ranging from
+    /// rect.min (inclusive) to rect.max (exclusive).
+    /// </summary>
+    /// <param name="rect">The bounds.</param>
+    /// <returns></returns>
+    public static Vector2 RandomVector2(Rect rect)
+    {
+        return RandomVector2(rect.min.x, rect.min.y, rect.max.x,
+            rect.max.y);
+    }
+
+    /// <summary>
     /// Gets a point on the unit circle.
     /// </summary>
     /// <returns>A point on the unit circle.</returns>
@@ -229,6 +241,18 @@ public static class RNGExt
             RandomFloat(minZ, maxZ)
             );
     }
+
+    /// <summary>
+    /// Returns a random Vector3 with its respective components ranging from
+    /// bounds.min (inclusive) to bounds.max (exclusive).
+    /// </summary>
+    /// <param name="bounds">The bounds.</param>
+    /// <returns></returns>
+    public static Vector3 RandomVector3(Bounds bounds)
+    {
+        return RandomVector3(bounds.min.x, bounds.min.y, bounds.max.z,
+            bounds.max.x, bounds.max.y, bounds.max.z);
+    }
     #endregion
 
     #region IEnumerable & Related
@@ -249,7 +273,7 @@ public static class RNGExt
 
         return values.ElementAt(RandomInt(length));
     }
-    
+
     /// <summary>
     /// Returns a random value from the provided enumeration of values.
     /// Alias for <a cref="GetRandomValue"/>.
