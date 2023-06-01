@@ -12,10 +12,11 @@ public static class VectorExt
     /// v3.x == v2.x and v3.z == v2.y and v3.y == 0
     /// </summary>
     /// <param name="v">The Vector2 to convert.</param>
+    /// <param name="y">The y component of the new Vector3</param>
     /// <returns>The converted Vector3.</returns>
-    public static Vector3 ToVector3(this Vector2 v)
+    public static Vector3 ToVector3(this Vector2 v, float y = 0)
     {
-        return new(v.x, 0, v.y);
+        return new(v.x, y, v.y);
     }
 
     /// <summary>
