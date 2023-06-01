@@ -1,6 +1,8 @@
-﻿using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
 
+/// <summary>
+/// Contains methods pertaining to Unity rectangles.
+/// </summary>
 public static class RectExt
 {
     #region Modifications
