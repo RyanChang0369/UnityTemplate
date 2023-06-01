@@ -18,4 +18,21 @@ public static class RectExt
         rect.center = center;
     }
     #endregion
+
+    #region Conversions
+    /// <summary>
+    /// Converts this rect to a bounds. Follows the logic from
+    /// <a cref="VectorExt.ToVector3(Vector2, float)"/>, so the x and z
+    /// components of the new bounds will be the x and y components of rect.
+    /// </summary>
+    /// <param name="rect">The rect used to create the bounds.</param>
+    /// <param name="y">The optional y component that will be used as the y
+    /// component of the minimum corner of the new bounds.</param>
+    /// <param name="height">The optional height of the new bounds.</param>
+    /// <returns></returns>
+    public static Bounds ToRect(this Rect rect, float y = 0, float height = 0)
+    {
+        return new Bounds(rect.min.ToVector3(y), rect.size.ToVector3(height));
+    }
+    #endregion
 }
