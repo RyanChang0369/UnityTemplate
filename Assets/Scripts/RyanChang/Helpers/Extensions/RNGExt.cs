@@ -231,7 +231,7 @@ public static class RNGExt
     }
     #endregion
 
-    #region IEnumerable
+    #region IEnumerable & Related
     /// <summary>
     /// Returns a random value from the provided enumeration of values.
     /// </summary>
@@ -248,6 +248,18 @@ public static class RNGExt
         }
 
         return values.ElementAt(RandomInt(length));
+    }
+    
+    /// <summary>
+    /// Returns a random value from the provided enumeration of values.
+    /// Alias for <a cref="GetRandomValue"/>.
+    /// </summary>
+    /// <param name="defaultOK">If true, then return default value if values
+    /// length is 0. Else throw an index error.</param>
+    public static T RandomSelectOne<T>(this IEnumerable<T> values,
+        bool defaultOK = true)
+    {
+        return values.GetRandomValue(defaultOK);
     }
 
     /// <summary>
@@ -358,6 +370,17 @@ public static class RNGExt
             list[k] = list[n];
             list[n] = value;
         }
+    }
+
+    /// <summary>
+    /// Selects one item from a param list of items.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items">List to select from.</param>
+    /// <returns>A random item from items.</returns>
+    public static T SelectOneFrom<T>(params T[] items)
+    {
+        return items.GetRandomValue<T>();
     }
     #endregion
 }
