@@ -298,7 +298,10 @@ public static class RNGExt
     {
         List<T> selected = new List<T>();
 
-        foreach (T obj in objs)
+        var shuffled = objs.ToList();
+        shuffled.Shuffle();
+
+        foreach (T obj in shuffled)
         {
             if (PercentChance(key(obj)))
             {
