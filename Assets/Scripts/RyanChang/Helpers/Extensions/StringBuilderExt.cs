@@ -90,9 +90,11 @@ public static class StringBuilderExt
     /// </summary>
     /// <param name="sb">The string builder.</param>
     /// <param name="lineLen">The length of the line.</param>
-    public static void AppendHorzLine(this StringBuilder sb, int lineLen = 80)
+    /// <param name="lineChar">The char that will make up the dashed line</param>
+    public static void AppendHorzLine(this StringBuilder sb, int lineLen = 80,
+        char lineChar = '-')
     {
-        sb.AppendLine("".PadLeft(lineLen, '-'));
+        sb.AppendLine("".PadLeft(lineLen, lineChar));
     }
 
     /// <summary>
@@ -120,19 +122,37 @@ public static class StringBuilderExt
         if (sb.Length > 0)
             sb.AppendLine("\r\n");
 
+        sb.AppendHorzLine(lineLen, '=');
+        sb.AppendLineAutoNewLine(title.ToUpper(), lineLen, "||    ", "    ||");
+        sb.AppendHorzLine(lineLen, '=');
+        sb.AppendLine();
+    }
+
+    /// <summary>
+    /// Adds a formatted first level header to the string builder.
+    /// </summary>
+    /// <param name="sb">The string builder.</param>
+    /// <param name="header">The text of the header.</param>
+    /// <param name="lineLen">The length of the line.</param>
+    public static void AppendH1(this StringBuilder sb, string header,
+        int lineLen = 80)
+    {
+        if (sb.Length > 0)
+            sb.AppendLine("\r\n");
+
         sb.AppendHorzLine(lineLen);
-        sb.AppendLineAutoNewLine(title.ToUpper(), lineLen, "|    ", "    |");
+        sb.AppendLineAutoNewLine(header, lineLen, "| ", " |");
         sb.AppendHorzLine(lineLen);
         sb.AppendLine();
     }
 
     /// <summary>
-    /// Adds a formatted header to the string builder.
+    /// Adds a formatted second level header to the string builder.
     /// </summary>
     /// <param name="sb">The string builder.</param>
     /// <param name="header">The text of the header.</param>
     /// <param name="lineLen">The length of the line.</param>
-    public static void AppendHeader(this StringBuilder sb, string header,
+    public static void AppendH2(this StringBuilder sb, string header,
         int lineLen = 80)
     {
         if (sb.Length > 0)
@@ -140,6 +160,39 @@ public static class StringBuilderExt
 
         sb.AppendLineAutoNewLine(header, lineLen);
         sb.AppendHorzLine(lineLen);
+        sb.AppendLine();
+    }
+
+    /// <summary>
+    /// Adds a formatted third level header to the string builder.
+    /// </summary>
+    /// <param name="sb">The string builder.</param>
+    /// <param name="header">The text of the header.</param>
+    /// <param name="lineLen">The length of the line.</param>
+    public static void AppendH3(this StringBuilder sb, string header,
+        int lineLen = 80)
+    {
+        if (sb.Length > 0)
+            sb.AppendLine("\r\n");
+
+        sb.AppendLineAutoNewLine(header, lineLen);
+        sb.AppendHorzLine(lineLen / 2, '~');
+        sb.AppendLine();
+    }
+
+    /// <summary>
+    /// Adds a formatted fourth level header to the string builder.
+    /// </summary>
+    /// <param name="sb">The string builder.</param>
+    /// <param name="header">The text of the header.</param>
+    /// <param name="lineLen">The length of the line.</param>
+    public static void AppendH4(this StringBuilder sb, string header,
+        int lineLen = 80)
+    {
+        if (sb.Length > 0)
+            sb.AppendLine("\r\n");
+
+        sb.AppendLineAutoNewLine(header, lineLen, "[", "]");
         sb.AppendLine();
     }
 }
