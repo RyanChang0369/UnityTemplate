@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class Testing : MonoBehaviour
 {
+    public static Testing singleton;
+
     public ModifierChain test;
 
     // [FixedList, NonReorderable]
@@ -36,6 +38,8 @@ public class Testing : MonoBehaviour
 
     private void Start()
     {
+        this.InstantiateSingleton(ref singleton);
+        
         test = new();
         test.Add(new(15, this, "Start"), new(17));
         test.Add(new(0, this, "Important"), new(0.5f, 0.5f));

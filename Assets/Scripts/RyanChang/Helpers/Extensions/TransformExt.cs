@@ -26,4 +26,14 @@ public static class TransformExt
     {
         return !HasSameRoot(a, b);
     }
+
+    /// <summary>
+    /// Orphans this transform, setting the parent to null while preserving
+    /// world position, rotation, and scale.
+    /// </summary>
+    /// <param name="transform">The transform to orphan.</param>
+    public static void Orphan(this Transform transform)
+    {
+        transform.SetParent(null, true);
+    }
 }

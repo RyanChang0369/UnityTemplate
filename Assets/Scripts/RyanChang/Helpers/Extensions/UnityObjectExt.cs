@@ -438,8 +438,20 @@ public static class UnityObjectExt
         return dst;
     }
 
-    public static void InstantiateSingleton<T>(this T self, ref T singleton)
-        where T : MonoBehaviour
+    /// <summary>
+    /// Instantiates a singleton (aka an instance). Also checks if singleton is
+    /// already set.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="self">The monobehavior to instantiate the singleton
+    /// on.</param>
+    /// <param name="singleton">The static singleton to set.</param>
+    /// <param name="dontDestroyOnLoad">If true, then call DontDestroyOnLoad on
+    /// the gameobject. Also orphans the gameobject.</param>
+    /// <exception cref="ArgumentException">If singleton is already set to some
+    /// value.</exception>
+    public static void InstantiateSingleton<T>(this T self, ref T singleton,
+        bool dontDestroyOnLoad = true) where T : MonoBehaviour
     {
         if (singleton)
         {
@@ -449,6 +461,12 @@ public static class UnityObjectExt
         else
         {
             singleton = self;
+
+            if (dontDestroyOnLoad)
+            {
+                self.transform.Orphan();
+                GameObject.DontDestroyOnLoad(self.gameObject);
+            }
         }
     }
     #endregion
