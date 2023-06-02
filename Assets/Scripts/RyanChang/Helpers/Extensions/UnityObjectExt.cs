@@ -247,20 +247,85 @@ public static class UnityObjectExt
             return true;
         }
     }
-
     #endregion
 
     #region Require Component
+    #region In Self
+    /// <summary>
+    /// Checks if self's GameObject has the specified component.
+    /// </summary>
+    /// <typeparam name="T">Type of component to get.</typeparam>
+    /// <param name="gameObject">Component whose GameObject will be used to search for
+    /// the component.</param>
+    /// <param name="component">Set to the component if found.</param>
+    /// <param name="doError">If true, log as an error. Otherwise, log as a
+    /// warning.</param>
+    /// <returns>True if gameObject has the specified component.</returns>
+    public static bool RequireComponent<T>(
+        this Component self,
+        out T component,
+        bool doError = true) where T : Component
+    {
+        return self.RequireComponent(out component, typeof(T).ToString(),
+            doError);
+    }
+
+    /// <summary>
+    /// Checks if self's GameObject has the specified component.
+    /// </summary>
+    /// <typeparam name="T">Type of component to get.</typeparam>
+    /// <param name="gameObject">GameObject used to search for the
+    /// component.</param>
+    /// <param name="component">Set to the component if found.</param>
+    /// <param name="doError">If true, log as an error. Otherwise, log as a
+    /// warning.</param>
+    /// <returns>True if gameObject has the specified component.</returns>
+    public static bool RequireComponent<T>(
+        this GameObject gameObject,
+        out T component,
+        bool doError = true) where T : Component
+    {
+        return gameObject.RequireComponent(out component, typeof(T).ToString(),
+            doError);
+    }
+
+    /// <summary>
+    /// Checks if self's GameObject has the specified component.
+    /// </summary>
+    /// <typeparam name="T">Type of component to get.</typeparam>
+    /// <param name="self">Component whose GameObject will be used to search for
+    /// the component.</param>
+    /// <param name="component">Set to the component if found.</param>
+    /// <param name="name">Name of the component that we are looking
+    /// for.</param>
+    /// <param name="doError">If true, log as an error. Otherwise, log as a
+    /// warning.</param>
+    /// <returns>True if gameObject has the specified component.</returns>
+    public static bool RequireComponent<T>(
+        this Component self,
+        out T component,
+        string name,
+        bool doError = true) where T : Component
+    {
+        return self.gameObject.RequireComponent(out component, name, doError);
+    }
+
     /// <summary>
     /// Checks if gameObject has the specified component.
     /// </summary>
     /// <typeparam name="T">Type of component to get.</typeparam>
     /// <param name="gameObject">GameObject to search for the component.</param>
     /// <param name="component">Set to the component if found.</param>
-    /// <param name="errorMessage">Message to print to log.</param>
-    /// <param name="doError">If true, log as an error. Otherwise, log as a warning.</param>
+    /// <param name="name">Name of the component that we are looking
+    /// for.</param>
+    /// <param name="doError">If true, log as an error. Otherwise, log as a
+    /// warning.</param>
     /// <returns>True if gameObject has the specified component.</returns>
-    public static bool RequireComponent<T>(this GameObject gameObject, out T component, string errorMessage, bool doError = true) where T : Component
+    public static bool RequireComponent<T>(
+        this GameObject gameObject,
+        out T component,
+        string name,
+        bool doError = true) where T : Component
     {
         if (gameObject.HasComponent(out component))
         {
@@ -268,6 +333,9 @@ public static class UnityObjectExt
         }
         else
         {
+            string errorMessage =
+                $"{gameObject} is missing required component {name}.";
+
             if (doError)
                 Debug.LogError(errorMessage);
             else
@@ -276,63 +344,106 @@ public static class UnityObjectExt
             return false;
         }
     }
+    #endregion
+
+    #region In Children
+        /// <summary>
+    /// Checks if self's GameObject has the specified component.
+    /// </summary>
+    /// <typeparam name="T">Type of component to get.</typeparam>
+    /// <param name="gameObject">Component whose GameObject will be used to search for
+    /// the component.</param>
+    /// <param name="component">Set to the component if found.</param>
+    /// <param name="doError">If true, log as an error. Otherwise, log as a
+    /// warning.</param>
+    /// <returns>True if gameObject has the specified component.</returns>
+    public static bool RequireComponentInChildren<T>(
+        this Component self,
+        out T component,
+        bool doError = true) where T : Component
+    {
+        return self.RequireComponentInChildren(out component,
+            typeof(T).ToString(), doError);
+    }
 
     /// <summary>
     /// Checks if self's GameObject has the specified component.
     /// </summary>
     /// <typeparam name="T">Type of component to get.</typeparam>
-    /// <param name="self">Component whose GameObject will be used to search for the component.</param>
+    /// <param name="gameObject">GameObject used to search for the
+    /// component.</param>
     /// <param name="component">Set to the component if found.</param>
-    /// <param name="name">Name of the component that we are looking for.</param>
-    /// <param name="doError">If true, log as an error. Otherwise, log as a warning.</param>
+    /// <param name="doError">If true, log as an error. Otherwise, log as a
+    /// warning.</param>
     /// <returns>True if gameObject has the specified component.</returns>
-    public static bool RequireComponentAuto<T>(this Component self, out T component, string name, bool doError = true) where T : Component
+    public static bool RequireComponentInChildren<T>(
+        this GameObject gameObject,
+        out T component,
+        bool doError = true) where T : Component
     {
-        return self.gameObject.RequireComponentAuto(out component, name, doError);
+        return gameObject.RequireComponentInChildren(out component,
+            typeof(T).ToString(), doError);
     }
 
     /// <summary>
-    /// Checks if gameObject has the specified component.
+    /// Checks if self's gameObject or its children has the specified component.
+    /// </summary>
+    /// <typeparam name="T">Type of component to get.</typeparam>
+    /// <param name="self">Component whose GameObject will be used to search for
+    /// the component.</param>
+    /// <param name="component">Set to the component if found.</param>
+    /// <param name="name">Name of the component that we are looking
+    /// for.</param>
+    /// <param name="doError">If true, log as an error. Otherwise, log as a
+    /// warning.</param>
+    /// <returns>True if gameObject or its children has the specified
+    /// component.</returns>
+    public static bool RequireComponentInChildren<T>(
+        this Component self,
+        out T component,
+        string name,
+        bool doError = true) where T : Component
+    {
+        return self.gameObject.RequireComponentInChildren(out component,
+            name, doError);
+    }
+
+    /// <summary>
+    /// Checks if gameObject or its children has the specified component.
     /// </summary>
     /// <typeparam name="T">Type of component to get.</typeparam>
     /// <param name="gameObject">GameObject to search for the component.</param>
     /// <param name="component">Set to the component if found.</param>
-    /// <param name="name">Name of the component that we are looking for.</param>
-    /// <param name="doError">If true, log as an error. Otherwise, log as a warning.</param>
-    /// <returns>True if gameObject has the specified component.</returns>
-    public static bool RequireComponentAuto<T>(this GameObject gameObject, out T component, string name, bool doError = true) where T : Component
+    /// <param name="name">Name of the component that we are looking
+    /// for.</param>
+    /// <param name="doError">If true, log as an error. Otherwise, log as a
+    /// warning.</param>
+    /// <returns>True if gameObject or its children has the specified
+    /// component.</returns>
+    public static bool RequireComponentInChildren<T>(
+        this GameObject gameObject,
+        out T component,
+        string name,
+        bool doError = true) where T : Component
     {
-        return gameObject.RequireComponent(out component,
-            $"{gameObject} is missing required component {name}.",
-            doError);
-    }
-
-    /// <summary>
-    /// Checks if gameObject has the specified component.
-    /// </summary>
-    /// <typeparam name="T">Type of component to get.</typeparam>
-    /// <param name="gameObject">GameObject to search for the component.</param>
-    /// <param name="component">Set to the component if found.</param>
-    /// <param name="tag">Tag to search for</param>
-    /// <param name="name">Name of the component that we are looking for.</param>
-    /// <param name="doError">If true, log as an error. Otherwise, log as a warning.</param>
-    /// <returns>True if gameObject has the specified component.</returns>
-    public static bool RequireComponentAuto<T>(out T component, string tag, string name, bool doError = true) where T : Component
-    {
-        var go = GameObject.FindGameObjectWithTag(tag);
-
-        if (!go)
+        if (gameObject.HasComponentInChildren(out component))
         {
-            Debug.LogError($"No gameobject found with {tag}");
-            throw new ArgumentException($"No gameobject found with {tag}");
+            return true;
         }
         else
         {
-            return go.RequireComponent(out component,
-                $"{go} is missing required component {name}.",
-                doError);
+            string errorMessage =
+                $"{gameObject} is missing required component {name} in children.";
+
+            if (doError)
+                Debug.LogError(errorMessage);
+            else
+                Debug.LogWarning(errorMessage);
+
+            return false;
         }
     }
+    #endregion
     #endregion
 
     #region Autofill
@@ -350,7 +461,7 @@ public static class UnityObjectExt
         if (component)
             return true;
         else
-            return self.RequireComponentAuto(out component, name, doError);
+            return self.RequireComponent(out component, name, doError);
     }
 
     /// <summary>
@@ -367,7 +478,7 @@ public static class UnityObjectExt
         if (component)
             return true;
         else
-            return gameObject.RequireComponentAuto(out component, name, doError);
+            return gameObject.RequireComponent(out component, name, doError);
     }
     #endregion
     #endregion

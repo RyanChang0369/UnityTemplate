@@ -9,6 +9,6 @@ public abstract class AdvancedLineRendererCreator : MonoBehaviour
 
     protected virtual void Start()
     {
-        gameObject.RequireComponentAuto(out alr, "Advanced line renderer.");
+        gameObject.RequireComponent(out alr, "Advanced line renderer.");
     }
 }

@@ -61,5 +61,7 @@ public class Testing : MonoBehaviour
         sb.AppendHeader("Sample Header");
         sb.AppendLineAutoNewLine("For example, the call to the String.Concat method in the following C# example appears to change the value of a string variable named value. In fact, the Concat method returns a value object that has a different value and address from the value object that was passed to the method. Note that the example must be compiled using the /unsafe compiler option.");
         // File.WriteAllText($"{Application.dataPath}/test.txt", sb.ToString());
+
+        this.RequireComponent(out CircleCollider2D other);
     }
 }
