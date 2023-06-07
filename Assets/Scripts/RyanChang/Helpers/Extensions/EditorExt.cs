@@ -8,6 +8,15 @@ using UnityEngine;
 /// </summary>
 public static class EditorExt
 {
+    #region Numbers
+    /// <summary>
+    /// Equal to <see cref="EditorGUIUtility.singleLineHeight"/> +
+    /// <see cref="EditorGUIUtility.standardVerticalSpacing"/>.
+    /// </summary>
+    public static float SpacedLineHeight => EditorGUIUtility.singleLineHeight
+        + EditorGUIUtility.standardVerticalSpacing;
+    #endregion
+
     #region Reflection
     /// <summary>
     /// Gets the 

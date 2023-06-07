@@ -18,7 +18,7 @@ public static class EnumerableExt
         return enumerable == null || !enumerable.Any();
     }
 
-        /// <summary>
+    /// <summary>
     /// Adds addition to a dictionary with a list as its value.
     /// <typeparam name="TKey">The key.</typeparam>
     /// <typeparam name="TMem">The member of the list within the dictionary.</typeparam>

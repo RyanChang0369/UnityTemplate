@@ -17,17 +17,17 @@ public class ModiferDrawerUIE : PropertyDrawer
         float tHeight = GetPropertyHeight(property, label);
         float thirdWidth = position.width / 3;
 
-        // Define indent
-        var indent = EditorGUI.indentLevel;
-        EditorGUI.indentLevel = 1;
-
         // Calculate rects
-        var labelRect = new Rect(position.x, position.y, thirdWidth, lnHeight);
+        var labelRect = new Rect(position.x, position.y, EditorGUIUtility.labelWidth, lnHeight);
         var addRect = new Rect(position.x + thirdWidth, position.y, thirdWidth, lnHeight);
         var multRect = new Rect(position.x + 2 * thirdWidth, position.y, thirdWidth, lnHeight);
 
         // Label
         EditorGUI.LabelField(labelRect, label);
+
+        // Define indent
+        var indent = EditorGUI.indentLevel;
+        EditorGUI.indentLevel = 1;
 
         // Draw fields
         EditorGUIUtility.labelWidth = 25;
@@ -51,6 +51,6 @@ public class ModiferDrawerUIE : PropertyDrawer
 
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
-        return 2 * EditorGUIUtility.singleLineHeight;
+        return EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
     }
 }

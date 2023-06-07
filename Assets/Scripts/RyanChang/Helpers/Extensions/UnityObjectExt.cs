@@ -347,7 +347,7 @@ public static class UnityObjectExt
     #endregion
 
     #region In Children
-        /// <summary>
+    /// <summary>
     /// Checks if self's GameObject has the specified component.
     /// </summary>
     /// <typeparam name="T">Type of component to get.</typeparam>
@@ -444,6 +444,76 @@ public static class UnityObjectExt
         }
     }
     #endregion
+    #endregion
+
+    #region Add To Manager Index
+    /// <summary>
+    /// If a MonoBehavior of type T already exists within managerCache, return
+    /// that MonoBehavior. Otherwise, attempts to find the specified manager in
+    /// self or its children. If found, instantiates a singleton for that
+    /// manager. Unlike <see cref="InstantiateSingleton{T}(T, ref T, bool)"/>,
+    /// this does not throw errors.
+    /// </summary>
+    ///
+    /// <typeparam name="T">The type of manager. Must be a
+    /// MonoBehaviour.</typeparam>
+    /// <param name="self">The manager container who is the parent of
+    /// manager.</param>
+    /// <param name="manager">Will be set to the value of the manager.</param>
+    /// <param name="managerCache">The cache to put the manager once it is
+    /// instantiated, if dontDestroyOnLoad is true. <see
+    /// cref="AddToManagerIndex{T}(MonoBehaviour, out T, ref Dictionary{Type,
+    /// MonoBehaviour}, bool)"/> uses this cache to locate existing managers
+    /// listed as DontDestroyOnLoad. It is recommended that this cache be static
+    /// so it is not deleted on scene load.
+    /// </param>
+    /// <param name="dontDestroyOnLoad">If true, add manager to cache and set it
+    /// to DontDestroyOnLoad.</param>
+    public static void AddToManagerIndex<T>(this MonoBehaviour self,
+        out T manager, ref Dictionary<Type, MonoBehaviour> managerCache,
+        bool dontDestroyOnLoad) where T : MonoBehaviour
+    {
+        self.RequireComponentInChildren(out T tempManager);
+
+        if (dontDestroyOnLoad)
+        {
+            managerCache ??= new();
+
+            if (managerCache.ContainsKey(typeof(T)) &&
+                managerCache[typeof(T)] != null)
+            {
+                // Set manager from the managerCache.
+                manager = (T)managerCache[typeof(T)];
+
+                if (tempManager != null)
+                {
+                    // However, we seem to already have another manager in self.
+                    // Delete this manager.
+                    Debug.LogError($"Found another instance of {typeof(T)}. " +
+                        "Deleting...");
+
+                    GameObject.Destroy(tempManager.gameObject);
+                }
+                return;
+            }
+
+            // We have a brand new manager.
+            manager = tempManager;
+
+            // Set as DoNotDestroyOnLoad
+            manager.transform.Orphan();
+            GameObject.DontDestroyOnLoad(manager.gameObject);
+
+            // Now set the value in the cache to the new manager.
+            managerCache[typeof(T)] = manager;
+        }
+        else
+        {
+            // Managers that are destroyed on load won't cause problems, as they
+            // can't reload.
+            manager = tempManager;
+        }
+    }
     #endregion
 
     #region Autofill
@@ -559,15 +629,13 @@ public static class UnityObjectExt
     /// <param name="singleton">The static singleton to set.</param>
     /// <param name="dontDestroyOnLoad">If true, then call DontDestroyOnLoad on
     /// the gameobject. Also orphans the gameobject.</param>
-    /// <exception cref="ArgumentException">If singleton is already set to some
-    /// value.</exception>
     public static void InstantiateSingleton<T>(this T self, ref T singleton,
         bool dontDestroyOnLoad = true) where T : MonoBehaviour
     {
         if (singleton)
         {
             GameObject.Destroy(self.gameObject);
-            throw new ArgumentException($"Multiple instances of {typeof(T)}.");
+            Debug.LogError($"Multiple instances of {typeof(T)}.");
         }
         else
         {
