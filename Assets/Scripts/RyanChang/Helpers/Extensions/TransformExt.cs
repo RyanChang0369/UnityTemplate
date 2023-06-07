@@ -49,6 +49,17 @@ public static class TransformExt
     }
 
     /// <summary>
+    /// Returns the distance between this transform and a point.
+    /// </summary>
+    /// <param name="transform">The transform.</param>
+    /// <param name="point">The point.</param>
+    /// <returns>The distance between transform and point.</returns>
+    public static float Distance(this Transform transform, Vector3 point)
+    {
+        return Vector3.Distance(transform.position, point);
+    }
+
+    /// <summary>
     /// Returns the center of the all the transforms.
     /// </summary>
     /// <param name="transforms">List of transforms.</param>
