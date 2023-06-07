@@ -36,4 +36,38 @@ public static class TransformExt
     {
         transform.SetParent(null, true);
     }
+
+    /// <summary>
+    /// Returns the distance between the two transforms.
+    /// </summary>
+    /// <param name="a">The first transform.</param>
+    /// <param name="b">The second transform.</param>
+    /// <returns>The distance between the two transforms.</returns>
+    public static float Distance(this Transform a, Transform b)
+    {
+        return Vector3.Distance(a.position, b.position);
+    }
+
+    /// <summary>
+    /// Returns the center of the all the transforms.
+    /// </summary>
+    /// <param name="transforms">List of transforms.</param>
+    /// <returns></returns>
+    /// <exception cref="System.ArgumentException">If passed empty list of
+    /// params.</exception>
+    public static Vector3 Center(params Transform[] transforms)
+    {
+        if (transforms.Length > 0)
+        {
+            Vector3 sum = new();
+
+            foreach (var t in transforms) sum += t.position;
+
+            return sum / transforms.Length;
+        }
+        else
+        {
+            throw new System.ArgumentException("Cannot provide empty params");
+        }
+    }
 }
