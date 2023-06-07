@@ -8,8 +8,8 @@ using System.Text;
 public static class StringBuilderExt
 {
     /// <summary>
-    /// Appends a line to the string builder. Automatically breaks the line if
-    /// it goes over lineLen.
+    /// Appends a paragraph to the string builder. Automatically breaks the line
+    /// if it goes over lineLen.
     /// </summary>
     /// <param name="sb">The string builder.</param>
     /// <param name="line">The line of text to write.</param>
@@ -19,7 +19,7 @@ public static class StringBuilderExt
     /// new lines created from breaking up the line.</param>
     /// <param name="suffix">Optional prefix to add to the end of line and any
     /// new lines created from breaking up the line.</param>
-    public static void AppendLineAutoNewLine(this StringBuilder sb,
+    public static void AppendP(this StringBuilder sb,
         string line, int lineLen = 80, string prefix = "", string suffix = "")
     {
         List<string> words = line.Split(" ").ToList();
@@ -86,7 +86,7 @@ public static class StringBuilderExt
     }
 
     /// <summary>
-    /// Adds a vertical line to the string builder.
+    /// Adds a horizontal line to the string builder.
     /// </summary>
     /// <param name="sb">The string builder.</param>
     /// <param name="lineLen">The length of the line.</param>
@@ -123,7 +123,7 @@ public static class StringBuilderExt
             sb.AppendLine("\r\n");
 
         sb.AppendHorzLine(lineLen, '=');
-        sb.AppendLineAutoNewLine(title.ToUpper(), lineLen, "||    ", "    ||");
+        sb.AppendP(title.ToUpper(), lineLen, "||    ", "    ||");
         sb.AppendHorzLine(lineLen, '=');
         sb.AppendLine();
     }
@@ -141,7 +141,7 @@ public static class StringBuilderExt
             sb.AppendLine("\r\n");
 
         sb.AppendHorzLine(lineLen);
-        sb.AppendLineAutoNewLine(header, lineLen, "| ", " |");
+        sb.AppendP(header, lineLen, "| ", " |");
         sb.AppendHorzLine(lineLen);
         sb.AppendLine();
     }
@@ -158,7 +158,7 @@ public static class StringBuilderExt
         if (sb.Length > 0)
             sb.AppendLine("\r\n");
 
-        sb.AppendLineAutoNewLine(header, lineLen);
+        sb.AppendP(header, lineLen);
         sb.AppendHorzLine(lineLen);
         sb.AppendLine();
     }
@@ -175,7 +175,7 @@ public static class StringBuilderExt
         if (sb.Length > 0)
             sb.AppendLine("\r\n");
 
-        sb.AppendLineAutoNewLine(header, lineLen);
+        sb.AppendP(header, lineLen);
         sb.AppendHorzLine(lineLen / 2, '~');
         sb.AppendLine();
     }
@@ -192,7 +192,8 @@ public static class StringBuilderExt
         if (sb.Length > 0)
             sb.AppendLine("\r\n");
 
-        sb.AppendLineAutoNewLine(header, lineLen, "[", "]");
+        sb.AppendP(header, lineLen);
+        sb.AppendHorzLine(lineLen / 2, '.');
         sb.AppendLine();
     }
 }

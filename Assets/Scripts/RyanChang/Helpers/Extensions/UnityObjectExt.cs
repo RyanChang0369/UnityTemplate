@@ -566,7 +566,7 @@ public static class UnityObjectExt
     {
         if (singleton)
         {
-            GameObject.Destroy(self);
+            GameObject.Destroy(self.gameObject);
             throw new ArgumentException($"Multiple instances of {typeof(T)}.");
         }
         else

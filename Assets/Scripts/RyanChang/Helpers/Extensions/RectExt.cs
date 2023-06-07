@@ -22,7 +22,7 @@ public static class RectExt
     #region Conversions
     /// <summary>
     /// Converts this rect to a bounds. Follows the logic from
-    /// <a cref="VectorExt.ToVector3(Vector2, float)"/>, so the x and z
+    /// <see cref="VectorExt.ToVector3(Vector2, float)"/>, so the x and z
     /// components of the new bounds will be the x and y components of rect.
     /// </summary>
     /// <param name="rect">The rect used to create the bounds.</param>

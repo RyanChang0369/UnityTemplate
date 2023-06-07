@@ -276,7 +276,7 @@ public static class RNGExt
 
     /// <summary>
     /// Returns a random value from the provided enumeration of values.
-    /// Alias for <a cref="GetRandomValue"/>.
+    /// Alias for <see cref="GetRandomValue"/>.
     /// </summary>
     /// <param name="defaultOK">If true, then return default value if values
     /// length is 0. Else throw an index error.</param>
