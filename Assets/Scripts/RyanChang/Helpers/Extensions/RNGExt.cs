@@ -14,7 +14,7 @@ public static class RNGExt
     /// <returns>An integer ranging from minValue to maxValue - 1.</returns>
     public static int RandomInt(int minVal, int maxVal)
     {
-        return RNGNum.Next(maxVal - minVal) + minVal;
+        return RNGNum.Next(minVal, maxVal);
     }
 
     /// <summary>
@@ -24,6 +24,15 @@ public static class RNGExt
     public static int RandomInt(int maxVal)
     {
         return RandomInt(0, maxVal);
+    }
+
+    /// <summary>
+    /// Alias for <see cref="System.Random.Next"/>.
+    /// </summary>
+    /// <returns>An integer ranging from 0 to <see cref="Int32.MaxValue"/>.</returns>
+    public static int RandomInt()
+    {
+        return RNGNum.Next();
     }
     #endregion
 
