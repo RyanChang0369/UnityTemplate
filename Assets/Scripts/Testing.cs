@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
 using UnityEngine;
 
@@ -9,7 +8,6 @@ public class Testing : MonoBehaviour
 
     public ModifierChain test;
 
-    // [FixedList, NonReorderable]
     public FixedList<Modifier> testFixedList = new()
     {
         new(15, 62),

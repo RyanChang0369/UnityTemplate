@@ -138,5 +138,32 @@ public static class EditorExt
     {
         property.DrawSerializedProperty(ref position, GUIContent.none);
     }
+
+    /// <summary>
+    /// Returns the height of the serialized property, trying to look for any
+    /// custom height getters. If not found, returns defaultHeight.
+    /// </summary>
+    /// <param name="property">Property to get the height from.</param>
+    /// <param name="label">The label.</param>
+    /// <param name="defaultHeight">The default height
+    /// (base.GetPropertyHeight(property, label);).</param>
+    /// <returns></returns>
+    public static float GetSerializedPropertyHeight(
+        this SerializedProperty property, GUIContent label, float defaultHeight)
+    {
+        // Try to find property drawer, if we can.
+        PropertyDrawer drawer = PropertyDrawerFinder.FindDrawer(property);
+
+        if (drawer != null)
+        {
+            // Found a custom property drawer. Use found drawer.
+            return drawer.GetPropertyHeight(property, label);
+        }
+        else
+        {
+            // Did not find a custom property drawer. Use default.
+            return defaultHeight;
+        }
+    }
     #endregion
 }
