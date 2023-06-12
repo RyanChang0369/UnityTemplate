@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 [CustomPropertyDrawer(typeof(Modifier))]
-public class ModiferDrawerUIE : PropertyDrawer
+public class ModifierDrawerUIE : PropertyDrawer
 {
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
