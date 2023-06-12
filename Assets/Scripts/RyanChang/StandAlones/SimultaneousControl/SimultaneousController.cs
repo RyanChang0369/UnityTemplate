@@ -17,7 +17,7 @@ public abstract class SimultaneousController : MonoBehaviour
     protected bool autoAssign;
 
     [Tooltip("Includes disabled children.")]
-    // [ShowIf(nameof(autoAssign))]
+    [ShowIf(nameof(autoAssign))]
     [SerializeField]
     protected bool includeInactive;
 

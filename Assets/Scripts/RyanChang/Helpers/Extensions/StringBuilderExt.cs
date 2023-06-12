@@ -7,6 +7,7 @@ using System.Text;
 /// </summary>
 public static class StringBuilderExt
 {
+    #region Append Functions
     /// <summary>
     /// Appends a paragraph to the string builder. Automatically breaks the line
     /// if it goes over lineLen.
@@ -196,4 +197,35 @@ public static class StringBuilderExt
         sb.AppendHorzLine(lineLen / 2, '.');
         sb.AppendLine();
     }
+    #endregion
+
+    #region Debugging
+    /// <summary>
+    /// Prints the string builder to the Unity Console using Log.
+    /// </summary>
+    /// <param name="sb">The string builder.</param>
+    public static void Log(this StringBuilder sb)
+    {
+        UnityEngine.Debug.Log(sb.ToString());
+    }
+
+    /// <summary>
+    /// Prints the string builder to the Unity Console using LogWarning.
+    /// </summary>
+    /// <param name="sb">The string builder.</param>
+    public static void LogWarning(this StringBuilder sb)
+    {
+        UnityEngine.Debug.LogWarning(sb.ToString());
+    }
+
+    /// <summary>
+    /// Prints the string builder to the Unity Console using LogError.
+    /// </summary>
+    /// <param name="sb">The string builder.</param>
+    public static void LogError(this StringBuilder sb)
+    {
+        UnityEngine.Debug.LogError(sb.ToString());
+    }
+
+    #endregion
 }
