@@ -227,6 +227,7 @@ GameObject:
   m_Component:
   - component: {fileID: 848942548}
   - component: {fileID: 848942547}
+  - component: {fileID: 848942549}
   m_Layer: 0
   m_Name: Testing
   m_TagString: Untagged
@@ -317,6 +318,43 @@ Transform:
   m_Father: {fileID: 2063589115}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &848942549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 848942546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bfe076c153f589b59e6424fa8f78820, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  autoAssign: 0
+  includeInactive: 0
+  autorun: 0
+  controlSwitchDelay: 0.2
+  maxSimultaneous: 3
+  currentSimultaneous: 0
+  manualControl: 0
+  controls: []
+  characterDelay:
+    rangePattern: 1
+    singleValue: 0.05
+    scalarMin: 0.05
+    scalarMax: 0.05
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    perlinCrawlSpeed: 0.1
+    modifer:
+      addition: 0
+      multiplier: 1
+    unfoldedInInspector: 0
+    fixedSelectionInInspector: 0
 --- !u!1 &2063589114
 GameObject:
   m_ObjectHideFlags: 0

@@ -18,9 +18,14 @@ public class TypewriterController : SimultaneousController
     [Tooltip("The delay, in seconds, between each character.")]
     public Range characterDelay = new(0.05f);
 
-    protected override void Instantiate()
+    private void Reset()
     {
-        controls = GetControls<TypewriterText, TextMeshProUGUI>();
+        characterDelay = new(0.05f);
+    }
+
+    protected override SimultaneousControl[] CreateControlsList()
+    {
+        return GetControls<TypewriterText, TextMeshProUGUI>();
     }    
     #endregion
 }

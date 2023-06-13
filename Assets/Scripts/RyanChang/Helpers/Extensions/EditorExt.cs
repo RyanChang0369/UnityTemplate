@@ -67,7 +67,8 @@ public static class EditorExt
             else
             {
                 // For each name in the path, get the reflection.
-                FieldInfo field = targetType.GetField(name);
+                FieldInfo field = targetType.GetField(name,
+                    BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
                 if (field == null)
                     throw new System.NullReferenceException(

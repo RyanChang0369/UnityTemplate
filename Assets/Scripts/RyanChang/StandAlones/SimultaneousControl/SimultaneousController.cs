@@ -38,8 +38,15 @@ public abstract class SimultaneousController : MonoBehaviour
     [ReadOnly]
     public int currentSimultaneous = 0;
 
+    [HorizontalLine]
+    [Tooltip("If set to true, enables manual editing of the controls field.")]
+    [InfoBox("Unity doesn't play nicely with fields of abstract classes. " +
+        "Use at your own risk.", EInfoBoxType.Warning)]
+    [SerializeField]
+    private bool manualControl;
+
     [Tooltip("The controls belonging to this controller.")]
-    [ReadOnly]
+    [ShowIf(nameof(manualControl))]
     [SerializeField]
     protected SimultaneousControl[] controls;
     #endregion
@@ -58,7 +65,10 @@ public abstract class SimultaneousController : MonoBehaviour
     #region Instantiation
     protected void Start()
     {
-        Instantiate();
+        if (!manualControl)
+        {
+            controls = CreateControlsList();
+        }
 
         foreach (var control in controls)
         {
@@ -72,8 +82,7 @@ public abstract class SimultaneousController : MonoBehaviour
     /// <summary>
     /// Creates the controls list.
     /// </summary>
-    protected abstract void Instantiate();
-    #endregion
+    protected abstract SimultaneousControl[] CreateControlsList();
 
     /// <summary>
     /// Returns a list of SimultaneousControls, which are present on the
@@ -128,6 +137,7 @@ public abstract class SimultaneousController : MonoBehaviour
             return GetComponentsInChildren<S>(includeInactive);
         }
     }
+    #endregion
 
     #region Coroutine
     /// <summary>

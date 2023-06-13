@@ -69,7 +69,9 @@ public class Range
     public Range(float value)
     {
         singleValue = value;
-        rangePattern = RangePattern.Linear;
+        scalarMax = value;
+        scalarMin = value;
+        rangePattern = RangePattern.Single;
         crawlPos = RNGExt.RandomVector2(1000);
         crawlDir = RNGExt.OnUnitCircle();
     }
@@ -81,6 +83,7 @@ public class Range
     /// <param name="max">Maximal value</param>
     public Range(float min, float max)
     {
+        singleValue = (min + max) / 2;
         scalarMax = max;
         scalarMin = min;
         rangePattern = RangePattern.Linear;
@@ -100,7 +103,7 @@ public class Range
     }
 
     /// <summary>
-    /// Locks the range pattern in inspector.
+    /// Locks the range pattern in inspector (put in OnValidate).
     /// </summary>
     /// <param name="pattern">Pattern to lock to.</param>
     public void LockRangePattern(RangePattern pattern)
