@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace RyanChang.Imports.NaughtyAttributes.Editor
+namespace NaughtyAttributes.Editor
 {
     public static class PropertyUtility
     {

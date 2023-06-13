@@ -7,7 +7,7 @@ using UnityEditor.Experimental.SceneManagement;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-namespace RyanChang.Imports.NaughtyAttributes.Editor
+namespace NaughtyAttributes.Editor
 {
     public static class NaughtyEditorGUI
     {

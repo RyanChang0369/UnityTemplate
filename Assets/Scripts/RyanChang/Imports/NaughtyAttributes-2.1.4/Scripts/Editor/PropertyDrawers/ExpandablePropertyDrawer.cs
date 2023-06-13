@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-namespace RyanChang.Imports.NaughtyAttributes.Editor
+namespace NaughtyAttributes.Editor
 {
     [CustomPropertyDrawer(typeof(ExpandableAttribute))]
     public class ExpandablePropertyDrawer : PropertyDrawerBase

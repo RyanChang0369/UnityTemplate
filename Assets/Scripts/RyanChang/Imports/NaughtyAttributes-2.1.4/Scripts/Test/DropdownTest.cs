@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace RyanChang.Imports.NaughtyAttributes.Test
+namespace NaughtyAttributes.Test
 {
     public class DropdownTest : MonoBehaviour
     {

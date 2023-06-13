@@ -1,5 +1,5 @@
 using System.Collections;
-using RyanChang.Imports.NaughtyAttributes;
+using NaughtyAttributes;
 using UnityEngine;
 
 /// <summary>

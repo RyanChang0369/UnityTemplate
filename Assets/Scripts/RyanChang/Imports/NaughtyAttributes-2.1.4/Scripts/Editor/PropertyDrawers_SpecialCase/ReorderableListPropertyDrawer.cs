@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEditorInternal;
 using System.Collections.Generic;
 
-namespace RyanChang.Imports.NaughtyAttributes.Editor
+namespace NaughtyAttributes.Editor
 {
     public class ReorderableListPropertyDrawer : SpecialCasePropertyDrawerBase
     {

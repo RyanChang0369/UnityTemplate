@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace RyanChang.Imports.NaughtyAttributes.Editor
+namespace NaughtyAttributes.Editor
 {
     [CustomPropertyDrawer(typeof(TagAttribute))]
     public class TagPropertyDrawer : PropertyDrawerBase

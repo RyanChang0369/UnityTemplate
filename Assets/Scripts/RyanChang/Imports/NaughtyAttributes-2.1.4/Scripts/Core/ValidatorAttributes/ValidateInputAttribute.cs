@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RyanChang.Imports.NaughtyAttributes
+namespace NaughtyAttributes
 {
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
     public class ValidateInputAttribute : ValidatorAttribute

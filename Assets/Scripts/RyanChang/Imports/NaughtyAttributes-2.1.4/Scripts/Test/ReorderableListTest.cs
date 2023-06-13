@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace RyanChang.Imports.NaughtyAttributes.Test
+namespace NaughtyAttributes.Test
 {
     public class ReorderableListTest : MonoBehaviour
     {

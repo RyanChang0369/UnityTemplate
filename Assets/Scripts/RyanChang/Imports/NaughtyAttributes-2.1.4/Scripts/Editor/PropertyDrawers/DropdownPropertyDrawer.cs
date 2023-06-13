@@ -5,7 +5,7 @@ using System.Reflection;
 using System;
 using System.Collections.Generic;
 
-namespace RyanChang.Imports.NaughtyAttributes.Editor
+namespace NaughtyAttributes.Editor
 {
     [CustomPropertyDrawer(typeof(DropdownAttribute))]
     public class DropdownPropertyDrawer : PropertyDrawerBase

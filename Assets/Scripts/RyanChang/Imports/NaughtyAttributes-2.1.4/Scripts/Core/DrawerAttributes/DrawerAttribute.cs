@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace RyanChang.Imports.NaughtyAttributes
+namespace NaughtyAttributes
 {
     /// <summary>
     /// Base class for all drawer attributes

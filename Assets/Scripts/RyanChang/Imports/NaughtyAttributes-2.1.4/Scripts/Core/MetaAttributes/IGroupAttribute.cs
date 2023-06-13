@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace RyanChang.Imports.NaughtyAttributes
+namespace NaughtyAttributes
 {
     public interface IGroupAttribute
     {

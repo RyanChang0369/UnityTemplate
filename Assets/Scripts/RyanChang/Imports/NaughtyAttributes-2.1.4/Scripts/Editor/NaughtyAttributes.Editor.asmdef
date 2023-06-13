@@ -1,8 +1,8 @@
 {
-    "name": "RyanChang.Imports.NaughtyAttributes.Editor",
+    "name": "NaughtyAttributes.Editor",
     "rootNamespace": "",
     "references": [
-        "RyanChang.Imports.NaughtyAttributes.Core"
+        "NaughtyAttributes.Core"
     ],
     "includePlatforms": [
         "Editor"

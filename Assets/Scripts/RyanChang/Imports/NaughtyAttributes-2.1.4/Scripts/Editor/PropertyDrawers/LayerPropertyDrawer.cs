@@ -2,7 +2,7 @@
 using UnityEditor;
 using System;
 
-namespace RyanChang.Imports.NaughtyAttributes.Editor
+namespace NaughtyAttributes.Editor
 {
     [CustomPropertyDrawer(typeof(LayerAttribute))]
     public class LayerPropertyDrawer : PropertyDrawerBase

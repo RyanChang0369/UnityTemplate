@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RyanChang.Imports.NaughtyAttributes
+namespace NaughtyAttributes
 {
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class ShowIfAttribute : ShowIfAttributeBase

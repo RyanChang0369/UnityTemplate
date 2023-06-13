@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RyanChang.Imports.NaughtyAttributes
+namespace NaughtyAttributes
 {
     public class ShowIfAttributeBase : MetaAttribute
     {

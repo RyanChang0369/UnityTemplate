@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace RyanChang.Imports.NaughtyAttributes.Test
+namespace NaughtyAttributes.Test
 {
     public class HideIfTest : MonoBehaviour
     {

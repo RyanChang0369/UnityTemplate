@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System;
 
-namespace RyanChang.Imports.NaughtyAttributes.Editor
+namespace NaughtyAttributes.Editor
 {
     [CustomPropertyDrawer(typeof(SceneAttribute))]
     public class ScenePropertyDrawer : PropertyDrawerBase

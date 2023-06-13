@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-namespace RyanChang.Imports.NaughtyAttributes.Test
+namespace NaughtyAttributes.Test
 {
     //[CreateAssetMenu(fileName = "TestScriptableObjectB", menuName = "NaughtyAttributes/TestScriptableObjectB")]
     public class _TestScriptableObjectB : ScriptableObject

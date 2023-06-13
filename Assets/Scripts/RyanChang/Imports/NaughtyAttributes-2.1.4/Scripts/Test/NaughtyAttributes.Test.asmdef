@@ -1,8 +1,8 @@
 {
-    "name": "RyanChang.Imports.NaughtyAttributes.Test",
+    "name": "NaughtyAttributes.Test",
     "rootNamespace": "",
     "references": [
-        "RyanChang.Imports.NaughtyAttributes.Core"
+        "NaughtyAttributes.Core"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
