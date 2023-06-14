@@ -46,7 +46,7 @@ public abstract class SimultaneousController : MonoBehaviour
     private bool manualControl;
 
     [Tooltip("The controls belonging to this controller.")]
-    [ShowIf(nameof(manualControl))]
+    [EnableIf(nameof(manualControl))]
     [SerializeField]
     protected SimultaneousControl[] controls;
     #endregion
