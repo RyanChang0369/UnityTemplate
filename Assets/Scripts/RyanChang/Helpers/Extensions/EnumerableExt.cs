@@ -99,7 +99,7 @@ public static class EnumerableExt
             list[index] = obj;
         else
         {
-            while (index - 1 > list.Count)
+            while (index > list.Count)
             {
                 list.Add(default);
             }
