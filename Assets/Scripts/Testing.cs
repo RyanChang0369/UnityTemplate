@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class Testing : MonoBehaviour
@@ -47,11 +49,6 @@ public class Testing : MonoBehaviour
         
         test.Remove(new(0, this, "Important"));
 
-        foreach (var item in test.chain)
-        {
-            print(item.Key);
-        }
-
         StringBuilder sb = new();
         sb.AppendTitle("Sample Text");
         sb.AppendP("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
@@ -60,6 +57,22 @@ public class Testing : MonoBehaviour
         sb.AppendP("For example, the call to the String.Concat method in the following C# example appears to change the value of a string variable named value. In fact, the Concat method returns a value object that has a different value and address from the value object that was passed to the method. Note that the example must be compiled using the /unsafe compiler option.");
         // File.WriteAllText($"{Application.dataPath}/test.txt", sb.ToString());
 
-        this.RequireComponent(out CircleCollider2D other);
+
+        string str1 = "other.array[5003].mold[16].gray.mushroom";
+
+        Regex rx = new(@"([\w\.]+)(\[\d+\])");
+        var matches = rx.Matches(str1);
+        
+        foreach (Match m in matches)
+        {
+            if (m.Success)
+            {
+                print($"Match {m}");
+
+                print(m.Groups[1]);
+                string num = m.Groups[2].ToString()[1..^1];
+                print(Int32.Parse(num));
+            }
+        }
     }
 }
