@@ -18,7 +18,7 @@ public static class UnityObjectExt
     /// <typeparam name="T">Type of the component to get.</typeparam>
     /// <param name="gameObject">GameObject to search for the component.</param>
     /// <returns>True if gameObject has the specified component.</returns>
-    public static bool HasComponent<T>(this GameObject gameObject) where T : Component
+    public static bool HasComponent<T>(this GameObject gameObject)
     {
         return !gameObject.GetComponent<T>().IsNullOrUnityNull();
     }
@@ -27,9 +27,10 @@ public static class UnityObjectExt
     /// Checks if self's GameObject has the specified component.
     /// </summary>
     /// <typeparam name="T">Type of the component to get.</typeparam>
-    /// <param name="self">Component whose GameObject will be used to search for the component.</param>
+    /// <param name="self">Component whose GameObject will be used to search for
+    /// the component.</param>
     /// <returns>True if gameObject has the specified component.</returns>
-    public static bool HasComponent<T>(this Component self) where T : Component
+    public static bool HasComponent<T>(this Component self)
     {
         return self.gameObject.HasComponent<T>();
     }
@@ -41,7 +42,8 @@ public static class UnityObjectExt
     /// <param name="gameObject">GameObject to search for the component.</param>
     /// <param name="component">Set to the component if found.</param>
     /// <returns>True if gameObject has the specified component.</returns>
-    public static bool HasComponent<T>(this GameObject gameObject, out T component) where T : Component
+    public static bool HasComponent<T>(this GameObject gameObject,
+        out T component)
     {
         component = gameObject.GetComponent<T>();
         return !component.IsNullOrUnityNull();
@@ -51,10 +53,11 @@ public static class UnityObjectExt
     /// Checks if gameObject has the specified component.
     /// </summary>
     /// <typeparam name="T">Type of the component to get.</typeparam>
-    /// <param name="self">Component whose GameObject will be used to search for the component.</param>
+    /// <param name="self">Component whose GameObject will be used to search for
+    /// the component.</param>
     /// <param name="component">Set to the component if found.</param>
     /// <returns>True if gameObject has the specified component.</returns>
-    public static bool HasComponent<T>(this Component self, out T component) where T : Component
+    public static bool HasComponent<T>(this Component self, out T component)
     {
         component = self.GetComponent<T>();
         return !component.IsNullOrUnityNull();
@@ -67,8 +70,9 @@ public static class UnityObjectExt
     /// </summary>
     /// <typeparam name="T">Type of the component to get.</typeparam>
     /// <param name="gameObject">GameObject to search for the component.</param>
-    /// <returns>True if gameObject has the specified component in its parent.</returns>
-    public static bool HasComponentInParent<T>(this GameObject gameObject) where T : Component
+    /// <returns>True if gameObject has the specified component in its
+    /// parent.</returns>
+    public static bool HasComponentInParent<T>(this GameObject gameObject)
     {
         return !gameObject.GetComponentInParent<T>().IsNullOrUnityNull();
     }
@@ -77,9 +81,11 @@ public static class UnityObjectExt
     /// Checks if gameObject has the specified component in its children.
     /// </summary>
     /// <typeparam name="T">Type of the component to get.</typeparam>
-    /// <param name="self">Component whose GameObject will be used to search for the component.</param>
-    /// <returns>True if gameObject has the specified component in its children.</returns>
-    public static bool HasComponentInParent<T>(this Component self) where T : Component
+    /// <param name="self">Component whose GameObject will be used to search for
+    /// the component.</param>
+    /// <returns>True if gameObject has the specified component in its
+    /// children.</returns>
+    public static bool HasComponentInParent<T>(this Component self)
     {
         return self.gameObject.HasComponentInParent<T>();
     }
@@ -90,8 +96,10 @@ public static class UnityObjectExt
     /// <typeparam name="T">Type of the component to get.</typeparam>
     /// <param name="gameObject">GameObject to search for the component.</param>
     /// <param name="component">Set to the component if found.</param>
-    /// <returns>True if gameObject has the specified component in its parent.</returns>
-    public static bool HasComponentInParent<T>(this GameObject gameObject, out T component) where T : Component
+    /// <returns>True if gameObject has the specified component in its
+    /// parent.</returns>
+    public static bool HasComponentInParent<T>(this GameObject gameObject,
+        out T component)
     {
         component = gameObject.GetComponentInParent<T>();
         return !component.IsNullOrUnityNull();
@@ -101,10 +109,13 @@ public static class UnityObjectExt
     /// Checks if gameObject has the specified component in its children.
     /// </summary>
     /// <typeparam name="T">Type of the component to get.</typeparam>
-    /// <param name="self">Component whose GameObject will be used to search for the component.</param>
+    /// <param name="self">Component whose GameObject will be used to search for
+    /// the component.</param>
     /// <param name="component">Set to the component if found.</param>
-    /// <returns>True if gameObject has the specified component in its children.</returns>
-    public static bool HasComponentInParent<T>(this Component self, out T component) where T : Component
+    /// <returns>True if gameObject has the specified component in its
+    /// children.</returns>
+    public static bool HasComponentInParent<T>(this Component self,
+        out T component)
     {
         return self.gameObject.HasComponentInParent<T>(out component);
     }
@@ -117,8 +128,9 @@ public static class UnityObjectExt
     /// </summary>
     /// <typeparam name="T">Type of the component to get.</typeparam>
     /// <param name="gameObject">GameObject to search for the component.</param>
-    /// <returns>True if gameObject has the specified component in its children.</returns>
-    public static bool HasComponentInChildren<T>(this GameObject gameObject) where T : Component
+    /// <returns>True if gameObject has the specified component in its
+    /// children.</returns>
+    public static bool HasComponentInChildren<T>(this GameObject gameObject)
     {
         return !gameObject.GetComponentInChildren<T>().IsNullOrUnityNull();
     }
@@ -127,9 +139,11 @@ public static class UnityObjectExt
     /// Checks if gameObject has the specified component in its children.
     /// </summary>
     /// <typeparam name="T">Type of the component to get.</typeparam>
-    /// <param name="self">Component whose GameObject will be used to search for the component.</param>
-    /// <returns>True if gameObject has the specified component in its children.</returns>
-    public static bool HasComponentInChildren<T>(this Component self) where T : Component
+    /// <param name="self">Component whose GameObject will be used to search for
+    /// the component.</param>
+    /// <returns>True if gameObject has the specified component in its
+    /// children.</returns>
+    public static bool HasComponentInChildren<T>(this Component self)
     {
         return self.gameObject.HasComponentInChildren<T>();
     }
@@ -140,8 +154,10 @@ public static class UnityObjectExt
     /// <typeparam name="T">Type of the component to get.</typeparam>
     /// <param name="gameObject">GameObject to search for the component.</param>
     /// <param name="component">Set to the component if found.</param>
-    /// <returns>True if gameObject has the specified component in its children.</returns>
-    public static bool HasComponentInChildren<T>(this GameObject gameObject, out T component) where T : Component
+    /// <returns>True if gameObject has the specified component in its
+    /// children.</returns>
+    public static bool HasComponentInChildren<T>(this GameObject gameObject,
+        out T component)
     {
         component = gameObject.GetComponentInChildren<T>();
         return !component.IsNullOrUnityNull();
@@ -151,10 +167,13 @@ public static class UnityObjectExt
     /// Checks if gameObject has the specified component in its children.
     /// </summary>
     /// <typeparam name="T">Type of the component to get.</typeparam>
-    /// <param name="self">Component whose GameObject will be used to search for the component.</param>
+    /// <param name="self">Component whose GameObject will be used to search for
+    /// the component.</param>
     /// <param name="component">Set to the component if found.</param>
-    /// <returns>True if gameObject has the specified component in its children.</returns>
-    public static bool HasComponentInChildren<T>(this Component self, out T component) where T : Component
+    /// <returns>True if gameObject has the specified component in its
+    /// children.</returns>
+    public static bool HasComponentInChildren<T>(this Component self,
+        out T component)
     {
         return self.gameObject.HasComponentInChildren<T>(out component);
     }
@@ -179,8 +198,9 @@ public static class UnityObjectExt
     /// </summary>
     /// <typeparam name="T">The component to look for.</typeparam>
     /// <param name="array">Array of GameObjects to look through.</param>
-    /// <returns>An array of GameObjects with only the type of components specified.</returns>
-    public static GameObject[] WithComponent<T>(this GameObject[] array) where T : Component
+    /// <returns>An array of GameObjects with only the type of components
+    /// specified.</returns>
+    public static GameObject[] WithComponent<T>(this GameObject[] array)
     {
         return array.Where(obj => obj.HasComponent<T>()).ToArray();
     }
@@ -231,9 +251,11 @@ public static class UnityObjectExt
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="gameObject"></param>
-    /// <param name="component">Either the newly added component or an existing one.</param>
+    /// <param name="component">Either the newly added component or an existing
+    /// one.</param>
     /// <returns>True if the gameobject has the component</returns>
-    public static bool AddComponentIfMissing<T>(this GameObject gameObject, out T component) where T : Component
+    public static bool AddComponentIfMissing<T>(this GameObject gameObject,
+        out T component) where T : Component
     {
         T thing = gameObject.GetComponent<T>();
         if (thing.IsNullOrUnityNull())
@@ -255,8 +277,8 @@ public static class UnityObjectExt
     /// Checks if self's GameObject has the specified component.
     /// </summary>
     /// <typeparam name="T">Type of component to get.</typeparam>
-    /// <param name="gameObject">Component whose GameObject will be used to search for
-    /// the component.</param>
+    /// <param name="gameObject">Component whose GameObject will be used to
+    /// search for the component.</param>
     /// <param name="component">Set to the component if found.</param>
     /// <param name="doError">If true, log as an error. Otherwise, log as a
     /// warning.</param>
@@ -264,7 +286,7 @@ public static class UnityObjectExt
     public static bool RequireComponent<T>(
         this Component self,
         out T component,
-        bool doError = true) where T : Component
+        bool doError = true)
     {
         return self.RequireComponent(out component, typeof(T).ToString(),
             doError);
@@ -283,7 +305,7 @@ public static class UnityObjectExt
     public static bool RequireComponent<T>(
         this GameObject gameObject,
         out T component,
-        bool doError = true) where T : Component
+        bool doError = true)
     {
         return gameObject.RequireComponent(out component, typeof(T).ToString(),
             doError);
@@ -305,7 +327,7 @@ public static class UnityObjectExt
         this Component self,
         out T component,
         string name,
-        bool doError = true) where T : Component
+        bool doError = true)
     {
         return self.gameObject.RequireComponent(out component, name, doError);
     }
@@ -325,7 +347,7 @@ public static class UnityObjectExt
         this GameObject gameObject,
         out T component,
         string name,
-        bool doError = true) where T : Component
+        bool doError = true)
     {
         if (gameObject.HasComponent(out component))
         {
@@ -351,8 +373,8 @@ public static class UnityObjectExt
     /// Checks if self's GameObject has the specified component.
     /// </summary>
     /// <typeparam name="T">Type of component to get.</typeparam>
-    /// <param name="gameObject">Component whose GameObject will be used to search for
-    /// the component.</param>
+    /// <param name="gameObject">Component whose GameObject will be used to
+    /// search for the component.</param>
     /// <param name="component">Set to the component if found.</param>
     /// <param name="doError">If true, log as an error. Otherwise, log as a
     /// warning.</param>
@@ -360,7 +382,7 @@ public static class UnityObjectExt
     public static bool RequireComponentInChildren<T>(
         this Component self,
         out T component,
-        bool doError = true) where T : Component
+        bool doError = true)
     {
         return self.RequireComponentInChildren(out component,
             typeof(T).ToString(), doError);
@@ -379,7 +401,7 @@ public static class UnityObjectExt
     public static bool RequireComponentInChildren<T>(
         this GameObject gameObject,
         out T component,
-        bool doError = true) where T : Component
+        bool doError = true)
     {
         return gameObject.RequireComponentInChildren(out component,
             typeof(T).ToString(), doError);
@@ -402,7 +424,7 @@ public static class UnityObjectExt
         this Component self,
         out T component,
         string name,
-        bool doError = true) where T : Component
+        bool doError = true)
     {
         return self.gameObject.RequireComponentInChildren(out component,
             name, doError);
@@ -424,7 +446,7 @@ public static class UnityObjectExt
         this GameObject gameObject,
         out T component,
         string name,
-        bool doError = true) where T : Component
+        bool doError = true)
     {
         if (gameObject.HasComponentInChildren(out component))
         {
@@ -521,12 +543,17 @@ public static class UnityObjectExt
     /// Checks if self's GameObject has the specified component.
     /// </summary>
     /// <typeparam name="T">Type of component to get.</typeparam>
-    /// <param name="self">Component whose GameObject will be used to search for the component.</param>
+    /// <param name="self">Component whose GameObject will be used to search for
+    /// the component.</param>
     /// <param name="component">Set to the component if found.</param>
-    /// <param name="name">Name of the component that we are looking for.</param>
-    /// <param name="doError">If true, log as an error. Otherwise, log as a warning.</param>
-    /// <returns>True if gameObject has the specified component or if the component is already specified.</returns>
-    public static bool AutofillComponent<T>(this Component self, ref T component, string name, bool doError = true) where T : Component
+    /// <param name="name">Name of the component that we are looking
+    /// for.</param>
+    /// <param name="doError">If true, log as an error. Otherwise, log as a
+    /// warning.</param>
+    /// <returns>True if gameObject has the specified component or if the
+    /// component is already specified.</returns>
+    public static bool AutofillComponent<T>(this Component self, ref T component,
+        string name, bool doError = true) where T : Component
     {
         if (component)
             return true;
@@ -538,12 +565,17 @@ public static class UnityObjectExt
     /// Checks if self's GameObject has the specified component.
     /// </summary>
     /// <typeparam name="T">Type of component to get.</typeparam>
-    /// <param name="gameObject">Component whose GameObject will be used to search for the component.</param>
+    /// <param name="gameObject">Component whose GameObject will be used to
+    /// search for the component.</param>
     /// <param name="component">Set to the component if found.</param>
-    /// <param name="name">Name of the component that we are looking for.</param>
-    /// <param name="doError">If true, log as an error. Otherwise, log as a warning.</param>
-    /// <returns>True if gameObject has the specified component or if the component is already specified.</returns>
-    public static bool AutofillComponent<T>(this GameObject gameObject, ref T component, string name, bool doError = true) where T : Component
+    /// <param name="name">Name of the component that we are looking
+    /// for.</param>
+    /// <param name="doError">If true, log as an error. Otherwise, log as a
+    /// warning.</param>
+    /// <returns>True if gameObject has the specified component or if the
+    /// component is already specified.</returns>
+    public static bool AutofillComponent<T>(this GameObject gameObject,
+        ref T component, string name, bool doError = true) where T : Component
     {
         if (component)
             return true;
@@ -555,26 +587,25 @@ public static class UnityObjectExt
 
     #region Other
     /// <summary>
-    /// Checks if an object either
-    /// - is null
+    /// Checks if an object either <br/>
+    /// - is null <br/>
     /// - is a UnityEngine.Object that is == null, meaning that's invalid - ie.
-	/// Destroyed, not assigned, or created with new
+	/// Destroyed, not assigned, or created with new. <br/>
     ///
     /// Unity overloads the == operator for UnityEngine.Object, and returns true
-	/// for a == null both if a is null, or if
-    /// it doesn't exist in the c++ engine. This method is for checking for
-	/// either of those being the case
-    /// for objects that are not necessarily UnityEngine.Objects.
-	/// This is useful when you're using interfaces, since ==
-    /// is a static method, so if you check if a member of an interface == null,
-	/// it will hit the default C# == check instead
-    /// of the overridden Unity check.
+	/// for a == null both if a is null, or if it doesn't exist in the c++
+	/// engine. This method is for checking for either of those being the case
+	/// for objects that are not necessarily UnityEngine.Objects. This is useful
+	/// when you're using interfaces, since == is a static method, so if you
+	/// check if a member of an interface == null, it will hit the default C# ==
+	/// check instead of the overridden Unity check.
     /// 
     /// Source:
 	/// https://forum.unity.com/threads/when-a-rigid-body-is-not-attached-component-getcomponent-rigidbody-returns-null-as-a-string.521633/
     /// </summary>
     /// <param name="obj">Object to check</param>
-    /// <returns>True if the object is null, or if it's a UnityEngine.Object that has been destroyed</returns>
+    /// <returns>True if the object is null, or if it's a UnityEngine.Object
+    /// that has been destroyed</returns>
     public static bool IsNullOrUnityNull(this object obj)
     {
         if (obj == null)
@@ -593,27 +624,32 @@ public static class UnityObjectExt
     }
 
     /// <summary>
-    /// Copies a component and adds it to destination.
-    /// Adapted from http://answers.unity.com/answers/1118416/view.html
+    /// Copies a component and adds it to destination. Adapted from
+    /// http://answers.unity.com/answers/1118416/view.html
     /// </summary>
     /// <typeparam name="T">A component.</typeparam>
     /// <param name="original">Reference to the component to copy.</param>
     /// <param name="destination">Where to add the component.</param>
     /// <returns></returns>
-    public static T CopyComponent<T>(this T original, GameObject destination) where T : Component
+    public static T CopyComponent<T>(this T original, GameObject destination)
+        where T : Component
     {
         Type type = original.GetType();
         var dst = destination.AddComponent(type) as T;
         var fields = type.GetFields();
         foreach (var field in fields)
         {
-            if (field.IsStatic) continue;
+            if (field.IsStatic)
+                continue;
+
             field.SetValue(dst, field.GetValue(original));
         }
         var props = type.GetProperties();
         foreach (var prop in props)
         {
-            if (!prop.CanWrite || !prop.CanWrite || prop.Name == "name") continue;
+            if (!prop.CanWrite || !prop.CanWrite || prop.Name == "name")
+                continue;
+
             prop.SetValue(dst, prop.GetValue(original, null), null);
         }
         return dst;
