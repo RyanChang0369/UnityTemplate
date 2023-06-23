@@ -36,6 +36,19 @@ public class Testing : MonoBehaviour
         new(0, 1),
     };
 
+    public enum TestEnum
+    {
+        NotApplicable = -1,
+        NotValid,
+        Valid,
+        PartiallyValid,
+        Mould = 21
+    }
+
+    public EnumDictionary<TestEnum, GameObject> testEnumDictionary = new();
+
+    public UnityDictionary<string, int> testUnityDict = new();
+
     public Range testRange = new(69, 420);
 
     private void Start()
@@ -50,5 +63,11 @@ public class Testing : MonoBehaviour
         // list1.AddOrReplaceWithBuffer("desaclorb", 1);
 
         print(list1);
+
+        // testEnumDictionary[TestEnum.Mould] = "17 gallons of mould";
+
+        // testUnityDict["mould, gallons"] = 17;
+
+        // testUnityDict.Remove("The orb is a bord");
     }
 }

@@ -317,6 +317,10 @@ MonoBehaviour:
     multiplier: 98
   - addition: 0
     multiplier: 1
+  testUnityDict:
+    keyValuePairs:
+    - key: The orb is a bord
+      value: 17
   testRange:
     rangePattern: 1
     singleValue: 0
