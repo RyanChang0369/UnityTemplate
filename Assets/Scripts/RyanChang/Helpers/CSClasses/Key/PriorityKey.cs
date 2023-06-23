@@ -50,17 +50,35 @@ public class PriorityKey : IComparable<PriorityKey>
     }
 
     /// <summary>
-    /// Creates a new priority key, using a Unity GameObject.
+    /// Creates a new priority key, using a Unity GameObject to generate the ID.
     /// </summary>
     /// <param name="priority">Priority of the key. A lower value is a higher
     /// priority.</param>
-    /// <param name="unityObject">Object used for ID. See <see cref="id"/>.</param>
+    /// <param name="unityObject">Object used for ID. See <see
+    /// cref="id"/>.</param>
     /// <param name="tag">Optional tag to distinguish between different keys
     /// with the same ID. See <see cref="tag"/>.</param>
     public PriorityKey(int priority, UnityEngine.Object unityObject,
         string tag = "default")
     {
         this.priority = priority;
+        this.id = unityObject.GetInstanceID();
+        this.tag = tag;
+    }
+
+    /// <summary>
+    /// Creates a new priority key, using a Unity GameObject to generate the ID,
+    /// with the default priority of 0.
+    /// </summary>
+    /// <param name="priority">Priority of the key. A lower value is a higher
+    /// priority.</param>
+    /// <param name="unityObject">Object used for ID. See <see
+    /// cref="id"/>.</param>
+    /// <param name="tag">Optional tag to distinguish between different keys
+    /// with the same ID. See <see cref="tag"/>.</param>
+    public PriorityKey(UnityEngine.Object unityObject, string tag = "default")
+    {
+        this.priority = 0;
         this.id = unityObject.GetInstanceID();
         this.tag = tag;
     }
