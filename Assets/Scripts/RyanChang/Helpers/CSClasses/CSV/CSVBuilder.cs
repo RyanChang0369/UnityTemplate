@@ -45,6 +45,11 @@ public class CSVBuilder
 
     public override string ToString()
     {
+        return ToString("");
+    }
+
+    public string ToString(string headerPrefix)
+    {
         // This first chunk of code writes the body of the CSV by transposing
         // the rows of internalData into columns and vice versa.
         StringBuilder sb = new();
@@ -57,11 +62,20 @@ public class CSVBuilder
 
         for (int i = 0; i < longestLength; i++)
         {
-            sb.AppendLine(String.Join(", ",
-                keys.Select(k => internalData[k][i])));
+            try
+            {
+                sb.AppendLine(String.Join(", ",
+                    keys.Select(k => internalData[k][i])));
+            }
+            catch (System.ArgumentOutOfRangeException)
+            {
+                // Do nothing.
+            }
         }
 
-        return $"{String.Join(", ", keys)}\r\n{sb.ToString()}";
+        var headers = keys.Select(k => $"{headerPrefix}{k.ToString()}");
+        string headerStr = String.Join(", ", headers);
+        return $"{headerStr}\r\n{sb.ToString()}";
     }
     #endregion
 }

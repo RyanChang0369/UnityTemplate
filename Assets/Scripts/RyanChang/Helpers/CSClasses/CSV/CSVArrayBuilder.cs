@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using UnityEngine;
 
 /// <summary>
 /// Helper class to build valid CSV, to be used with Newtonsoft's JsonTextReader
@@ -114,8 +115,11 @@ public class CSVArrayBuilder
             Index ph_to = m.Groups[0].Index;
             string preHeader = rx_index.Replace(header[..ph_to], "");
 
+            string builderHeader = preHeader + arrHeader;
+
             // Add stuff to the builders.
-            builders.GetOrCreate(preHeader).Add(postHeader, data);
+            builders.GetOrCreate(builderHeader).Add(postHeader, data);
+            // AddToHeaderMap(builderHeader);
         }
         else
         {
@@ -127,8 +131,75 @@ public class CSVArrayBuilder
     public override string ToString()
     {
         return String.Join("\r\n\r\n",
-            builders.Keys.Select(k => builders[k].ToString()));
-        // return "";
+            builders.Keys.Select(k => builders[k].ToString(k)));
+    }
+    #endregion
+
+    #region Helpers
+    private void AddToHeaderMap(string header)
+    {
+        if (headerMap.ContainsKey(header))
+            return;
+
+        string[] headPath = header.Split('.');
+
+        Dictionary<string, string> toChange = new();
+
+        foreach (var other in headerMap.Keys)
+        {
+            string[] otherPath = other.Split('.');
+
+            // Compare the two paths.
+            List<string> same = new();
+            bool foundChange = false;
+
+            // First, get shortest of the paths.
+            int shortest = Math.Min(headPath.Length, otherPath.Length);
+            int i;
+
+            // Loop through both paths, starting from the rear.
+            for (i = 1; i <= shortest; i++)
+            {
+                if (headPath[^i].Equals(otherPath[^i]))
+                {
+                    same.Add(headPath[^i]);
+                }
+                else
+                {
+                    // Make both otherPath and headPath have different names.
+                    toChange[header] = String.Join(".", headPath[^i..]);
+                    toChange[other] = String.Join(".", otherPath[^i..]);
+
+                    foundChange = true;
+                    break;
+                }
+            }
+
+            if (!foundChange && headPath[^i] == otherPath[^i])
+            {
+                // We have not found any differences, but header and other may
+                // still have the same name. This occurs when one path is
+                // shorter, and the shorter path is a subset of the longer one.
+
+                // Also, the two paths should not be the same length.
+                Debug.Assert(headPath.Length != otherPath.Length);
+
+                if (headPath.Length < otherPath.Length)
+                {
+                    toChange[other] = String.Join(".", otherPath[^(i + 1)..]);
+                }
+                else
+                {
+                    toChange[header] = String.Join(".", headPath[^(i + 1)..]);
+                }
+            }
+        }
+
+        // Assign the values.
+        foreach (var keyVal in toChange)
+        {
+            headerMap[keyVal.Key] = keyVal.Value;
+        }
     }
     #endregion
 }
