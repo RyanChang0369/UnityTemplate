@@ -83,18 +83,32 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     #region Helper Functions
     private void GenerateInternalDict()
     {
-        // Check the hash to avoid unneeded updates.
-        int KVPsHash = keyValuePairs.GetHashCode();
-        if (internalDict == null || KVPsHash != prevKVPsHash)
+        if (keyValuePairs == null)
         {
-            internalDict = new();
-
-            foreach (var keyValue in keyValuePairs)
+            ResetInternalDict();
+            prevKVPsHash = keyValuePairs.GetHashCode();
+        }
+        else
+        {
+            // Check the hash to avoid unneeded updates.
+            int KVPsHash = keyValuePairs.GetHashCode();
+            if (internalDict == null || KVPsHash != prevKVPsHash)
             {
-                internalDict[keyValue.Key] = keyValue.Value;
+                ResetInternalDict();
+                prevKVPsHash = KVPsHash;
             }
+        }
+    }
 
-            prevKVPsHash = KVPsHash;
+    private void ResetInternalDict()
+    {
+        internalDict = new();
+
+        keyValuePairs ??= new();
+
+        foreach (var keyValue in keyValuePairs)
+        {
+            internalDict[keyValue.Key] = keyValue.Value;
         }
     }
 

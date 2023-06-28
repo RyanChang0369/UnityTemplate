@@ -317,10 +317,21 @@ MonoBehaviour:
     multiplier: 98
   - addition: 0
     multiplier: 1
+  testEnumDictionary:
+    editorDict:
+      keyValuePairs:
+      - key: 0
+        value: {fileID: 0}
+      - key: 1
+        value: {fileID: 0}
+      - key: 2
+        value: {fileID: 0}
+      - key: 21
+        value: {fileID: 0}
+      - key: -1
+        value: {fileID: 0}
   testUnityDict:
-    keyValuePairs:
-    - key: The orb is a bord
-      value: 17
+    keyValuePairs: []
   testRange:
     rangePattern: 1
     singleValue: 0
