@@ -81,6 +81,34 @@ public static class EditorExt
 
         return targetObject;
     }
+
+    /// <summary>
+    /// Calls <see cref="SerializedProperty.Next(bool)"/> until a child is found
+    /// of type <paramref name="type"/>. This is useful if your property is
+    /// nested somewhere.
+    /// </summary>
+    /// <param name="property">The serialized property to search. If it returns
+    /// true, then this will be a serialized property of type <paramref
+    /// name="type"/>. Otherwise, it is reset.</param>
+    /// <param name="type">The type to look for.</param>
+    /// <param name="visibleOnly">If true, then calls <see
+    /// cref="SerializedProperty.NextVisible(bool)"/> instead.</param>
+    /// <return>True on success, false otherwise.</return>
+    public static bool AdvancePropertyToType(this SerializedProperty property,
+        System.Type type,
+        bool visibleOnly = false)
+    {
+        do
+        {
+            string typename = type.Name;
+            if (property.type == typename)
+                return true;
+        }
+        while (visibleOnly ? property.NextVisible(true) : property.Next(true));
+
+        property.Reset();
+        return false;
+    }
     #endregion
     
     #region Drawing

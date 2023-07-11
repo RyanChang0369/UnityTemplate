@@ -49,6 +49,8 @@ public class Testing : MonoBehaviour
 
     public UnityDictionary<string, int> testUnityDict = new();
 
+    public Selector<float> testSelector;
+
     public Range testRange = new(69, 420);
 
     private void Start()

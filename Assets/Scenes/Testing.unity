@@ -331,7 +331,18 @@ MonoBehaviour:
       - key: -1
         value: {fileID: 0}
   testUnityDict:
-    keyValuePairs: []
+    keyValuePairs:
+    - key: This is a Dictionary.
+      value: 0
+    - key: 
+      value: 0
+    - key: 
+      value: 0
+    - key: 
+      value: 0
+  testSelector:
+    selectionMode: 0
+    elements: []
   testRange:
     rangePattern: 1
     singleValue: 0
@@ -347,7 +358,7 @@ MonoBehaviour:
     modifer:
       addition: 0
       multiplier: 1
-    unfoldedInInspector: 0
+    unfoldedInInspector: 1
     fixedSelectionInInspector: 0
 --- !u!4 &848942548
 Transform:
