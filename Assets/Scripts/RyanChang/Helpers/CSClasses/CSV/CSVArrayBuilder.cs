@@ -115,7 +115,7 @@ public class CSVArrayBuilder
             Index ph_to = m.Groups[0].Index;
             string preHeader = rx_index.Replace(header[..ph_to], "");
 
-            string builderHeader = preHeader + arrHeader;
+            string builderHeader = $"{preHeader}.{arrHeader}";
 
             // Add stuff to the builders.
             builders.GetOrCreate(builderHeader).Add(postHeader, data);
