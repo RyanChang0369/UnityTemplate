@@ -81,4 +81,16 @@ public static class TransformExt
             throw new System.ArgumentException("Cannot provide empty params");
         }
     }
+
+    /// <summary>
+    /// Destroys all children in <paramref name="transform"/>.
+    /// </summary>
+    /// <param name="transform">The transform whose children we destroy.</param>
+    public static void DestroyAllChildren(this Transform transform)
+    {
+        while (transform.childCount > 0)
+        {
+            Object.Destroy(transform.GetChild(0));
+        }
+    }
 }
