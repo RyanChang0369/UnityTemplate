@@ -21,10 +21,34 @@ using UnityEngine;
 [System.Serializable]
 public class ModifierChain
 {
+    #region Variables
     /// <summary>
     /// The internal modifier chain used in modifying some value.
     /// </summary>
     private SortedDictionary<PriorityKey, Modifier> chain = new();
+
+    /// <summary>
+    /// The cached value.
+    /// </summary>
+    private float cache;
+
+    /// <summary>
+    /// True if the cache is dirty (cache may be incorrect), false otherwise
+    /// (cache is correct).
+    /// </summary>
+    private bool cacheDirty = true;
+    #endregion
+
+    #region Constructors
+    /// <summary>
+    /// Creates a new modifier chain with an empty chain.
+    /// </summary>
+    public ModifierChain()
+    {
+        chain = new();
+        cacheDirty = true;
+    }
+    #endregion
 
     /// <summary>
     /// Adds a modifier to the chain.
@@ -36,8 +60,10 @@ public class ModifierChain
     {
         if (chain.ContainsKey(key))
             return false;
-        
+
         chain.Add(key, modifier);
+        cacheDirty = true;
+
         return true;
     }
 
@@ -48,7 +74,13 @@ public class ModifierChain
     /// <returns>True on successful removal, false otherwise.</returns>
     public bool Remove(PriorityKey key)
     {
-        return chain.Remove(key);
+        if (chain.Remove(key))
+        {
+            cacheDirty = true;
+            return true;
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -57,6 +89,7 @@ public class ModifierChain
     public void Clear()
     {
         chain.Clear();
+        cacheDirty = true;
     }
 
     /// <summary>
@@ -66,11 +99,20 @@ public class ModifierChain
     /// <returns></returns>
     public float Modify(float input)
     {
-        foreach (var pair in chain)
+        if (cacheDirty)
         {
-            input = pair.Value.Modify(input);
-        }
+            cache = input;
 
-        return input;
+            foreach (var pair in chain)
+            {
+                cache = pair.Value.Modify(cache);
+            }
+
+            return cache;
+        }
+        else
+        {
+            return cache;
+        }
     }
 }
