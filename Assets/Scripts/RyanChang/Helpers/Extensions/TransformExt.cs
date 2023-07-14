@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -86,11 +87,24 @@ public static class TransformExt
     /// Destroys all children in <paramref name="transform"/>.
     /// </summary>
     /// <param name="transform">The transform whose children we destroy.</param>
-    public static void DestroyAllChildren(this Transform transform)
+    /// <param name="immediate">If true and in edit mode, destroy the children
+    /// immediately. This is required if you are in edit mode.</param>
+    public static void DestroyAllChildren(this Transform transform,
+        bool immediate = false)
     {
-        while (transform.childCount > 0)
+        List<Transform> childs = new(transform.childCount);
+
+        foreach (Transform child in transform)
         {
-            Object.Destroy(transform.GetChild(0));
+            childs.Add(child);
+        }
+
+        foreach (var child in childs)
+        {
+            if (Application.isEditor && immediate)
+                Object.DestroyImmediate(child.gameObject);
+            else
+                Object.Destroy(child.gameObject);
         }
     }
 }
