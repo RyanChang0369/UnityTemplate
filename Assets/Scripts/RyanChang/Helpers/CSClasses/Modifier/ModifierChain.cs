@@ -108,6 +108,8 @@ public class ModifierChain
                 cache = pair.Value.Modify(cache);
             }
 
+            cacheDirty = false;
+
             return cache;
         }
         else
