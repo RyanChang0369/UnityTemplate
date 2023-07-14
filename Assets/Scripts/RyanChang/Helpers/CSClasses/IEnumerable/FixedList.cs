@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Collections;
+using System.Linq;
 
 [Serializable]
 public class FixedList<T> : IEnumerable<T>, IList<T>
@@ -22,6 +23,11 @@ public class FixedList<T> : IEnumerable<T>, IList<T>
     public FixedList(List<T> list)
     {
         internalList = list;
+    }
+
+    public FixedList(IEnumerable<T> collection)
+    {
+        internalList = collection.ToList();
     }
 
     public IEnumerator<T> GetEnumerator()
