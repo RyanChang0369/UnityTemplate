@@ -55,21 +55,9 @@ public class Testing : MonoBehaviour
 
     private void Start()
     {
-        this.InstantiateSingleton(ref singleton);
+        Dictionary<string, List<float>> test = new();
 
-        List<string> list1 = new() { "orb", "borb" };
-
-        list1.AddOrReplace("florb", 1);
-        // list1.AddOrReplaceWithBuffer("norb", 12);
-        // list1.AddOrReplaceWithBuffer("scorb", 16);
-        // list1.AddOrReplaceWithBuffer("desaclorb", 1);
-
-        print(list1);
-
-        // testEnumDictionary[TestEnum.Mould] = "17 gallons of mould";
-
-        // testUnityDict["mould, gallons"] = 17;
-
-        // testUnityDict.Remove("The orb is a bord");
+        test.AddToDictList("Key", 20.5f);
+        test.AddToDictList("Key", 0.5f);
     }
 }

@@ -108,4 +108,26 @@ public static class EnumerableExt
         }
     }
     #endregion
+
+    #region Dictionary
+    /// <summary>
+    /// Adds <paramref name="obj"/> to an internal list in a dictionary of lists
+    /// <paramref name="dictionary"/>.
+    /// </summary>
+    /// <typeparam name="K">Key type.</typeparam>
+    /// <typeparam name="T">Object to add type.</typeparam>
+    /// <param name="dictionary">The dictionary of lists.</param>
+    /// <param name="key">The key that targets the list to add to.</typeparam>
+    /// <param name="obj">The object to add to the list.</param>
+    public static void AddToDictList<K, T>(
+        this Dictionary<K, List<T>> dictionary, K key, T obj)
+    {
+        if (!dictionary.ContainsKey(key))
+            dictionary[key] = new();
+        else
+            dictionary[key] ??= new();
+
+        dictionary[key].Add(obj);
+    }
+    #endregion
 }
