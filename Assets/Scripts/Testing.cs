@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -53,11 +55,103 @@ public class Testing : MonoBehaviour
 
     public Range testRange = new(69, 420);
 
+    /// <summary>
+    /// The genotype of the fish.
+    /// </summary>
+    public struct Genotype : IEquatable<Genotype>
+    {
+        /// <summary>
+        /// A bit array is a handy way to efficiently store the genes.
+        /// </summary>
+        private BitArray genes;
+
+        public Genotype(BitArray genes)
+        {
+            this.genes = genes;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Genotype gn)
+            {
+                return Equals(gn);
+            }
+
+            return false;
+        }
+
+        public bool Equals(Genotype other)
+        {
+            if (genes.Length == other.genes.Length)
+            {
+                for (int i = 0; i < genes.Length; i++)
+                {
+                    if (genes[i] != other.genes[i])
+                        return false;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Taken from https://stackoverflow.com/a/3125721.
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            int hash = 17;
+
+            for (int i = 0; i < genes.Length; i += 32)
+            {
+                int subhash = 0;
+                int len = Mathf.Min(32, genes.Length - i);
+
+                for (int j = 0; j < len; j++)
+                {
+                    subhash |= (genes[i + j] ? 1 : 0) << j;
+                }
+
+                hash = hash * 23 + subhash;
+            }
+
+            return (int)hash;
+        }
+    }
+
     private void Start()
     {
-        Dictionary<string, List<float>> test = new();
+        BitArray ba0 = new(16, false);
+        ba0[12] = true;
 
-        test.AddToDictList("Key", 20.5f);
-        test.AddToDictList("Key", 0.5f);
+        BitArray ba1 = new(16, false);
+        ba1[12] = true;
+
+        Dictionary<BitArray, float> baDict = new();
+        baDict[ba0] = 16;
+        baDict[ba1] = -51.002f;
+
+        print(ba0.Equals(ba1));
+
+        BitVector32 bv0 = new(9);
+
+        BitVector32 bv1 = new(9);
+
+        Dictionary<BitVector32, float> bvDict = new();
+        bvDict[bv0] = 16;
+        bvDict[bv1] = -51.002f;
+
+        print(bv0.Data == bv1.Data);
+
+        Genotype gn0 = new(ba0);
+        Genotype gn1 = new(ba1);
+
+        Dictionary<Genotype, float> gnDict = new();
+        gnDict[gn0] = 16;
+        gnDict[gn1] = -51.002f;
+
+        print(gn0.Equals(gn1));
     }
 }

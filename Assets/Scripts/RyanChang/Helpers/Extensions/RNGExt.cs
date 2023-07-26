@@ -390,8 +390,8 @@ public static class RNGExt
 
 
     /// <summary>
-    /// Shuffles the list in place.
-    /// Adapted from https://stackoverflow.com/a/1262619.
+    /// Shuffles the list in place. This is an O(n) operation. Adapted from
+    /// https://stackoverflow.com/a/1262619.
     /// </summary>
     /// <typeparam name="T">Any type.</typeparam>
     /// <param name="list">List to shuffle.</param>
