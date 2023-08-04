@@ -70,13 +70,18 @@ public abstract class SimultaneousController : MonoBehaviour
             controls = CreateControlsList();
         }
 
+        RefreshControls();
+
+        if (autorun) StartController();
+    }
+
+    public void RefreshControls()
+    {
         foreach (var control in controls)
         {
             control.Controller = this;
             control.Instantiate();
         }
-
-        if (autorun) StartController();
     }
 
     /// <summary>
