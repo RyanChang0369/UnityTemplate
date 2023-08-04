@@ -305,20 +305,8 @@ public static class RNGExt
     public static IEnumerable<T> RandomSelectMany<T>(this IEnumerable<T> objs,
         Func<T, float> key)
     {
-        List<T> selected = new List<T>();
-
-        var shuffled = objs.ToList();
-        shuffled.Shuffle();
-
-        foreach (T obj in shuffled)
-        {
-            if (PercentChance(key(obj)))
-            {
-                selected.Add(obj);
-            }
-        }
-
-        return selected;
+        return objs
+            .Where(obj => PercentChance(key(obj)));
     }
 
     /// <summary>
