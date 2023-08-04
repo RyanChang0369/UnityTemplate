@@ -2,8 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Text;
-using System.Text.RegularExpressions;
+using NaughtyAttributes;
 using UnityEngine;
 
 public class Testing : MonoBehaviour
@@ -153,5 +152,40 @@ public class Testing : MonoBehaviour
         gnDict[gn1] = -51.002f;
 
         print(gn0.Equals(gn1));
+    }
+
+    private void Update()
+    {
+        print(Camera.main.ScreenPointToRay(Input.mousePosition));
+    }
+
+    [Button]
+    private void TestArraySlices()
+    {
+        int[] array = new int[] { 14, 19, 52, -8, 0, 0, 15, 4, 2, 3, 6 };
+        int[] slice = array[0..2];
+        slice[1] = 63422;
+
+        print("Done");
+    }
+
+    [Button]
+    private void TestArrayParam()
+    {
+        int[] array = new int[] { 14, 19, 52, -8, 0, 0, 15, 4, 2, 3, 6 };
+        ArrayParam(array[0..8]);
+    }
+
+    private void ArrayParam(int[] array)
+    {
+        array[4] = -9000;
+    }
+
+    [Button]
+    private void TestCompare()
+    {
+        int a = 90;
+        int b = 90 + 1;
+        print(a.CompareTo(b));
     }
 }

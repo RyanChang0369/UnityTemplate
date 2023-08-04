@@ -334,11 +334,11 @@ MonoBehaviour:
     keyValuePairs:
     - key: This is a Dictionary.
       value: 0
-    - key: 
+    - key: Key
       value: 0
-    - key: 
+    - key: GoodKey
       value: 0
-    - key: 
+    - key: uio
       value: 0
   testSelector:
     selectionMode: 0
