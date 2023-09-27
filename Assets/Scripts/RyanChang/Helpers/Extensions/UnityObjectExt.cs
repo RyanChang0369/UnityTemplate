@@ -241,12 +241,8 @@ public static class UnityObjectExt
 
     #region Autoadd
     #region Add If Missing
-    /// <summary>
-    /// Adds component if not found in gameObject
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="gameObject"></param>
-    /// <returns>True if the gameobject has the component</returns>
+    /// <returns>The component that was added.</returns>
+    /// <inheritdoc cref="AddComponentIfMissing{T}(GameObject, out T)"/>
     public static T AddComponentIfMissing<T>(this GameObject gameObject)
         where T : Component
     {
@@ -261,20 +257,22 @@ public static class UnityObjectExt
     }
 
     /// <summary>
-    /// Adds component if not found in gameObject
+    /// Adds a component of type T if none are found in <paramref
+    /// name="target"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="gameObject"></param>
+    /// <param name="target">The gameobject to add the component to.</param>
     /// <param name="component">Either the newly added component or an existing
     /// one.</param>
-    /// <returns>True if the gameobject has the component</returns>
-    public static bool AddComponentIfMissing<T>(this GameObject gameObject,
+    /// <returns>True if the gameobject has the component, false if it had to be
+    /// added.</returns>
+    public static bool AddComponentIfMissing<T>(this GameObject target,
         out T component) where T : Component
     {
-        T thing = gameObject.GetComponent<T>();
+        T thing = target.GetComponent<T>();
         if (thing.IsNullOrUnityNull())
         {
-            component = gameObject.AddComponent<T>();
+            component = target.AddComponent<T>();
             return false;
         }
         else
@@ -543,7 +541,7 @@ public static class UnityObjectExt
                 {
                     // However, we seem to already have another manager in self.
                     // Delete this manager.
-                    Debug.LogError($"Found another instance of {typeof(T)}. " +
+                    Debug.LogWarning($"Found another instance of {typeof(T)}. " +
                         "Deleting...");
 
                     GameObject.Destroy(tempManager.gameObject);
@@ -673,6 +671,83 @@ public static class UnityObjectExt
     {
         GameObject.Instantiate(reference.gameObject).RequireComponent(out T instance);
         return instance;
+    }
+
+    /// <inheritdoc cref="InstantiateComponent{T}(T)"/>
+    /// <inheritdoc cref="UnityEngine.Object.Instantiate(UnityEngine.Object,
+    /// Transform, bool)"/>
+    public static T InstantiateComponent<T>(this T reference, Transform parent,
+        bool instantiateInWorldSpace) where T : Component
+    {
+        GameObject.Instantiate(
+            reference.gameObject,
+            parent,
+            instantiateInWorldSpace
+        ).RequireComponent(out T instance);
+        return instance;
+    }
+
+    /// <inheritdoc cref="InstantiateComponent{T}(T)"/>
+    /// <inheritdoc cref="UnityEngine.Object.Instantiate(UnityEngine.Object,
+    /// Vector3, Quaternion)"/>
+    public static T InstantiateComponent<T>(this T reference, Vector3 position,
+        Quaternion rotation) where T : Component
+    {
+        GameObject.Instantiate(
+            reference.gameObject,
+            position,
+            rotation
+        ).RequireComponent(out T instance);
+        return instance;
+    }
+
+    /// <inheritdoc cref="InstantiateComponent{T}(T)"/>
+    /// <inheritdoc cref="UnityEngine.Object.Instantiate(UnityEngine.Object,
+    /// Vector3, Quaternion, Transform)"/>
+    public static T InstantiateComponent<T>(this T reference, Vector3 position,
+        Quaternion rotation, Transform parent) where T : Component
+    {
+        GameObject.Instantiate(
+            reference.gameObject,
+            position,
+            rotation,
+            parent
+        ).RequireComponent(out T instance);
+        return instance;
+    }
+    #endregion
+
+    #region Resource Load
+    /// <summary>
+    /// Loads <paramref name="obj"/> from <paramref name="path"/>.
+    /// </summary>
+    /// <inheritdoc cref="LoadIfMissing{T}(T, string)"/>
+    public static void LoadResource<T>(this T obj, string path)
+            where T : UnityEngine.Object
+    {
+        obj = Resources.Load<T>(path);
+    }
+
+    /// <summary>
+    /// Loads <paramref name="obj"/> from <paramref name="path"/> if <paramref
+    /// name="obj"/> is not set to some value.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="obj">The object to load.</param>
+    /// <param name="path">The path of the resource from a Resources
+    /// folder.</param>
+    /// <returns>True if <paramref name="obj"/> is already set to some value,
+    /// false otherwise.</returns>
+    public static bool LoadIfMissing<T>(this T obj, string path)
+        where T : UnityEngine.Object
+    {
+        if (!obj)
+        {
+            obj = Resources.Load<T>(path);
+            return false;
+        }
+
+        return true;
     }
     #endregion
 
@@ -808,6 +883,35 @@ public static class UnityObjectExt
                 self.transform.Orphan();
                 GameObject.DontDestroyOnLoad(self.gameObject);
             }
+        }
+    }
+
+    /// <summary>
+    /// Detects if Unity is running as an editor or application, then chooses
+    /// the appropriate destruction method to use to destroy <paramref
+    /// name="gameObject"/>.
+    /// </summary>
+    /// <param name="gameObject">The GameObject to destroy.</param>
+    /// <exception cref="ArgumentException"></exception>
+    public static void AutoDestroy(this GameObject gameObject)
+    {
+        if (Application.isEditor)
+        {
+#if UNITY_EDITOR
+            if (UnityEditor.EditorUtility.IsPersistent(gameObject))
+            {
+                throw new ArgumentException(
+                    "Trying to destroy a persistent object!",
+                    nameof(gameObject)
+                );
+            }
+
+            GameObject.DestroyImmediate(gameObject, false);
+#endif
+        }
+        else
+        {
+            GameObject.Destroy(gameObject);
         }
     }
     #endregion

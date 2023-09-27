@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
+using System.Linq;
 
 /// <summary>
 /// Contains methods pertaining to Vector3 and Vector2.
@@ -55,10 +57,14 @@ public static class VectorExt
     /// </summary>
     /// <param name="v">The Vector3 to convert.</param>
     /// <returns>The converted Vector3Int.</returns>
-    public static Vector3Int ToVector3Int(this Vector3 v)
+    public static Vector3Int ToVector3Int(this Vector3 v,
+        NumericalExt.RoundMode mode = NumericalExt.RoundMode.NearestInt)
     {
-        return new(Mathf.RoundToInt(v.x), Mathf.RoundToInt(v.y),
-            Mathf.RoundToInt(v.z));
+        return new(
+            v.x.Round(mode),
+            v.y.Round(mode),
+            v.z.Round(mode)
+        );
     }
 
     /// <summary>
@@ -66,9 +72,13 @@ public static class VectorExt
     /// </summary>
     /// <param name="v">The Vector2 to convert.</param>
     /// <returns>The converted Vector2Int.</returns>
-    public static Vector2Int ToVector2Int(this Vector2 v)
+    public static Vector2Int ToVector2Int(this Vector2 v,
+    NumericalExt.RoundMode mode = NumericalExt.RoundMode.NearestInt)
     {
-        return new(Mathf.RoundToInt(v.x), Mathf.RoundToInt(v.y));
+        return new(
+            v.x.Round(mode),
+            v.y.Round(mode)
+        );
     }
 
     /// <summary>
@@ -198,6 +208,48 @@ public static class VectorExt
     {
         return Mathf.Min(v.x, v.y, v.z);
     }
+
+    /// <summary>
+    /// Returns a vector that is the minimum component of all other vectors.
+    /// </summary>
+    /// <param name="vertices"></param>
+    /// <returns></returns>
+    public static Vector2 WithMinComponents(params Vector2[] vertices)
+    {
+        return new(
+            vertices.Min(v => v.x),
+            vertices.Min(v => v.y)
+        );
+    }
+
+    /// <inheritdoc cref="WithMinComponents(Vector2[])"/>
+    public static Vector2Int WithMinComponents(params Vector2Int[] vertices)
+    {
+        return new(
+            vertices.Min(v => v.x),
+            vertices.Min(v => v.y)
+        );
+    }
+
+    /// <inheritdoc cref="WithMinComponents(Vector2[])"/>
+    public static Vector3 WithMinComponents(params Vector3[] vertices)
+    {
+        return new(
+            vertices.Min(v => v.x),
+            vertices.Min(v => v.y),
+            vertices.Min(v => v.z)
+        );
+    }
+
+    /// <inheritdoc cref="WithMinComponents(Vector3[])"/>
+    public static Vector3Int WithMinComponents(params Vector3Int[] vertices)
+    {
+        return new(
+            vertices.Min(v => v.x),
+            vertices.Min(v => v.y),
+            vertices.Min(v => v.z)
+        );
+    }
     #endregion
 
     #region Max
@@ -239,6 +291,48 @@ public static class VectorExt
     public static float MaxComponent(this Vector3Int v)
     {
         return Mathf.Max(v.x, v.y, v.z);
+    }
+
+    /// <summary>
+    /// Returns a vector that is the maximum component of all other vectors.
+    /// </summary>
+    /// <param name="vertices"></param>
+    /// <returns></returns>
+    public static Vector2 WithMaxComponents(params Vector2[] vertices)
+    {
+        return new(
+            vertices.Max(v => v.x),
+            vertices.Max(v => v.y)
+        );
+    }
+
+    /// <inheritdoc cref="WithMaxComponents(Vector2[])"/>
+    public static Vector2Int WithMaxComponents(params Vector2Int[] vertices)
+    {
+        return new(
+            vertices.Max(v => v.x),
+            vertices.Max(v => v.y)
+        );
+    }
+
+    /// <inheritdoc cref="WithMaxComponents(Vector2[])"/>
+    public static Vector3 WithMaxComponents(params Vector3[] vertices)
+    {
+        return new(
+            vertices.Max(v => v.x),
+            vertices.Max(v => v.y),
+            vertices.Max(v => v.z)
+        );
+    }
+
+    /// <inheritdoc cref="WithMaxComponents(Vector3[])"/>
+    public static Vector3Int WithMaxComponents(params Vector3Int[] vertices)
+    {
+        return new(
+            vertices.Max(v => v.x),
+            vertices.Max(v => v.y),
+            vertices.Max(v => v.z)
+        );
     }
     #endregion
 
@@ -495,8 +589,7 @@ public static class VectorExt
         return new Vector2(cos * oldX - sin * oldY, sin * oldX + cos * oldY);
     }
     #endregion
-    
-    
+
     #region Distance
     /// <summary>
     /// Gets the taxicab distance between two vectors.
@@ -540,6 +633,45 @@ public static class VectorExt
     public static int TaxicabDistance(this Vector3Int v1, Vector3Int v2)
     {
         return (v1 - v2).Abs().SumComponents();
+    }
+    #endregion
+
+    #region Inverse Square
+    /// <summary>
+    /// Computes the force vector resulting from the inverse square law.
+    /// </summary>
+    /// <param name="origin">The starting point (where the explosion began, for
+    /// example).</param>
+    /// <param name="target">The testing point.</param>
+    /// <returns>The force vector, centered on the origin.</returns>
+    public static Vector2 InverseSquare(this Vector2 origin, Vector2 target)
+    {
+        return InverseSquare(target - origin);
+    }
+
+    /// <summary>
+    /// Computes the force vector resulting from the inverse square law.
+    /// </summary>
+    /// <param name="difference">The difference between the starting point
+    /// (where the explosion began, for example) and the testing point.</param>
+    /// <returns>The force vector, centered on the origin.</returns>
+    public static Vector2 InverseSquare(this Vector2 difference)
+    {
+        var s = difference.sqrMagnitude;
+        return difference / s;
+    }
+
+    /// <inheritdoc cref="InverseSquare(Vector2, Vector2)"/>
+    public static Vector3 InverseSquare(this Vector3 origin, Vector3 target)
+    {
+        return InverseSquare(target - origin);
+    }
+
+    /// <inheritdoc cref="InverseSquare(Vector2)"/>
+    public static Vector3 InverseSquare(this Vector3 difference)
+    {
+        var s = difference.sqrMagnitude;
+        return difference / s;
     }
     #endregion
 

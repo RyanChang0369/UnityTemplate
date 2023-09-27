@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Collections;
 using System;
 using UnityEngine;
 
@@ -10,10 +9,11 @@ using UnityEngine;
 /// <typeparam name="T"></typeparam>
 public class PriorityQueue<T>
 {
+    #region Structs
     /// <summary>
     /// Priority queue element.
     /// </summary>
-    private struct PQElement
+    public struct PriorityElement
     {
         /// <summary>
         /// Priority of the element. Smaller = higher priority.
@@ -30,7 +30,7 @@ public class PriorityQueue<T>
         /// </summary>
         /// <param name="priority">The priority to assign to this.</param>
         /// <param name="value">The element's value.</param>
-        public PQElement(float priority, T value)
+        public PriorityElement(float priority, T value)
         {
             this.priority = priority;
             this.value = value;
@@ -42,12 +42,15 @@ public class PriorityQueue<T>
         }
     }
 
+    /// <summary>
+    /// Used to locate <see cref="PriorityElement"/>.
+    /// </summary>
     private struct LocatorElement : IComparable
     {
         /// <summary>
         /// Element this locator is pointing at.
         /// </summary>
-        public PQElement pqElement;
+        public PriorityElement pqElement;
 
         /// <summary>
         /// A counter value to do tie breaks.
@@ -69,7 +72,7 @@ public class PriorityQueue<T>
         /// </summary>
         /// <param name="pqElement">The priority queue element this points to.</param>
         /// <param name="index">Index of <paramref name="pqElement"/> in <paramref name="data"/>.</param>
-        public LocatorElement(PQElement pqElement, int index)
+        public LocatorElement(PriorityElement pqElement, int index)
         {
             this.pqElement = pqElement;
             this.index = index;
@@ -99,43 +102,91 @@ public class PriorityQueue<T>
             return $"LocatorElement: index {index}, {pqElement}";
         }
     }
+    #endregion
 
+    #region Variables
     /// <summary>
-    /// Underlying container for this queue
+    /// Underlying container for this queue.
     /// </summary>
-    // private SortedList<float, T> list = new SortedList<float, T>(new MinFloatCompare());
-    private List<PQElement> data = new List<PQElement>();
+    private List<PriorityElement> data;
 
     /// <summary>
     /// Dictionary to locate the data to update.
     /// </summary>
-    private Dictionary<T, LocatorElement> locator = new Dictionary<T, LocatorElement>();
+    private Dictionary<T, LocatorElement> locator;
+    #endregion
 
+    #region Properties
     /// <summary>
     /// Objects in this queue.
     /// </summary>
     public int Count => data.Count;
+    #endregion
 
+    #region Constructors
+    /// <summary>
+    /// Creates a new empty <see cref="PriorityQueue{T}"/>.
+    /// </summary>
+    public PriorityQueue()
+    {
+        data = new();
+        locator = new();
+    }
+
+    /// <summary>
+    /// Creates a <see cref="PriorityQueue{T}"/> with the specified elements.
+    /// </summary>
+    /// <param name="elements">The collection of elements to add.</param>
+    public PriorityQueue(IEnumerable<PriorityElement> elements) : this()
+    {
+        foreach (var elem in elements)
+        {
+            Enqueue(elem);
+        }
+    }
+    #endregion
+
+    #region Public Methods
     /// <summary>
     /// Enqueues a value with a priority.
     /// </summary>
-    /// <param name="priority">Priority of the value. Smaller = more priority.</param>
+    /// <param name="priority">Priority of the value. Smaller = more
+    /// priority.</param>
     /// <param name="value">Value to insert.</param>
     public void Enqueue(float priority, T value)
     {
-        var newPQElem = new PQElement(priority, value);
-        data.Add(newPQElem);
-        locator.Add(value, new LocatorElement(newPQElem, Count - 1));
+        var element = new PriorityElement(priority, value);
+        data.Add(element);
+        locator.Add(value, new LocatorElement(element, Count - 1));
         PercolateUp(Count - 1);
     }
 
     /// <summary>
-    /// Removes and returns the minimum value.
+    /// Enqueues a <see cref="PriorityElement"/> directly.
     /// </summary>
-    /// <returns>The minimum value.</returns>
-    public T Dequeue()
+    /// <param name="element"></param>
+    public void Enqueue(PriorityElement element)
+    {
+        data.Add(element);
+        locator.Add(element.value, new LocatorElement(element, Count - 1));
+        PercolateUp(Count - 1);
+    }
+
+    /// <summary>
+    /// Returns the element at the front of the queue.
+    /// </summary>
+    /// <returns></returns>
+    public T Peek() => data[0].value;
+
+    /// <summary>
+    /// Removes and returns the element and its priority at the front of the
+    /// queue.
+    /// </summary>
+    /// <returns>A tuple of (priority, value).</returns>
+    public PriorityElement DequeueElement()
     {
         T value = data[0].value;
+        var valueElement = data[0];
 
         // Get values of the datas.
         var currData = data[0];
@@ -162,7 +213,16 @@ public class PriorityQueue<T>
         // Swapped element needs to be correctly ordered.
         PercolateDown(0);
 
-        return value;
+        return valueElement;
+    }
+
+    /// <summary>
+    /// Removes and returns the element at the front of the queue.
+    /// </summary>
+    /// <returns>The minimum value.</returns>
+    public T DequeueValue()
+    {
+        return DequeueElement().value;
     }
 
     /// <summary>
@@ -189,7 +249,7 @@ public class PriorityQueue<T>
         locator[key] = currLocator;
         locator[swapData.value] = swapLocator;
 
-        Dequeue();
+        DequeueValue();
 
         Enqueue(newPriority, currLocator.pqElement.value);
 
@@ -198,14 +258,19 @@ public class PriorityQueue<T>
 
         return true;
     }
+    #endregion
 
+    #region Helpers
     /// <summary>
-    /// Returns the left child index of the element at <paramref name="currentIndex"/>.
+    /// Returns the left child index of the element at <paramref
+    /// name="currentIndex"/>.
     /// </summary>
     /// <param name="currentIndex">Current index of an element.</param>
-    /// <returns>The left child index, if it exists. Otherwise throws IndexOutOfRangeException.</returns>
-    /// <exception cref="IndexOutOfRangeException">Thrown when the left child of the element at 
-    /// <paramref name="currentIndex"/> does not exist.</exception>
+    /// <returns>The left child index, if it exists. Otherwise throws
+    /// IndexOutOfRangeException.</returns>
+    /// <exception cref="IndexOutOfRangeException">Thrown when the left child of
+    /// the element at <paramref name="currentIndex"/> does not
+    /// exist.</exception>
     private int GetLeftChildIndex(int currentIndex)
     {
         int childI = 2 * currentIndex + 1;
@@ -220,12 +285,15 @@ public class PriorityQueue<T>
     }
 
     /// <summary>
-    /// Returns the right child index of the element at <paramref name="currentIndex"/>.
+    /// Returns the right child index of the element at <paramref
+    /// name="currentIndex"/>.
     /// </summary>
     /// <param name="currentIndex">Current index of an element.</param>
-    /// <returns>The right child index, if it exists. Otherwise throws IndexOutOfRangeException.</returns>
-    /// <exception cref="IndexOutOfRangeException">Thrown when the right child of the element at 
-    /// <paramref name="currentIndex"/> does not exist.</exception>
+    /// <returns>The right child index, if it exists. Otherwise throws
+    /// IndexOutOfRangeException.</returns>
+    /// <exception cref="IndexOutOfRangeException">Thrown when the right child
+    /// of the element at <paramref name="currentIndex"/> does not
+    /// exist.</exception>
     private int GetRightChildIndex(int currentIndex)
     {
         int childI = 2 * currentIndex + 2;
@@ -240,12 +308,15 @@ public class PriorityQueue<T>
     }
 
     /// <summary>
-    /// Returns the index of the smallest child of the element at <paramref name="currentIndex"/>.
+    /// Returns the index of the smallest child of the element at <paramref
+    /// name="currentIndex"/>.
     /// </summary>
     /// <param name="currentIndex">Current index of an element.</param>
-    /// <returns>The smallest child index, if it exists. Otherwise throws IndexOutOfRangeException.</returns>
-    /// <exception cref="IndexOutOfRangeException">Thrown when the smallest child of the element at 
-    /// <paramref name="currentIndex"/> does not exist.</exception>
+    /// <returns>The smallest child index, if it exists. Otherwise throws
+    /// IndexOutOfRangeException.</returns>
+    /// <exception cref="IndexOutOfRangeException">Thrown when the smallest
+    /// child of the element at <paramref name="currentIndex"/> does not
+    /// exist.</exception>
     private int GetMinChildIndex(int currentIndex)
     {
         int childIR = 2 * currentIndex + 2;
@@ -265,13 +336,14 @@ public class PriorityQueue<T>
         }
         else
         {
-            throw new IndexOutOfRangeException(
-                $"Child indexes {childIR} and {childIL} of current index {currentIndex} is out " +
-                $"of range of list with length {Count}."
-                );
+            return -1;
+            // throw new IndexOutOfRangeException(
+            //     $"Child indexes {childIR} and {childIL} of current index {currentIndex} is out " +
+            //     $"of range of list with length {Count}."
+            //     );
         }
     }
-    
+
     /// <summary>
     /// Returns the parent index of the element at <paramref name="childIndex"/>.
     /// </summary>
@@ -304,37 +376,28 @@ public class PriorityQueue<T>
     /// <param name="index">Index to start the percolation at.</param>
     private void PercolateUp(int index)
     {
-        while (index >= 0 && index < Count)
+        while (index > 0 && index < Count)
         {
-            try
-            {
-                var parentI = GetParentIndex(index);
+            var parentI = GetParentIndex(index);
 
-                if (parentI == index)
-                    break;
-
-                if (data[index].priority < data[parentI].priority)
-                {
-                    // Parent's child has more priority, Swap elements.
-                    var dataTemp = data[index];
-                    data[index] = data[parentI];
-                    data[parentI] = dataTemp;
-
-                    // Update locators.
-                    var parentLocator = locator[data[parentI].value];
-                    var currentLocator = locator[data[index].value];
-                    parentLocator.index = parentI;
-                    currentLocator.index = index;
-                    locator[data[parentI].value] = parentLocator;
-                    locator[data[index].value] = currentLocator;
-                }
-
-                index = parentI;
-            }
-            catch (IndexOutOfRangeException)
-            {
+            if (parentI == index)
                 break;
+
+            if (data[index].priority < data[parentI].priority)
+            {
+                // Parent's child has more priority, Swap elements.
+                (data[parentI], data[index]) = (data[index], data[parentI]);
+
+                // Update locators.
+                var parentLocator = locator[data[parentI].value];
+                var currentLocator = locator[data[index].value];
+                parentLocator.index = parentI;
+                currentLocator.index = index;
+                locator[data[parentI].value] = parentLocator;
+                locator[data[index].value] = currentLocator;
             }
+
+            index = parentI;
         }
     }
 
@@ -346,32 +409,24 @@ public class PriorityQueue<T>
     {
         while (index >= 0 && index < Count)
         {
-            try
+            var childI = GetMinChildIndex(index);
+
+            if (childI >= 0 && data[childI].priority < data[index].priority)
             {
-                var childI = GetMinChildIndex(index);
+                // Child has more priority. Swap elements.
+                (data[childI], data[index]) = (data[index], data[childI]);
 
-                if (data[childI].priority < data[index].priority)
-                {
-                    // Child has more priority. Swap elements.
-                    var temp = data[index];
-                    data[index] = data[childI];
-                    data[childI] = temp;
-
-                    // Update locators.
-                    var childLocator = locator[data[childI].value];
-                    var currentLocator = locator[data[index].value];
-                    childLocator.index = childI;
-                    currentLocator.index = index;
-                    locator[data[childI].value] = childLocator;
-                    locator[data[index].value] = currentLocator;
-                }
-
-                index = childI;
+                // Update locators.
+                var childLocator = locator[data[childI].value];
+                var currentLocator = locator[data[index].value];
+                childLocator.index = childI;
+                currentLocator.index = index;
+                locator[data[childI].value] = childLocator;
+                locator[data[index].value] = currentLocator;
             }
-            catch (IndexOutOfRangeException)
-            {
-                break;
-            }
+
+            index = childI;
         }
     }
+    #endregion
 }

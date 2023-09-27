@@ -25,7 +25,7 @@ public class ModifierChain
     /// <summary>
     /// The internal modifier chain used in modifying some value.
     /// </summary>
-    private SortedDictionary<PriorityKey, Modifier> chain = new();
+    private SortedDictionary<PriorityKey<int>, Modifier> chain = new();
 
     /// <summary>
     /// The cached value.
@@ -56,7 +56,7 @@ public class ModifierChain
     /// <param name="key">Key to add.</param>
     /// <param name="modifier">Modifier to add.</param>
     /// <returns>True if key successfully added, false otherwise.</returns>
-    public bool Add(PriorityKey key, Modifier modifier)
+    public bool Add(PriorityKey<int> key, Modifier modifier)
     {
         if (chain.ContainsKey(key))
             return false;
@@ -72,7 +72,7 @@ public class ModifierChain
     /// </summary>
     /// <param name="key">Key to remove.</param>
     /// <returns>True on successful removal, false otherwise.</returns>
-    public bool Remove(PriorityKey key)
+    public bool Remove(PriorityKey<int> key)
     {
         if (chain.Remove(key))
         {

@@ -114,8 +114,10 @@ public class CSVArrayBuilder
             // is also a fully qualified identifier for this specific array.
             Index ph_to = m.Groups[0].Index;
             string preHeader = rx_index.Replace(header[..ph_to], "");
+            preHeader = preHeader.Trim('.');    // Remove any trailing dots.
 
-            string builderHeader = $"{preHeader}.{arrHeader}";
+            string builderHeader = string.IsNullOrEmpty(preHeader) ? arrHeader :
+                $"{preHeader}.{arrHeader}";
 
             // Add stuff to the builders.
             builders.GetOrCreate(builderHeader).Add(postHeader, data);

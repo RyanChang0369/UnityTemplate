@@ -89,6 +89,11 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         UnityDictionaryErrorCode code = UnityDictionaryErrorCode.None;
 
+        if (keyValuePairs == null)
+        {
+            return code;
+        }
+
         if (keyValuePairs.Count != keyValuePairs.Distinct(inspectorKVPKeyComparer).Count())
         {
             code |= UnityDictionaryErrorCode.DuplicateKeys;
@@ -118,6 +123,28 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>
         {
             return obj.GetHashCode();
         }
+    }
+    #endregion
+
+    #region Constructors
+    /// <summary>
+    /// Creates a new empty UnityDictionary.
+    /// </summary>
+    public UnityDictionary()
+    {
+        keyValuePairs = new();
+    }
+
+    /// <summary>
+    /// Creates a new UnityDictionary from the collection of key value pairs.
+    /// </summary>
+    /// <param name="collection">The aforementioned collection.</param>
+    public UnityDictionary(IEnumerable<KeyValuePair<TKey, TValue>> collection)
+    {
+        var items = collection.Select(c => new InspectorKeyValuePair(c));
+
+        if (items.Any())
+            keyValuePairs = new(items);
     }
     #endregion
 

@@ -188,4 +188,18 @@ public class Testing : MonoBehaviour
         int b = 90 + 1;
         print(a.CompareTo(b));
     }
+
+    [Button]
+    private void TestLayers()
+    {
+        for (int i = 0; i < 32; i++)
+        {
+            int thingy = 948 & (1 << i);
+
+            if (thingy != 0)
+                print(LayerMask.LayerToName(i));
+        }
+
+        print((LayerMask)3);
+    }
 }

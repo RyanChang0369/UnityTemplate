@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,14 +10,15 @@ using System.Linq;
 public static class EnumerableExt
 {
     /// <summary>
-    /// Returns true if the IEnumerable is null or contains no elements.
+    /// Returns true if <paramref name="collection"/> is null or contains no
+    /// elements.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="enumerable">IEnumerable to check.</param>
+    /// <param name="collection">Collection to check.</param>
     /// <returns></returns>
-    public static bool IsNullOrEmpty<T>(this IEnumerable<T> enumerable)
+    public static bool IsNullOrEmpty<T>(this ICollection<T> collection)
     {
-        return enumerable == null || !enumerable.Any();
+        return collection == null || collection.Count <= 0;
     }
 
     /// <summary>
@@ -50,6 +53,64 @@ public static class EnumerableExt
             dict[key] = new();
 
         return dict[key];
+    }
+
+    #region Index
+    /// <summary>
+    /// Returns true if <paramref name="index"/> is a valid indexer into
+    /// <paramref name="collection"/>. If <paramref name="collection"/> is null
+    /// or empty, returns false.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="collection">The collection to evaluate.</param>
+    /// <param name="index">The index to evaluate.</param>
+    /// <returns>True if <paramref name="index"/> is a valid indexer into
+    /// <paramref name="collection"/>, false otherwise.</returns>
+    public static bool IndexInRange<T>(this IEnumerable<T> collection,
+        int index)
+    {
+        if (collection == null)
+            return false;
+
+        return index >= 0 && index < collection.Count();
+    }
+
+    /// <summary>
+    /// Ensures that <paramref name="index"/> ranges from 0 to <paramref
+    /// name="collection"/> count. If it lies outside of that bound, then wrap
+    /// it.
+    /// </summary>
+    public static int BoundToLength(this ICollection collection, int index)
+    {
+        return collection.Count.BoundToLength(index);
+    }
+
+    /// <summary>
+    /// Ensures that <paramref name="index"/> ranges from 0 to <paramref
+    /// name="length"/>. If it lies outside of that bound, then wrap it.
+    /// </summary>
+    public static int BoundToLength(this int length, int index)
+    {
+        while (index < 0)
+            index += length;
+
+        index %= length;
+
+        return index;
+    }
+    #endregion
+
+    /// <summary>
+    /// Swaps the values in the collection at <paramref name="indexA"/> and
+    /// <paramref name="indexB"/>.
+    /// </summary>
+    /// <param name="collection">The list/array to operate on.</param>
+    /// <param name="indexA"></param>
+    /// <param name="indexB"></param>
+    public static void Swap<T>(this IList<T> collection, int indexA, int indexB)
+    {
+        (collection[indexB], collection[indexA]) =
+            (collection[indexA], collection[indexB]);
     }
 
     #region List
@@ -111,6 +172,29 @@ public static class EnumerableExt
 
     #region Dictionary
     /// <summary>
+    /// Tries to get the value from <paramref name="dictionary"/>. If found,
+    /// returns that value. Otherwise, return the value assigned to <paramref
+    /// name="defaultValue"/>.
+    /// </summary>
+    /// <typeparam name="TKey">The type of key in the dictionary.</typeparam>
+    /// <typeparam name="TVal">The type of value in the dictionary.</typeparam>
+    /// <param name="dictionary"></param>
+    /// <param name="key"></param>
+    /// <param name="defaultValue"></param>
+    /// <returns></returns>
+    public static TVal GetValueOrDefault<TKey, TVal>(
+        this IDictionary<TKey, TVal> dictionary,
+        TKey key, TVal defaultValue = default)
+    {
+        if (dictionary.TryGetValue(key, out TVal value))
+        {
+            return value;
+        }
+
+        return defaultValue;
+    }
+
+    /// <summary>
     /// Initializes an internal list in <paramref name="dictionary"/>.
     /// </summary>
     /// <typeparam name="K">Key type.</typeparam>
@@ -160,6 +244,44 @@ public static class EnumerableExt
         dictionary.InitializeListInDictList(key);
 
         dictionary[key].AddOrReplace(obj, index);
+    }
+    #endregion
+
+    #region Enums
+    /// <summary>
+    /// Evaluates <paramref name="value"/> and determines whether or not all
+    /// bits in <paramref name="flags"/> is also set in <paramref
+    /// name="value"/>.
+    /// </summary>
+    /// <typeparam name="TEnum">Any enum type.</typeparam>
+    /// <param name="value">The value to test.</param>
+    /// <param name="flags">The flags to test against.</param>
+    /// <returns>True if all bits in <paramref name="flags"/> are also set in
+    /// <paramref name="value"/>, false otherwise.</returns>
+    public static bool AllFlagsSet<TEnum>(this TEnum value, TEnum flags)
+        where TEnum : System.Enum
+    {
+        var valueLong = Convert.ToInt64(value);
+        var flagsLong = Convert.ToInt64(flags);
+
+        return (valueLong & flagsLong) == flagsLong;
+    }
+
+    /// <summary>
+    /// Evaluates <paramref name="value"/> and determines whether or not at
+    /// least one bit in <paramref name="flags"/> is also set in its
+    /// corresponding location in <paramref name="value"/>.
+    /// </summary>
+    /// <returns>True if at least one bit in <paramref name="flags"/> is also
+    /// set in its corresponding location in <paramref name="value"/>, false
+    /// otherwise.</returns>
+    /// <inheritdoc cref="AllFlagsSet{TEnum}(TEnum, TEnum)"/>
+    public static bool SomeFlagsSet<TEnum>(this TEnum value, TEnum flags)
+    {
+        var valueLong = Convert.ToInt64(value);
+        var flagsLong = Convert.ToInt64(flags);
+
+        return (valueLong & flagsLong) != 0;
     }
     #endregion
 }

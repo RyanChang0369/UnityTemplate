@@ -82,6 +82,14 @@ public static class EditorExt
         return targetObject;
     }
 
+    /// <param name="obj">The object to assign the value to.</param>
+    /// <inheritdoc cref="GetObjectFromReflection(SerializedProperty)"/>
+    public static void GetObjectFromReflection<T>(this SerializedProperty property,
+        out T obj)
+    {
+        obj = (T)property.GetObjectFromReflection();
+    }
+
     /// <summary>
     /// Calls <see cref="SerializedProperty.Next(bool)"/> until a child is found
     /// of type <paramref name="type"/>. This is useful if your property is

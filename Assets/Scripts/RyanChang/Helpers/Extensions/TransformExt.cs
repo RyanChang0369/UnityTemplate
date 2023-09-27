@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -6,6 +7,7 @@ using UnityEngine;
 /// </summary>
 public static class TransformExt
 {
+    #region Hierarchy
     /// <summary>
     /// Returns true if a and b have the same root
     /// </summary>
@@ -29,6 +31,41 @@ public static class TransformExt
     }
 
     /// <summary>
+    /// Sets the local position, rotation, and scale of the transform to their
+    /// "default" values.
+    /// <param name="transform"></param>
+    public static void Localize(this Transform transform)
+    {
+        transform.localPosition = Vector3.zero;
+        transform.localRotation = Quaternion.identity;
+        transform.localScale = Vector3.one;
+    }
+
+    /// <summary>
+    /// Sets the local position, rotation, and scale of the transform to their
+    /// "default" values, while also setting the parent.
+    /// </summary>
+    /// <param name="transform"></param>
+    /// <param name="newParent"></param>
+    public static void Localize(this Transform transform, Transform newParent)
+    {
+        transform.parent = newParent;
+        transform.Localize();
+    }
+
+    /// <summary>
+    /// Sets the position and rotation of <paramref name="target"/> to match
+    /// those of <paramref name="other"/>.
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="other"></param>
+    public static void MatchOther(this Transform target, Transform other)
+    {
+        target.position = other.position;
+        target.rotation = other.rotation;
+    }
+
+    /// <summary>
     /// Orphans this transform, setting the parent to null while preserving
     /// world position, rotation, and scale.
     /// </summary>
@@ -38,6 +75,50 @@ public static class TransformExt
         transform.SetParent(null, true);
     }
 
+    /// <summary>
+    /// Destroys all children in <paramref name="transform"/>.
+    /// </summary>
+    /// <param name="transform">The transform whose children we destroy.</param>
+    /// <param name="immediate">If true and in edit mode, destroy the children
+    /// immediately. This is required if you are in edit mode.</param>
+    public static void DestroyAllChildren(this Transform transform,
+        bool immediate = false)
+    {
+        List<Transform> childs = new(transform.childCount);
+
+        foreach (Transform child in transform)
+        {
+            childs.Add(child);
+        }
+
+        foreach (var child in childs)
+        {
+            if (Application.isEditor && immediate)
+                Object.DestroyImmediate(child.gameObject);
+            else
+                Object.Destroy(child.gameObject);
+        }
+    }
+
+    /// <summary>
+    /// Returns an iteration containing the transform's parent, grandparent,
+    /// etc, etc.
+    /// </summary>
+    /// <param name="transform"></param>
+    /// <returns></returns>
+    public static IEnumerable<Transform> Parents(this Transform transform)
+    {
+        Transform parent = transform.parent;
+
+        while (parent != null)
+        {
+            yield return parent;
+            parent = parent.parent;
+        }
+    }
+    #endregion
+
+    #region Numerical Computations
     /// <summary>
     /// Returns the distance between the two transforms.
     /// </summary>
@@ -82,29 +163,22 @@ public static class TransformExt
             throw new System.ArgumentException("Cannot provide empty params");
         }
     }
+    #endregion
 
+    #region RectTransform and Layout
     /// <summary>
-    /// Destroys all children in <paramref name="transform"/>.
+    /// Sets the <see cref="RectTransform.anchorMin"/>, <see
+    /// cref="RectTransform.anchorMax"/>, and <see cref="RectTransform.pivot"/>
+    /// components of the RectTransform to <paramref name="anchorAndPivot"/>.
     /// </summary>
-    /// <param name="transform">The transform whose children we destroy.</param>
-    /// <param name="immediate">If true and in edit mode, destroy the children
-    /// immediately. This is required if you are in edit mode.</param>
-    public static void DestroyAllChildren(this Transform transform,
-        bool immediate = false)
+    /// <param name="rectTransform">The RectTransform to alter.</param>
+    /// <param name="anchorAndPivot">The anchor and pivot points.</param>
+    public static void SetAnchorAndPivot(this RectTransform rectTransform,
+        Vector2 anchorAndPivot)
     {
-        List<Transform> childs = new(transform.childCount);
-
-        foreach (Transform child in transform)
-        {
-            childs.Add(child);
-        }
-
-        foreach (var child in childs)
-        {
-            if (Application.isEditor && immediate)
-                Object.DestroyImmediate(child.gameObject);
-            else
-                Object.Destroy(child.gameObject);
-        }
+        rectTransform.anchorMin = anchorAndPivot;
+        rectTransform.anchorMax = anchorAndPivot;
+        rectTransform.pivot = anchorAndPivot;
     }
+    #endregion
 }

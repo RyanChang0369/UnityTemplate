@@ -336,7 +336,7 @@ MonoBehaviour:
       value: 0
     - key: Key
       value: 0
-    - key: GoodKey
+    - key: Key
       value: 0
     - key: uio
       value: 0
@@ -390,6 +390,7 @@ MonoBehaviour:
   autoAssign: 0
   includeInactive: 0
   autorun: 0
+  autoReset: 0
   controlSwitchDelay: 0.2
   maxSimultaneous: 3
   currentSimultaneous: 0

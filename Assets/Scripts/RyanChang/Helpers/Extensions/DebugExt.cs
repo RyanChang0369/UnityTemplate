@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 /// <summary>
 /// Contains methods pertaining to debug drawing, gizmos drawing, and other
@@ -438,6 +439,19 @@ public static class DebugExt
     /// </summary>
     /// <param name="bounds">Bounds to draw.</param>
     public static void DrawCrossBounds(Bounds bounds)
+    {
+        DrawCrossBounds(bounds, Quaternion.identity);
+    }
+
+    /// <inheritdoc cref="DrawCrossBounds(Bounds, Quaternion)"/>
+    private static void DrawCrossBounds(BoundsInt bounds, Quaternion rotation)
+    {
+        DrawCrossBounds(bounds.ToBounds(), rotation);
+    }
+
+
+    /// <inheritdoc cref="DrawCrossBounds(Bounds)"/>
+    public static void DrawCrossBounds(BoundsInt bounds)
     {
         DrawCrossBounds(bounds, Quaternion.identity);
     }

@@ -25,6 +25,13 @@ public abstract class SimultaneousController : MonoBehaviour
     [SerializeField]
     protected bool autorun;
 
+    [Tooltip("If true, then reset the controller when this controller is " +
+        "disabled.")]
+    [ShowIf(nameof(autorun))]
+    [SerializeField]
+    protected bool autoReset;
+
+
     [Tooltip("The delay, in seconds, between starting one " +
         "SimultaneousControl and starting the next.")]
     [SerializeField]
@@ -40,12 +47,12 @@ public abstract class SimultaneousController : MonoBehaviour
 
     [HorizontalLine]
     [Tooltip("If set to true, enables manual editing of the controls field.")]
-    [InfoBox("Unity doesn't play nicely with fields of abstract classes. " +
-        "Use at your own risk.", EInfoBoxType.Warning)]
     [SerializeField]
     private bool manualControl;
 
     [Tooltip("The controls belonging to this controller.")]
+    [InfoBox("Unity doesn't play nicely with fields of abstract classes " +
+        "(which Controls is). Use at your own risk.", EInfoBoxType.Warning)]
     [EnableIf(nameof(manualControl))]
     [SerializeField]
     protected SimultaneousControl[] controls;
@@ -55,35 +62,69 @@ public abstract class SimultaneousController : MonoBehaviour
     /// <summary>
     /// Starts the controller, allowing it to do whatever it needs to do.
     /// </summary>
-    public virtual void StartController()
+    public void StartController()
     {
+        InitControlsList();
+        ResetControls();
         StartCoroutine(RunController());
     }
-    #endregion
 
-    #region Internal Methods
-    #region Instantiation
-    protected void Start()
-    {
-        if (!manualControl)
-        {
-            controls = CreateControlsList();
-        }
-
-        RefreshControls();
-
-        if (autorun) StartController();
-    }
-
-    public void RefreshControls()
+    /// <summary>
+    /// Resets all controls.
+    /// </summary>
+    public void ResetControls()
     {
         foreach (var control in controls)
         {
             control.Controller = this;
+            control.ResetControl();
+        }
+    }
+    #endregion
+
+    #region Internal Methods
+    #region Instantiation Helpers
+    /// <summary>
+    /// Instantiates the control list. This will only be called once in play
+    /// mode.
+    /// </summary>
+    protected void InitControlsList()
+    {
+        // Do nothing if manual control is enabled.
+        if (!manualControl)
+            controls = CreateControlsList();
+
+        foreach (var control in controls)
+        {
             control.Instantiate();
         }
     }
+    #endregion
 
+    #region MonoBehavior Functions
+    private bool started = false;
+
+    protected void OnEnable()
+    {
+        if (started && autorun && autoReset)
+        {
+            // Start the controls again.
+            StartController();
+        }
+    }
+
+    protected void Start()
+    {
+        if (autorun)
+        {
+            StartController();
+        }
+
+        started = true;
+    }
+    #endregion
+
+    #region Create Control List
     /// <summary>
     /// Creates the controls list.
     /// </summary>
@@ -157,9 +198,11 @@ public abstract class SimultaneousController : MonoBehaviour
         // The right index.
         int ri = 0;
 
+        int max = Mathf.Min(maxSimultaneous, controls.Length);
+
         while (ri < controls.Length)
         {
-            while (ri - li < maxSimultaneous)
+            while (ri - li < max)
             {
                 // Grows ri until we have the required number of typewriters
                 // running.

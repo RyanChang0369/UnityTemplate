@@ -14,8 +14,29 @@ public static class RectExt
     /// <returns></returns>
     public static void Translate(this ref Rect rect, Vector2 amount)
     {
-        Vector2 center = rect.center + amount;
-        rect.center = center;
+        Vector2 position = rect.position + amount;
+        rect.position = position;
+    }
+
+    /// <param name="x">The x component of the translation vector.</param>
+    /// <param name="y">The y component of the translation vector.</param>
+    /// <inheritdoc cref="Translate(ref Rect, Vector2)"/>
+    public static void Translate(this ref Rect rect, float x, float y)
+    {
+        rect.Translate(new(x, y));
+    }
+
+    /// <inheritdoc cref="Translate(ref Rect, Vector2)"/>
+    public static void Translate(this ref RectInt rect, Vector2Int amount)
+    {
+        Vector2Int position = rect.position + amount;
+        rect.position = position;
+    }
+
+    /// <inheritdoc cref="Translate(ref Rect, float, float)"/>
+    public static void Translate(this ref RectInt rect, int x, int y)
+    {
+        rect.Translate(new(x, y));
     }
     #endregion
 

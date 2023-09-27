@@ -43,10 +43,10 @@ public class CSVBuilder
         list.AddOrReplaceWithBuffer(data, index);
     }
 
-    public override string ToString()
-    {
-        return ToString("");
-    }
+    // public override string ToString()
+    // {
+    //     return ToString("");
+    // }
 
     public string ToString(string headerPrefix)
     {
@@ -73,8 +73,9 @@ public class CSVBuilder
             }
         }
 
-        var headers = keys.Select(k => $"{headerPrefix}{k.ToString()}");
+        var headers = keys.Select(k => $"{headerPrefix}.{k.ToString()}");
         string headerStr = String.Join(", ", headers);
+
         return $"{headerStr}\r\n{sb.ToString()}";
     }
     #endregion
