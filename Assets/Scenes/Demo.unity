@@ -226,7 +226,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 848942548}
-  - component: {fileID: 848942547}
   - component: {fileID: 848942549}
   m_Layer: 0
   m_Name: Containers
@@ -235,100 +234,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &848942547
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 848942546}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: af1e5b9f37a5293cbb26bfc2b918609c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  testFixedList:
-    internalList:
-    - addition: 15
-      multiplier: 62
-    - addition: 14
-      multiplier: 98
-    - addition: 0
-      multiplier: 1
-    - addition: 15
-      multiplier: 62
-    - addition: 14
-      multiplier: 98
-    - addition: 0
-      multiplier: 1
-    - addition: 15
-      multiplier: 62
-    - addition: 14
-      multiplier: 98
-    - addition: 0
-      multiplier: 1
-  testActualList:
-  - addition: 15
-    multiplier: 62
-  - addition: 14
-    multiplier: 98
-  - addition: 0
-    multiplier: 1
-  - addition: 15
-    multiplier: 62
-  - addition: 14
-    multiplier: 98
-  - addition: 0
-    multiplier: 1
-  - addition: 15
-    multiplier: 62
-  - addition: 14
-    multiplier: 98
-  - addition: 0
-    multiplier: 1
-  testEnumDictionary:
-    editorDict:
-      keyValuePairs:
-      - key: 0
-        value: {fileID: 0}
-      - key: 1
-        value: {fileID: 0}
-      - key: 2
-        value: {fileID: 0}
-      - key: 21
-        value: {fileID: 0}
-      - key: -1
-        value: {fileID: 0}
-  testUnityDict:
-    keyValuePairs:
-    - key: This is a Dictionary.
-      value: 0
-    - key: Key
-      value: 0
-    - key: Key
-      value: 0
-    - key: uio
-      value: 0
-  testSelector:
-    selectionMode: 0
-    elements: []
-  testRange:
-    rangePattern: 1
-    singleValue: 0
-    scalarMin: 69
-    scalarMax: 420
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    perlinCrawlSpeed: 0.1
-    modifer:
-      addition: 0
-      multiplier: 1
-    unfoldedInInspector: 1
-    fixedSelectionInInspector: 0
 --- !u!4 &848942548
 Transform:
   m_ObjectHideFlags: 0
@@ -353,35 +258,53 @@ MonoBehaviour:
   m_GameObject: {fileID: 848942546}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1bfe076c153f589b59e6424fa8f78820, type: 3}
+  m_Script: {fileID: 11500000, guid: b37ab3fcae7baa4d2a3ab99e4b5353f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  autoAssign: 0
-  includeInactive: 0
-  autorun: 0
-  autoReset: 0
-  controlSwitchDelay: 0.2
-  maxSimultaneous: 3
-  currentSimultaneous: 0
-  manualControl: 0
-  controls: []
-  characterDelay:
-    rangePattern: 1
-    singleValue: 0.05
-    scalarMin: 0.05
-    scalarMax: 0.05
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    perlinCrawlSpeed: 0.1
-    modifer:
-      addition: 0
-      multiplier: 1
-    unfoldedInInspector: 0
-    fixedSelectionInInspector: 0
+  fixedListSimple:
+    internalList: 0f000000a2ffffff0000000000000000050000005800000001000000030000002d000000e7000000
+  fixedListComplex:
+    internalList:
+    - elements:
+      - selection: Bob
+        probability: 0.17
+      - selection: Mary
+        probability: 0.47
+      - selection: John
+        probability: 0.85
+    - elements:
+      - selection: Chris
+        probability: 0.9
+    - elements:
+      - selection: Mould Man
+        probability: 0.7
+      - selection: Eater of Greece
+        probability: 0.4
+      - selection: Stephan
+        probability: 0.52
+  unityDictionary:
+    keyValuePairs:
+    - key: Red
+      value: {r: 1, g: 0, b: 0, a: 1}
+    - key: Blue
+      value: {r: 0, g: 0, b: 1, a: 1}
+    - key: Green
+      value: {r: 0, g: 1, b: 0, a: 1}
+    - key: Yellow
+      value: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  enumDictionary:
+    editorDict:
+      keyValuePairs:
+      - key: 1
+        value: {r: 0, g: 1, b: 0, a: 1}
+      - key: 0
+        value: {r: 1, g: 0, b: 0, a: 1}
+      - key: 2
+        value: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+      - key: -1
+        value: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+      - key: 21
+        value: {r: 0.3019608, g: 0.36862746, b: 0.15294118, a: 1}
 --- !u!1 &2128805935
 GameObject:
   m_ObjectHideFlags: 0

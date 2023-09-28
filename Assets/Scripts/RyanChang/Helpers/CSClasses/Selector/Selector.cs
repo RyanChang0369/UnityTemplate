@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Allows for a selection of a certain thing with an assigned likelyhood.
+/// Allows for a selection of a certain thing with an assigned likelihood.
 /// </summary>
 [System.Serializable]
 public class Selector<T>
@@ -34,10 +34,11 @@ public class Selector<T>
 
 
     /// <summary>
-    /// Performs the selection
+    /// Performs the selection.
     /// </summary>
     /// <returns>The selection.</returns>
-    /// <exception cref="System.ArgumentException">If selection mode is invalid.</exception>
+    /// <exception cref="System.ArgumentException">If selection mode is
+    /// invalid.</exception>
     public IEnumerable<T> DoSelection()
     {
         switch (selectionMode)
@@ -63,21 +64,3 @@ public class Selector<T>
         }
     }
 }
-
-// /// <summary>
-// /// An element in selector.
-// /// </summary>
-// /// <typeparam name="T"></typeparam>
-// [System.Serializable]
-// public struct SelectorElement<T>
-// {
-//     [Tooltip("The thing that could be choosen.")]
-//     public T selection;
-
-//     [Tooltip("The likelyhood that this element will be selected. " +
-//         "This is not the actual mathematical probability. " +
-//         "The higher this value, the more likely it is to be selected. " +
-//         "Elements with probabilities of zero or less MAY be selected IF " +
-//         "no other elements exists with probabilities of 1 or greater.")]
-//     public float probability;
-// }
