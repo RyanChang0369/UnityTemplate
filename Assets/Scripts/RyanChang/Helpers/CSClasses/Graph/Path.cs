@@ -29,9 +29,9 @@ public class Path<T> : IEnumerable<Vertex<T>>,
             throw new PathfindingException($"start and end are the same: {start}");
 
         path = new();
-        this.Graph = graph;
-        this.Start = start;
-        this.End = end;
+        Graph = graph;
+        Start = start;
+        End = end;
 
         Count = 0;
 
@@ -72,10 +72,12 @@ public class Path<T> : IEnumerable<Vertex<T>>,
         }
     }
 
-    public void UpdatePath(Vertex<T> from, Vertex<T> to)
-    {
-        path[from] = to;
-    }
+    /// <summary>
+    /// Index by <typeparamref name="T"/>.
+    /// </summary>
+    /// <param name="key">The key.</param>
+    /// <returns>The vertex associated with the key.</returns>
+    public Vertex<T> this[T key] => Graph.GetVertex(key);
 
     /// <summary>
     /// Traverse to the next item in the path.
@@ -85,7 +87,7 @@ public class Path<T> : IEnumerable<Vertex<T>>,
     /// <returns></returns>
     public T Next(T begin)
     {
-        return path[Graph.GetVertex(begin)].id;
+        return this[begin].id;
     }
 
     /// <inheritdoc cref="Next(T)"/>
@@ -98,13 +100,18 @@ public class Path<T> : IEnumerable<Vertex<T>>,
         catch (KeyNotFoundException e)
         {
             var trailingEdge = path
-                .Where(e => e.Value == begin);
-            throw new PathfindingException($"Vertex {begin} is not in path.", e);
+                .FirstOrDefault(edge => edge.Value == begin);
+            throw new PathfindingException(
+                $"Vertex {begin} (trailing edge [{trailingEdge.Key}, {trailingEdge.Value}]) " +
+                "is not in path.",
+                e
+            );
         }
     }
 
     /// <summary>
-    /// Traverse to the next N items on the path.
+    /// Traverse to the next N items on the path. Stops traversal if we reach
+    /// the end of the path.
     /// </summary>
     /// <param name="steps">How many items to traverse?</param>
     /// <param name="stepsTaken">How many items were actually traversed before
@@ -172,6 +179,76 @@ public class Path<T> : IEnumerable<Vertex<T>>,
 
         return next;
     }
+
+    /// <summary>
+    /// Returns the length of the path from <paramref name="from"/> to <paramref
+    /// name="to"/>.
+    /// </summary>
+    /// <param name="from">The vertex to start iteration at.</param>
+    /// <param name="to">The vertex to stop iteration at.</param>
+    /// <returns></returns>
+    public int GetLength(Vertex<T> from, Vertex<T> to)
+    {
+        if (from == null)
+            throw new ArgumentNullException("Vertex from is null");
+        else if (to == null)
+            throw new ArgumentNullException("Vertex to is null");
+
+        int cnt = 1;
+
+        while (from != to)
+        {
+            cnt++;
+            from = Next(from);
+        }
+
+        return cnt;
+    }
+
+    /// <summary>
+    /// Returns the length of the path from <paramref name="from"/> to <see
+    /// cref="End"/>.
+    /// </summary>
+    /// <inheritdoc cref="GetLength(Vertex{T}, Vertex{T})"/>
+    public int GetLength(Vertex<T> from) => GetLength(from, End);
+
+    /// <summary>
+    /// Returns the length of the path from <see cref="Start"/> to <see
+    /// cref="End"/>.
+    /// </summary>
+    /// <inheritdoc cref="GetLength(Vertex{T}, Vertex{T})"/>
+    public int GetLength() => GetLength(Start, End);
+
+    // <summary>
+    /// Returns the length of the path from <paramref name="from"/> to <paramref
+    /// name="to"/>.
+    /// </summary>
+    /// <param name="from">The vertex to start iteration at.</param>
+    /// <param name="to">The vertex to stop iteration at.</param>
+    /// <returns></returns>
+    public int GetLength(T from, T to)
+    {
+        if (!Graph.TryGetVertex(from, out var fromV))
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(from),
+                $"{from} does not exist in the graph"
+            );
+        }
+
+        if (!Graph.TryGetVertex(to, out var toV))
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(to),
+                $"{to} does not exist in the graph"
+            );
+        }
+        
+        return GetLength(fromV, toV);
+    }
+
+    /// <inheritdoc cref="GetLength(Vertex{T})"/>
+    public int GetLength(T from) => GetLength(from, End.Value);
 
     /// <summary>
     /// Returns all the vertices along this path from <paramref name="from"/> to

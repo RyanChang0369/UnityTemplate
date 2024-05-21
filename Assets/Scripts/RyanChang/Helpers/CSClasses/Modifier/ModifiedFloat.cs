@@ -9,7 +9,7 @@ using UnityEngine;
 /// </summary>
 /// <seealso cref="ModifierChain"/>
 [System.Serializable]
-public class ModifierFloat
+public class ModifiedFloat : IModifiedValue
 {
     #region Variables
     [Tooltip("The initial value of this modifier float.")]
@@ -29,11 +29,11 @@ public class ModifierFloat
 
     #region Constructors
     /// <summary>
-    /// Constructs a new <see cref="ModifierFloat"/>.
+    /// Constructs a new <see cref="ModifiedFloat"/>.
     /// </summary>
     /// <param name="initialValue">The initial value for this <see
-    /// cref="ModifierFloat"/>.</param>
-    public ModifierFloat(float initialValue)
+    /// cref="ModifiedFloat"/>.</param>
+    public ModifiedFloat(float initialValue)
     {
         this.initialValue = initialValue;
     }

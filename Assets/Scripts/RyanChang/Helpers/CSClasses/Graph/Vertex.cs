@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using NaughtyAttributes;
 using UnityEngine;
 
@@ -17,6 +16,9 @@ public class Vertex<T> : ISerializationCallbackReceiver, IEquatable<Vertex<T>> w
     /// This is unique for each vertex and serves as its id. 
     /// </summary>
     public T id;
+
+    [SerializeField]
+    private List<PathNode> nodes;
 
     /// <summary>
     /// Dictionary of outgoing edges. <id, graph weight>.
@@ -72,6 +74,20 @@ public class Vertex<T> : ISerializationCallbackReceiver, IEquatable<Vertex<T>> w
     /// Degree of this vertex (number of outgoing edges).
     /// </summary>
     public int Degree => Adjacent.Count;
+
+    public List<PathNode> Nodes
+    {
+        get
+        {
+            nodes ??= new();
+            return nodes;
+        }
+        set
+        {
+            nodes ??= new();
+            nodes = value;
+        }
+    }
 
     public UnityDictionary<T, float> Adjacent
     {
@@ -211,7 +227,7 @@ public class Vertex<T> : ISerializationCallbackReceiver, IEquatable<Vertex<T>> w
     #region Generic Overrides
     public override string ToString()
     {
-        return $"Vertex: {id}";
+        return $"{id} [{sectionID}]";
     }
     public override int GetHashCode()
     {
