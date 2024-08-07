@@ -147,10 +147,9 @@ public class Tracer<T> where T : IEquatable<T>
 
     protected void ValidateFields()
     {
-        UnityObjectExt.LoadIfMissing(
-            ref tracerData,
-            "Pathfinding/Visual/DefaultTracerData"
-        );
+        Resources.
+            Load<GameObject>("Pathfinding/Visual/DefaultTracerData").
+            RequireComponent(out tracerData);
     }
     #endregion
 }

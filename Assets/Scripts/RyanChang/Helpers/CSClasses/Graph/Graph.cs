@@ -848,7 +848,7 @@ public class Graph<T> : ISerializationCallbackReceiver, IEnumerable<Vertex<T>>,
     {
         ValidateStartEnd(startID, endID, false, out Vertex<T> endV, out Vertex<T> startV);
 
-        PriorityQueue<Vertex<T>> unvisited = new();
+        PriorityQueue<float, Vertex<T>> unvisited = new();
 
         foreach (var v in Values)
         {
@@ -880,7 +880,7 @@ public class Graph<T> : ISerializationCallbackReceiver, IEnumerable<Vertex<T>>,
 
         while (unvisited.Count > 0)
         {
-            var currentPQE = unvisited.DequeueElement();
+            var currentPQE = unvisited.Dequeue();
             // Current vertex.
             var currentV = currentPQE.value;
             // Current ID of vertex.

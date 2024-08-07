@@ -7,7 +7,33 @@ using System.Linq;
 /// </summary>
 public static class EnumerableExt
 {
-    #region Index
+    #region Misc Collection
+    /// <summary>
+    /// Returns true if <see cref="collection"/> is null or contains no
+    /// elements.
+    /// </summary>
+    /// <param name="collection">The collection.</param>
+    public static bool IsNullOrEmpty<T>(this IEnumerable<T> collection) =>
+        collection == null || !collection.Any();
+
+    /// <inheritdoc cref="IsNullOrEmpty{T}(IEnumerable{T})"/>
+    public static bool IsNullOrEmpty<T>(this ICollection<T> collection) =>
+        collection == null || collection.Count == 0;
+
+    /// <summary>
+    /// Determines whether <see cref="collection"/> contains any elements.
+    /// </summary>
+    /// <inheritdoc cref="IsNullOrEmpty{T}(IEnumerable{T})"/>
+    public static bool IsEmpty<T>(this ICollection<T> collection) =>
+        collection.Count == 0;
+
+    /// <summary>
+    /// Determines whether <see cref="collection"/> contains none elements.
+    /// </summary>
+    /// <inheritdoc cref="IsNullOrEmpty{T}(IEnumerable{T})"/>
+    public static bool NotEmpty<T>(this ICollection<T> collection) =>
+        collection.Count > 0;
+
     /// <summary>
     /// Returns true if <paramref name="index"/> is a valid indexer into
     /// <paramref name="collection"/>. If <paramref name="collection"/> is null
@@ -25,6 +51,24 @@ public static class EnumerableExt
             return false;
 
         return index >= 0 && index < collection.Count();
+    }
+
+    /// <summary>
+    /// Returns true if <paramref name="index"/> is a valid indexer into
+    /// <paramref name="array"/>. If <paramref name="array"/> is null
+    /// or empty, returns false.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="array">The array to evaluate.</param>
+    /// <param name="index">The index to evaluate.</param>
+    /// <returns>True if <paramref name="index"/> is a valid indexer into
+    /// <paramref name="array"/>, false otherwise.</returns>
+    public static bool IndexInRange<T>(this T[] array, int index)
+    {
+        if (array == null)
+            return false;
+
+        return index >= 0 && index < array.Length;
     }
 
     /// <summary>
@@ -89,6 +133,30 @@ public static class EnumerableExt
     }
 
     /// <summary>
+    /// Returns either the element of <paramref name="list"/> at <paramref
+    /// name="index"/> if <paramref name="index"/> is within range of <paramref
+    /// name="list"/>, or null if it is not.
+    /// </summary>
+    public static T AtIndexOrNull<T>(this IList<T> list, int index)
+        where T : class => AtIndexOrValue(list, index, null);
+
+    /// <summary>
+    /// Returns either the element of <paramref name="list"/> at <paramref
+    /// name="index"/> if <paramref name="index"/> is within range of <paramref
+    /// name="list"/>, or the value of <paramref name="defaultValue"/> if it is
+    /// not. 
+    /// </summary>
+    public static T AtIndexOrValue<T>(this IList<T> list, int index, T defaultValue)
+    {
+        if (list == null || !list.IndexInRange(index))
+        {
+            return defaultValue;
+        }
+
+        return list[index];
+    }
+
+    /// <summary>
     /// If index is a valid index in list, then replace the element at index
     /// with obj. Otherwise, add obj to the list.
     /// </summary>
@@ -132,18 +200,41 @@ public static class EnumerableExt
 
     #region Dictionary
     /// <summary>
+    /// Attempts to retrieve the value of <typeparamref name="TVal"/> using
+    /// <typeparamref name="TKey"/>. Creates a new instance of <typeparamref
+    /// name="TVal"/> if the specified key does not exist in the provided
+    /// dictionary.
+    /// </summary>
+    /// <typeparam name="TKey">The key type.</typeparam>
+    /// <typeparam name="TVal">The member type.</typeparam>
+    /// <param name="dictionary">The provided dictionary.</param>
+    /// <param name="key">The specified key.</param>
+    /// <returns>The newly created or found instance of <typeparamref
+    /// name="TVal"/>.</returns>
+    public static TVal GetOrCreate<TKey, TVal>(this IDictionary<TKey,
+        TVal> dictionary, TKey key) where TVal : class, new()
+    {
+        if (!dictionary.ContainsKey(key) || dictionary[key] == null)
+        {
+            dictionary[key] = new();
+        }
+
+        return dictionary[key];
+    }
+
+    /// <summary>
     /// Tries to get the value from <paramref name="dictionary"/>. If found,
     /// returns that value. Otherwise, return the value assigned to <paramref
     /// name="defaultValue"/>.
     /// </summary>
     /// <typeparam name="TKey">The type of key in the dictionary.</typeparam>
     /// <typeparam name="TVal">The type of value in the dictionary.</typeparam>
-    /// <param name="dictionary"></param>
-    /// <param name="key"></param>
-    /// <param name="defaultValue"></param>
-    /// <returns></returns>
+    /// <returns>The value from <paramref name="dictionary"/>, or <paramref
+    /// name="defaultValue"/>.</returns>
+    /// <inheritdoc cref="GetOrCreate{TKey, TVal}(IReadOnlyDictionary{TKey,
+    /// TVal}, TKey)"/>
     public static TVal GetValueOrDefault<TKey, TVal>(
-        this IDictionary<TKey, TVal> dictionary,
+        this IReadOnlyDictionary<TKey, TVal> dictionary,
         TKey key, TVal defaultValue = default)
     {
         if (dictionary.TryGetValue(key, out TVal value))
@@ -155,36 +246,31 @@ public static class EnumerableExt
     }
 
     /// <summary>
-    /// Initializes an internal list in <paramref name="dictionary"/>.
+    /// Tries to get the value from <paramref name="dictionary"/>. If found,
+    /// returns that value. Otherwise, return <see cref="null"/>.
     /// </summary>
-    /// <typeparam name="K">Key type.</typeparam>
-    /// <typeparam name="T">List member object type.</typeparam>
-    /// <param name="dictionary">The dictionary of lists.</param>
-    /// <param name="key">The key for <paramref name="dictionary"/>.</typeparam>
-    public static void InitializeListInDictList<K, T>(
-        this IDictionary<K, List<T>> dictionary, K key)
-    {
-        if (!dictionary.ContainsKey(key))
-            dictionary[key] = new();
-        else
-            dictionary[key] ??= new();
-    }
+    /// <returns>The value from <paramref name="dictionary"/>, or
+    /// null.</returns>
+    /// <inheritdoc cref="GetValueOrDefault{TKey,
+    /// TVal}(IReadOnlyDictionary{TKey, TVal}, TKey, TVal)"/>
+    public static TVal GetValueOrNull<TKey, TVal>(
+        this IReadOnlyDictionary<TKey, TVal> dictionary,
+        TKey key) where TVal : class =>
+        GetValueOrDefault(dictionary, key, null);
 
     /// <summary>
-    /// Adds <paramref name="obj"/> to an internal list in a dictionary of lists
-    /// <paramref name="dictionary"/>.
+    /// Adds an addition to a list in the dictionary. Creates the list and adds
+    /// the addition if the specified key does not exist in the dictionary.
+    /// <typeparam name="TKey">The type of key to add.</typeparam>
+    /// <typeparam name="TVal">The type of value to add.</typeparam>
+    /// <param name="dict">The dictionary to add to.</param>
+    /// <param name="key">The specified key.</param>
+    /// <param name="value">What to add to the list.</param>
     /// </summary>
-    /// <typeparam name="K">Key type.</typeparam>
-    /// <typeparam name="T">Object to add type.</typeparam>
-    /// <param name="dictionary">The dictionary of lists.</param>
-    /// <param name="key">The key that targets the list to add to.</typeparam>
-    /// <param name="obj">The object to add to the list.</param>
-    public static void AddToDictList<K, T>(
-        this IDictionary<K, List<T>> dictionary, K key, T obj)
+    public static void AddToDictList<TKey, TVal>(this IDictionary<TKey,
+        List<TVal>> dict, TKey key, TVal value)
     {
-        dictionary.InitializeListInDictList(key);
-
-        dictionary[key].Add(obj);
+        dict.GetOrCreate(key).Add(value);
     }
 
     /// <summary>
@@ -192,32 +278,27 @@ public static class EnumerableExt
     /// dictionary of lists <paramref name="dictionary"/>. See <see
     /// cref="AddOrReplace{T}(IList{T}, T, int)"/>.
     /// </summary>
-    /// <typeparam name="K">Key type.</typeparam>
-    /// <typeparam name="T">Object to add type.</typeparam>
-    /// <param name="dictionary">The dictionary of lists.</param>
-    /// <param name="key">The key that targets the list to add to.</typeparam>
-    /// <param name="obj">The object to add to the list.</param>
+    /// <typeparam name="TKey">The type of key to add.</typeparam>
+    /// <typeparam name="TVal">The type of value to add.</typeparam>
+    /// <param name="dict">The dictionary of lists.</param>
+    /// <param name="key">The key that targets the list to add to. Must be
+    /// non-null.</typeparam>
+    /// <param name="obj">What to add to the list.</param>
     /// <param name="index">Index to add the object at.</param>
-    public static void AddOrReplaceToDictList<K, T>(
-        this IDictionary<K, List<T>> dictionary, K key, T obj, int index)
+    /// <param name="buffered">If true, add a buffer to the internal list. See
+    /// <see cref="AddOrReplaceWithBuffer{T}(IList{T}, T, int)"/></param>
+    public static void AddOrReplaceToDictList<TKey, TVal>(
+        this IDictionary<TKey, List<TVal>> dict, TKey key,
+        TVal obj, int index, bool buffered = false)
     {
-        dictionary.InitializeListInDictList(key);
-
-        dictionary[key].AddOrReplace(obj, index);
-    }
-    #endregion
-
-    #region Misc
-    /// <summary>
-    /// Returns true if <paramref name="collection"/> is null or contains no
-    /// elements.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="collection">Collection to check.</param>
-    /// <returns></returns>
-    public static bool IsNullOrEmpty<T>(this ICollection<T> collection)
-    {
-        return collection == null || collection.Count <= 0;
+        if (buffered)
+        {
+            dict.GetOrCreate(key).AddOrReplaceWithBuffer(obj, index);
+        }
+        else
+        {
+            dict.GetOrCreate(key).AddOrReplace(obj, index);
+        }
     }
     #endregion
 }

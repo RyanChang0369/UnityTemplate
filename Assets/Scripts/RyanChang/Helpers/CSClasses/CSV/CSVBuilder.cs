@@ -27,7 +27,7 @@ public class CSVBuilder
     /// <param name="data">The data.</param>
     public void Add(string header, string data)
     {
-        internalData.CreateAndAddList(header, data);
+        internalData.AddToDictList(header, data);
     }
 
     /// <summary>
@@ -73,10 +73,10 @@ public class CSVBuilder
             }
         }
 
-        var headers = keys.Select(k => $"{headerPrefix}.{k.ToString()}");
-        string headerStr = String.Join(", ", headers);
+        var headers = keys.Select(k => $"{headerPrefix}.{k}");
+        string headerStr = string.Join(", ", headers);
 
-        return $"{headerStr}\r\n{sb.ToString()}";
+        return $"{headerStr}\r\n{sb}";
     }
     #endregion
 }

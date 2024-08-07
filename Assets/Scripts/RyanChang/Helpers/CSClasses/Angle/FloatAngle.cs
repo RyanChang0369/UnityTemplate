@@ -131,7 +131,7 @@ public class FloatAngle
             _ => value.AsPlusMinusPi()
         };
     }
-    
+
     /// <summary>
     /// Gets the direction to other. +1 for counterclockwise,
     /// -1 for clockwise

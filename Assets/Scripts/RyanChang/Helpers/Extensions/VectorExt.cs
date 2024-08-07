@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using static NumericalExt;
 using System.Linq;
 
 /// <summary>
@@ -39,6 +40,7 @@ public static class VectorExt
         Y,
         Z,
     }
+
     #region Conversion
     /// <summary>
     /// Converts from a Vector2, v2, to a Vector3, v3.
@@ -101,12 +103,12 @@ public static class VectorExt
     /// <param name="v">The Vector3 to convert.</param>
     /// <returns>The converted Vector3Int.</returns>
     public static Vector3Int ToVector3Int(this Vector3 v,
-        NumericalExt.RoundMode mode = NumericalExt.RoundMode.NearestInt)
+        RoundMode mode = RoundMode.NearestInt)
     {
         return new(
-            v.x.Round(mode),
-            v.y.Round(mode),
-            v.z.Round(mode)
+            v.x.RoundToInt(mode),
+            v.y.RoundToInt(mode),
+            v.z.RoundToInt(mode)
         );
     }
 
@@ -116,11 +118,11 @@ public static class VectorExt
     /// <param name="v">The Vector2 to convert.</param>
     /// <returns>The converted Vector2Int.</returns>
     public static Vector2Int ToVector2Int(this Vector2 v,
-    NumericalExt.RoundMode mode = NumericalExt.RoundMode.NearestInt)
+        RoundMode mode = RoundMode.NearestInt)
     {
         return new(
-            v.x.Round(mode),
-            v.y.Round(mode)
+            v.x.RoundToInt(mode),
+            v.y.RoundToInt(mode)
         );
     }
 
@@ -368,13 +370,24 @@ public static class VectorExt
         );
     }
 
-    /// <inheritdoc cref="WithMaxComponents(Vector3[])"/>
+    /// <inheritdoc cref="WithMaxComponents(Vector2[])"/>
     public static Vector3Int WithMaxComponents(params Vector3Int[] vertices)
     {
         return new(
             vertices.Max(v => v.x),
             vertices.Max(v => v.y),
             vertices.Max(v => v.z)
+        );
+    }
+
+    /// <inheritdoc cref="WithMaxComponents(Vector2[])"/>
+    public static Vector4 WithMaxComponents(params Vector4[] vertices)
+    {
+        return new(
+            vertices.Max(v => v.x),
+            vertices.Max(v => v.y),
+            vertices.Max(v => v.z),
+            vertices.Max(v => v.w)
         );
     }
     #endregion
@@ -615,6 +628,59 @@ public static class VectorExt
     }
     #endregion
 
+    #region Rounding
+    /// <summary>
+    /// Rounds the vector to a Vector2Int.
+    /// </summary>
+    /// <inheritdoc cref="NumericalExt.RoundToInt(float, RoundMode)"/>
+    public static Vector2Int RoundToInt(this Vector2 vector,
+        RoundMode mode = RoundMode.NearestInt) => new(
+        vector[0].RoundToInt(mode),
+        vector[1].RoundToInt(mode)
+    );
+
+    /// <summary>
+    /// Rounds the vector to the specified number of digits.
+    /// </summary>
+    /// <inheritdoc cref="NumericalExt.Round(float, int)"/>
+    public static Vector2 Round(this Vector2 vector, int digits = 0) => new(
+        vector[0].Round(digits),
+        vector[1].Round(digits)
+    );
+
+    /// <summary>
+    /// Rounds the vector to a Vector3Int.
+    /// </summary>
+    /// <inheritdoc cref="NumericalExt.RoundToInt(float, RoundMode)"/>
+    public static Vector3Int RoundToInt(this Vector3 vector,
+        RoundMode mode = RoundMode.NearestInt) => new(
+        vector[0].RoundToInt(mode),
+        vector[1].RoundToInt(mode),
+        vector[2].RoundToInt(mode)
+    );
+
+    /// <summary>
+    /// Rounds the vector to the specified number of digits.
+    /// </summary>
+    /// <inheritdoc cref="NumericalExt.Round(float, int)"/>
+    public static Vector3 Round(this Vector3 vector, int digits = 0) => new(
+        vector[0].Round(digits),
+        vector[1].Round(digits),
+        vector[2].Round(digits)
+    );
+
+    /// <summary>
+    /// Rounds the vector to the specified number of digits.
+    /// </summary>
+    /// <inheritdoc cref="NumericalExt.Round(float, int)"/>
+    public static Vector4 Round(this Vector4 vector, int digits = 0) => new(
+        vector[0].Round(digits),
+        vector[1].Round(digits),
+        vector[2].Round(digits),
+        vector[3].Round(digits)
+    );
+    #endregion
+
     #region Trig
     /// <summary>
     /// Rotates a vector by theta degrees
@@ -631,6 +697,68 @@ public static class VectorExt
 
         return new Vector2(cos * oldX - sin * oldY, sin * oldX + cos * oldY);
     }
+    #endregion
+
+    #region Multiplication/Scale
+    /// <summary>
+    /// Multiplies <paramref name="factor1"/> and <paramref name="factor2"/>
+    /// component-wise.
+    /// </summary>
+    /// <param name="factor1">The first vector factor.</param>
+    /// <param name="factor2">The second vector factor.</param>
+    /// <returns>The vector resulting from the component-wise
+    /// multiplication.</returns>
+    public static Vector2 Scale(this Vector2 factor1, Vector2 factor2) =>
+        Vector2.Scale(factor1, factor2);
+
+    /// <inheritdoc cref="Scale(Vector2, Vector2)"/>
+    public static Vector3 Scale(this Vector3 factor1, Vector3 factor2) =>
+        Vector3.Scale(factor1, factor2);
+
+    /// <inheritdoc cref="Scale(Vector2, Vector2)"/>
+    public static Vector4 Scale(this Vector4 factor1, Vector4 factor2) =>
+        Vector4.Scale(factor1, factor2);
+
+    public static Vector2Int Scale(this Vector2Int factor1, Vector2Int factor2) =>
+        Vector2Int.Scale(factor1, factor2);
+
+    /// <inheritdoc cref="Scale(Vector2, Vector2)"/>
+    public static Vector3Int Scale(this Vector3Int factor1, Vector3Int factor2) =>
+        Vector3Int.Scale(factor1, factor2);
+    #endregion
+
+    #region Division/Descale
+    /// <summary>
+    /// Divides <paramref name="dividend"/> by <paramref name="divisor"/>
+    /// component-wise.
+    /// </summary>
+    /// <param name="dividend">The vector being divided.</param>
+    /// <param name="divisor">The vector doing the dividing.</param>
+    /// <returns>The vector resulting from the component-wise
+    /// division.</returns>
+    public static Vector2 Descale(this Vector2 dividend, Vector2 divisor) =>
+        new(dividend.x / divisor.x, dividend.y / divisor.y);
+
+    /// <inheritdoc cref="Descale(Vector2, Vector2)"/>
+    public static Vector2Int Descale(this Vector2Int dividend,
+        Vector2Int divisor) =>
+        new(dividend.x / divisor.x, dividend.y / divisor.y);
+
+    /// <inheritdoc cref="Descale(Vector2, Vector2)"/>
+    public static Vector3 Descale(this Vector3 dividend, Vector3 divisor) =>
+        new(dividend.x / divisor.x, dividend.y / divisor.y,
+            dividend.z / divisor.z);
+
+    /// <inheritdoc cref="Descale(Vector2, Vector2)"/>
+    public static Vector3Int Descale(this Vector3Int dividend,
+        Vector3Int divisor) =>
+        new(dividend.x / divisor.x, dividend.y / divisor.y,
+            dividend.z / divisor.z);
+
+    /// <inheritdoc cref="Descale(Vector2, Vector2)"/>
+    public static Vector4 Descale(this Vector4 dividend, Vector4 divisor) =>
+        new(dividend.x / divisor.x, dividend.y / divisor.y,
+            dividend.z / divisor.z, dividend.w / divisor.w);
     #endregion
 
     #region Distance

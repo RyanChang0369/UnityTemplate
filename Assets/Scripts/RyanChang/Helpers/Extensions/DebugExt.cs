@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Assertions;
 
 /// <summary>
 /// Contains methods pertaining to debug drawing, gizmos drawing, and other
@@ -183,7 +186,7 @@ public static class DebugExt
         {
             DrawLine(corners[i - 1], corners[i], primaryColor);
         }
-        DrawLine(corners[0], corners[corners.Length - 1], primaryColor);
+        DrawLine(corners[0], corners[^1], primaryColor);
 
         // Draw cross
         DrawLine(corners[0], corners[2], secondaryColor);
@@ -201,7 +204,7 @@ public static class DebugExt
         {
             DrawLine(corners[i - 1], corners[i], primaryColor);
         }
-        DrawLine(corners[0], corners[corners.Length - 1], primaryColor);
+        DrawLine(corners[0], corners[^1], primaryColor);
 
         // Other corners
         DrawLine(corners[1], corners[6], primaryColor);
@@ -245,11 +248,11 @@ public static class DebugExt
         // Define corners
         Vector3[] corners = {
             // First face
-            new Vector3(half, half, 0),
-            new Vector3(-half, half, 0),
-            new Vector3(-half, -half, 0),
-            new Vector3(half, -half, 0),
-            new Vector3(half, half, 0),
+            new(half, half, 0),
+            new(-half, half, 0),
+            new(-half, -half, 0),
+            new(half, -half, 0),
+            new(half, half, 0),
         };
 
         // Apply rotation, then transformation.
@@ -287,17 +290,17 @@ public static class DebugExt
         // Define corners
         Vector3[] corners = {
             // First face
-            new Vector3(half, half, half),
-            new Vector3(-half, half, half),
-            new Vector3(-half, -half, half),
-            new Vector3(half, -half, half),
-            new Vector3(half, half, half),
+            new(half, half, half),
+            new(-half, half, half),
+            new(-half, -half, half),
+            new(half, -half, half),
+            new(half, half, half),
             //Cross over to other face
-            new Vector3(half, half, -half),
-            new Vector3(-half, half, -half),
-            new Vector3(-half, -half, -half),
-            new Vector3(half, -half, -half),
-            new Vector3(half, half, -half),
+            new(half, half, -half),
+            new(-half, half, -half),
+            new(-half, -half, -half),
+            new(half, -half, -half),
+            new(half, half, -half),
         };
 
         // Apply rotation, then transformation.
@@ -328,14 +331,14 @@ public static class DebugExt
     /// <param name="max">Maximum corner of the rectangle.</param>
     /// <param name="rotation">Rotation of the drawn object.</param>
     public static void DrawCrossRect(Vector2 min, Vector2 max,
-        Quaternion rotation)
+        Quaternion rotation, float y = 0)
     {
         // Define corners
         Vector3[] corners = {
-            new Vector2(max.x, max.y).ToVector3(),
-            new Vector2(min.x, max.y).ToVector3(),
-            new Vector2(min.x, min.y).ToVector3(),
-            new Vector2(max.x, min.y).ToVector3()
+            new(max.x, y, max.y),
+            new(min.x, y, max.y),
+            new(min.x, y, min.y),
+            new(max.x, y, min.y)
         };
 
         // Center rect at origin, rotate, then transform back to original
@@ -354,9 +357,9 @@ public static class DebugExt
     /// </summary>
     /// <param name="min">Minimum corner of the rectangle.</param>
     /// <param name="max">Maximum corner of the rectangle.</param>
-    public static void DrawCrossRect(Vector2 min, Vector2 max)
+    public static void DrawCrossRect(Vector2 min, Vector2 max, float y = 0)
     {
-        DrawCrossRect(min, max, Quaternion.identity);
+        DrawCrossRect(min, max, Quaternion.identity, y);
     }
 
     /// <summary>
@@ -364,16 +367,14 @@ public static class DebugExt
     /// </summary>
     /// <param name="rect">Rectangle to draw.</param>
     /// <param name="rotation">Rotation of the drawn object.</param>
-    public static void DrawCrossRect(Rect rect, Quaternion rotation)
+    public static void DrawCrossRect(Rect rect, Quaternion rotation, float y = 0)
     {
-        Vector2 max = rect.max, min = rect.min;
-
         // Define corners
         Vector3[] corners = {
-            new Vector2(max.x, max.y).ToVector3(),
-            new Vector2(min.x, max.y).ToVector3(),
-            new Vector2(min.x, min.y).ToVector3(),
-            new Vector2(max.x, min.y).ToVector3()
+            new(rect.xMax, y, rect.yMax),
+            new(rect.xMin, y, rect.yMax),
+            new(rect.xMin, y, rect.yMin),
+            new(rect.xMax, y, rect.yMin)
         };
 
         // Center rect at origin, rotate, then transform back to original
@@ -391,9 +392,9 @@ public static class DebugExt
     /// Draws a crossed rectangle.
     /// </summary>
     /// <param name="rect">Rectangle to draw.</param>
-    public static void DrawCrossRect(Rect rect)
+    public static void DrawCrossRect(Rect rect, float y = 0)
     {
-        DrawCrossRect(rect, Quaternion.identity);
+        DrawCrossRect(rect, Quaternion.identity, y);
     }
     #endregion
 
@@ -411,17 +412,17 @@ public static class DebugExt
         // Define corners
         Vector3[] corners = {
             // First face
-            new Vector3(max.x, max.y, max.z),
-            new Vector3(min.x, max.y, max.z),
-            new Vector3(min.x, min.y, max.z),
-            new Vector3(max.x, min.y, max.z),
-            new Vector3(max.x, max.y, max.z),
+            new(max.x, max.y, max.z),
+            new(min.x, max.y, max.z),
+            new(min.x, min.y, max.z),
+            new(max.x, min.y, max.z),
+            new(max.x, max.y, max.z),
             //Cross over to other face
-            new Vector3(max.x, max.y, min.z),
-            new Vector3(min.x, max.y, min.z),
-            new Vector3(min.x, min.y, min.z),
-            new Vector3(max.x, min.y, min.z),
-            new Vector3(max.x, max.y, min.z),
+            new(max.x, max.y, min.z),
+            new(min.x, max.y, min.z),
+            new(min.x, min.y, min.z),
+            new(max.x, min.y, min.z),
+            new(max.x, max.y, min.z),
         };
 
         // Center rect at origin, rotate, then transform back to original
@@ -444,8 +445,8 @@ public static class DebugExt
         DrawCrossBounds(bounds, Quaternion.identity);
     }
 
-    /// <inheritdoc cref="DrawCrossBounds(Bounds, Quaternion)"/>
-    private static void DrawCrossBounds(BoundsInt bounds, Quaternion rotation)
+	/// <inheritdoc cref="DrawCrossBounds(Bounds, Quaternion)"/>
+    public static void DrawCrossBounds(BoundsInt bounds, Quaternion rotation)
     {
         DrawCrossBounds(bounds.ToBounds(), rotation);
     }
@@ -457,5 +458,66 @@ public static class DebugExt
         DrawCrossBounds(bounds, Quaternion.identity);
     }
     #endregion
+    #endregion
+
+    #region Print to Console
+    /// <summary>
+    /// Only log messages flagged with one of the flags defined in the
+    /// whitelist.
+    /// </summary>
+    public static DebugGroup Whitelist { get; set; }
+
+    /// <inheritdoc cref="Whitelist"/>
+    [Flags]
+    public enum DebugGroup
+    {
+        GameState           = 0b00000001,
+        ArtificialPlayer    = 0b00000010,
+        GenomeAndFish       = 0b00001000,
+        Config              = 0b00010000,
+        Tower               = 0b00100000,
+        Briefing            = 0b01000000,
+    }
+
+    /// <inheritdoc cref="Debug.Log(object, Object)"/>
+    /// <param name="grouping">Type of message to log, filtered by <see
+    /// cref="Whitelist"/>.</param>
+    public static void Log(
+        this UnityEngine.Object context, DebugGroup grouping, string message)
+    {
+        if (Whitelist.HasAnyFlag(grouping))
+        {
+            Debug.Log($"{grouping}: {message}", context);
+        }
+    }
+
+    /// <inheritdoc cref="Log(Object, DebugGroup, string)"/>
+    public static void Log(DebugGroup grouping, string message) =>
+        Log(null, grouping, message);
+    #endregion
+
+    #region Assertions
+    /// <summary>
+    /// Determines if all elements in <paramref name="collection"/> meets
+    /// <paramref name="condition"/>.
+    /// </summary>
+    /// <param name="collection">Collection to test.</param>
+    /// <param name="condition">Condition each element in <paramref
+    /// name="collection"/> must pass. An element passes if this returns true,
+    /// and fails otherwise.</param>
+    /// <param name="message">Message to display if assertion fails.</param>
+    /// <typeparam name="T"></typeparam>
+    public static void AssertAll<T>(this IEnumerable<T> collection,
+        Func<T, bool> condition, string message = "")
+    {
+        foreach (var item in collection)
+        {
+            if (!condition(item))
+            {
+                throw new AssertionException(
+                    $"AssertAll failed on {item} in {collection}", message);
+            }
+        }
+    }
     #endregion
 }

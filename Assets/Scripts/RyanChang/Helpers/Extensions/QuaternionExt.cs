@@ -34,4 +34,12 @@ public static class QuaternionExt
                 maxSpeed, deltaTime)
         );
     }
+
+    /// <inheritdoc cref="Quaternion.Euler(Vector3)"/>
+    /// <param name="euler">The euler angles to convert to a quaternion.</param>
+    /// <remarks>
+    /// Convenience function for <see cref="Quaternion.Euler(Vector3)"/>.
+    /// </remarks>
+    public static Quaternion ToEuler(this Vector3 euler) =>
+        Quaternion.Euler(euler);
 }

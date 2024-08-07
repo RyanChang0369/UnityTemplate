@@ -93,11 +93,11 @@ public class ModifierChain
     /// <summary>
     /// Modifies the input using the chain.
     /// </summary>
-    /// <param name="input"></param>
+    /// <param name="input">The float to be modified.</param>
     /// <returns></returns>
     public float Modify(float input)
     {
-        if (cacheDirty || !cache.Approx(input))
+        if (cacheDirty)
         {
             cache = input;
 

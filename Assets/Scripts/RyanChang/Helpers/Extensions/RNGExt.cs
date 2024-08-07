@@ -5,11 +5,12 @@ using UnityEngine;
 
 public static class RNGExt
 {
-    private static System.Random RNGNum = new System.Random();
+    private static readonly System.Random RNGNum = new();
 
     #region Integer
     /// <summary>
-    /// Returns an integer ranging from minValue, inclusive, to maxValue, exclusive.
+    /// Returns an integer ranging from minValue, inclusive, to maxValue,
+    /// exclusive.
     /// </summary>
     /// <returns>An integer ranging from minValue to maxValue - 1.</returns>
     public static int RandomInt(int minVal, int maxVal)
@@ -29,10 +30,23 @@ public static class RNGExt
     /// <summary>
     /// Alias for <see cref="System.Random.Next"/>.
     /// </summary>
-    /// <returns>An integer ranging from 0 to <see cref="Int32.MaxValue"/>.</returns>
+    /// <returns>An integer ranging from 0 to <see
+    /// cref="Int32.MaxValue"/>.</returns>
     public static int RandomInt()
     {
         return RNGNum.Next();
+    }
+    #endregion
+
+    #region Boolean
+    /// <summary>
+    /// Returns a random boolean value.
+    /// </summary>
+    /// <returns>The random boolean value, either true (1) or false
+    /// (0).</returns>
+    public static bool RandomBool()
+    {
+        return RandomInt() % 2 == 0;
     }
     #endregion
 
@@ -49,7 +63,8 @@ public static class RNGExt
     /// <summary>
     /// Returns a double ranging from 0, inclusive, to maxValue, exclusive.
     /// </summary>
-    /// <returns>A double ranging from 0, inclusive, to maxValue, exclusive.</returns>
+    /// <returns>A double ranging from 0, inclusive, to maxValue,
+    /// exclusive.</returns>
     public static double RandomDouble(double maxVal)
     {
         return RandomDouble(0, maxVal);
@@ -67,9 +82,11 @@ public static class RNGExt
 
     #region Float
     /// <summary>
-    /// Returns a float ranging from minValue, inclusive, to maxValue, exclusive.
+    /// Returns a float ranging from minValue, inclusive, to maxValue,
+    /// exclusive.
     /// </summary>
-    /// <returns>A float ranging from minValue, inclusive, to maxValue, exclusive.</returns>
+    /// <returns>A float ranging from minValue, inclusive, to maxValue,
+    /// exclusive.</returns>
     public static float RandomFloat(float minVal, float maxVal)
     {
         return (float)(RNGNum.NextDouble() * (maxVal - minVal) + minVal);
@@ -78,7 +95,8 @@ public static class RNGExt
     /// <summary>
     /// Returns a float ranging from 0, inclusive, to maxValue, exclusive.
     /// </summary>
-    /// <returns>A float ranging from minValue, inclusive, to maxValue, exclusive.</returns>
+    /// <returns>A float ranging from minValue, inclusive, to maxValue,
+    /// exclusive.</returns>
     public static float RandomFloat(float maxVal)
     {
         return RandomFloat(0, maxVal);
@@ -119,12 +137,10 @@ public static class RNGExt
     /// <summary>
     /// Returns a Vector2 with both components ranging from min to max.
     /// </summary>
-    /// <param name="min">
-    /// Minimum value of the x and y components, inclusive.
-    /// </param>
-    /// <param name="max">
-    /// Maximum value of the x and y components, exclusive.
-    /// </param>
+    /// <param name="min">Minimum value of the x and y components,
+    /// inclusive.</param>
+    /// <param name="max">Maximum value of the x and y components,
+    /// exclusive.</param>
     /// <returns>A random Vector2.</returns>
     public static Vector2 RandomVector2(float min, float max)
     {
@@ -135,12 +151,10 @@ public static class RNGExt
     /// Returns a random Vector2 with components ranging between the respective
     /// components of min and max.
     /// </summary>
-    /// <param name="min">
-    /// The lower bound of the random Vector2, inclusive.
-    /// </param>
-    /// <param name="max">
-    /// The upper bound of the random Vector2, exclusive.
-    /// </param>
+    /// <param name="min">The lower bound of the random Vector2,
+    /// inclusive.</param>
+    /// <param name="max">The upper bound of the random Vector2,
+    /// exclusive.</param>
     /// <returns>A random Vector2.</returns>
     public static Vector2 RandomVector2(Vector2 min, Vector2 max)
     {
@@ -169,7 +183,7 @@ public static class RNGExt
     /// </summary>
     /// <param name="rect">The bounds.</param>
     /// <returns></returns>
-    public static Vector2 RandomVector2(Rect rect)
+    public static Vector2 WithinRect(this Rect rect)
     {
         return RandomVector2(rect.min.x, rect.min.y, rect.max.x,
             rect.max.y);
@@ -241,10 +255,9 @@ public static class RNGExt
     }
 
     /// <summary>
-    /// Returns a random Vector3 with
-    /// the x component ranging from minX to maxX, 
-    /// the y component ranging from minY to maxY, and
-    /// the z component ranging from minZ to maxZ.
+    /// Returns a random Vector3 with the x component ranging from minX to maxX,
+    /// the y component ranging from minY to maxY, and the z component ranging
+    /// from minZ to maxZ.
     /// </summary>
     /// <param name="minX">Minimum value of the x component, inclusive.</param>
     /// <param name="minY">Minimum value of the y component, inclusive.</param>
@@ -269,11 +282,161 @@ public static class RNGExt
     /// </summary>
     /// <param name="bounds">The bounds.</param>
     /// <returns></returns>
-    public static Vector3 RandomVector3(Bounds bounds)
+    public static Vector3 WithinBounds(Bounds bounds)
     {
         return RandomVector3(bounds.min.x, bounds.min.y, bounds.max.z,
             bounds.max.x, bounds.max.y, bounds.max.z);
     }
+    #endregion
+
+    #region Vector4
+    /// <summary>
+    /// Returns a Vector4 with all components ranging from -val (inclusive) to
+    /// val (exclusive).
+    /// </summary>
+    /// <param name="val">The bounds of the Vector4.</param>
+    /// <returns>A random Vector4.</returns>
+    public static Vector4 RandomVector4(float val)
+    {
+        return RandomVector4(-val, val);
+    }
+
+    /// <summary>
+    /// Returns a Vector4 with all components ranging between min and max.
+    /// </summary>
+    /// <param name="min">
+    /// Minimum value of the x, y, z, and w components, inclusive.
+    /// </param>
+    /// <param name="max">
+    /// Maximum value of the x, y, z, and w components, exclusive.
+    /// </param>
+    /// <returns>A random Vector4.</returns>
+    public static Vector4 RandomVector4(float min, float max)
+    {
+        return RandomVector4(min, min, min, min, max, max, max, max);
+    }
+
+    /// <summary>
+    /// Returns a random Vector4 with components ranging between the respective
+    /// components of min and max.
+    /// </summary>
+    /// <param name="min">The lower bound of the random Vector4,
+    /// inclusive.</param>
+    /// <param name="max">The upper bound of the random Vector4,
+    /// exclusive.</param>
+    /// <returns>A random Vector4.</returns>
+    public static Vector4 RandomVector4(Vector4 min, Vector4 max)
+    {
+        return RandomVector4(min.x, min.y, min.z, min.w,
+            max.x, max.y, max.z, max.w);
+    }
+
+    /// <summary>
+    /// Returns a random Vector4 with the x component ranging from <paramref
+    /// name="minX"/> to <paramref name="maxX"/>, the y component ranging from
+    /// <paramref name="minY"/> to <paramref name="maxY"/>, the z component
+    /// ranging from <paramref name="minZ"/> to <paramref name="maxZ"/>, and the
+    /// w component ranging from <paramref name="minW"/> to <paramref
+    /// name="maxW"/>.
+    /// </summary>
+    /// <param name="minX">Minimum value of the x component, inclusive.</param>
+    /// <param name="minY">Minimum value of the y component, inclusive.</param>
+    /// <param name="minZ">Minimum value of the z component, inclusive.</param>
+    /// <param name="minW">Minimum value of the w component, inclusive.</param>
+    /// <param name="maxX">Maximum value of the x component, exclusive.</param>
+    /// <param name="maxY">Maximum value of the y component, exclusive.</param>
+    /// <param name="maxZ">Maximum value of the z component, exclusive.</param>
+    /// <param name="maxW">Maximum value of the w component, exclusive.</param>
+    /// <returns>A random Vector4.</returns>
+    public static Vector4 RandomVector4(float minX, float minY,
+        float minZ, float minW, float maxX, float maxY, float maxZ, float maxW)
+    {
+        return new Vector4(
+            RandomFloat(minX, maxX),
+            RandomFloat(minY, maxY),
+            RandomFloat(minZ, maxZ),
+            RandomFloat(minW, maxW)
+            );
+    }
+    #endregion
+
+    #region Rect
+    /// <summary>
+    /// Generates a rectangle with random components.
+    /// </summary>
+    /// <param name="minX">Minimum value of the x component, inclusive.</param>
+    /// <param name="minY">Minimum value of the y component, inclusive.</param>
+    /// <param name="minWidth">Minimum value of the width component,
+    /// inclusive.</param>
+    /// <param name="minHeight">Minimum value of the height component,
+    /// inclusive.</param>
+    /// <param name="maxX">Maximum value of the x component, exclusive.</param>
+    /// <param name="maxY">Maximum value of the y component, exclusive.</param>
+    /// <param name="maxWidth">Maximum value of the width component,
+    /// exclusive.</param>
+    /// <param name="maxHeight">Maximum value of the height component,
+    /// exclusive.</param>
+    /// <returns>The random rectangle.</returns>
+    public static Rect RandomRect(
+        float minX, float minY, float minWidth, float minHeight,
+        float maxX, float maxY, float maxWidth, float maxHeight) =>
+        new(
+            RandomFloat(minX, maxX),
+            RandomFloat(minY, maxY),
+            RandomFloat(minWidth, maxWidth),
+            RandomFloat(minHeight, maxHeight)
+        );
+
+    /// <inheritdoc cref="RandomRect(float, float, float, float, float, float,
+    /// float, float)"/>
+    /// <summary>
+    /// Generates a random rectangle that lies between the rectangle bounded by
+    /// <paramref name="minimum"/> and <paramref name="maximum"/>.
+    /// </summary>
+    /// <param name="minimum">The lower bound.</param>
+    /// <param name="maximum">The higher bound.</param>
+    public static Rect RandomRect(Vector2 minimum, Vector2 maximum)
+    {
+        var lowerX = Mathf.Min(minimum.x, maximum.x);
+        var lowerY = Mathf.Min(minimum.y, maximum.y);
+        var higherX = Mathf.Max(minimum.x, maximum.x);
+        var higherY = Mathf.Max(minimum.y, maximum.y);
+
+        return RandomRect(
+            lowerX, lowerY, 0, 0,
+            higherX, higherY, higherX - lowerX, higherY - lowerY
+        );
+    }
+
+    /// <inheritdoc cref="RandomRect(float, float, float, float, float, float,
+    /// float, float)"/>
+    /// <summary>
+    /// Generates a random rectangle that lies within <paramref name="bound"/>.
+    /// </summary>
+    /// <param name="bound">The bounds of the random rectangle.</param>
+    public static Rect RandomRect(Rect bound) =>
+        RandomRect(bound.min, bound.max);
+    #endregion
+
+    #region Byte
+    /// <summary>
+    /// Gets a random byte string.
+    /// </summary>
+    /// <param name="bytes">How many bytes of RNG to generate?</param>
+    /// <returns></returns>
+    public static byte[] RandomHash(int bytes = 16)
+    {
+        byte[] arr = new byte[bytes];
+        RNGNum.NextBytes(arr);
+        return arr;
+    }
+
+    /// <inheritdoc cref="RandomHash(int)"/>
+    /// <summary>
+    /// Gets a random byte string as a hexadecimal hash.
+    /// </summary>
+    public static string RandomHashString(int bytes = 16) =>
+        BitConverter.ToString(RandomHash(bytes)).Replace("-", "");
     #endregion
 
     #region IEnumerable & Related
@@ -295,12 +458,15 @@ public static class RNGExt
         return values.ElementAt(RandomInt(length));
     }
 
+    /// <inheritdoc cref="GetRandomValue{T}(IEnumerable{T}, bool)"/>
+    public static T GetRandomValue<T>(params T[] values) =>
+        values.GetRandomValue();
+
+    /// <inheritdoc cref="GetRandomValue{T}(IEnumerable{T}, bool)"/>
     /// <summary>
-    /// Returns a random value from the provided enumeration of values.
-    /// Alias for <see cref="GetRandomValue"/>.
+    /// Returns a random value from the provided enumeration of values. Alias
+    /// for <see cref="GetRandomValue{T}(IEnumerable{T}, bool)"/>.
     /// </summary>
-    /// <param name="defaultOK">If true, then return default value if values
-    /// length is 0. Else throw an index error.</param>
     public static T RandomSelectOne<T>(this IEnumerable<T> values,
         bool defaultOK = true)
     {
@@ -312,7 +478,8 @@ public static class RNGExt
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="objs"></param>
-    /// <param name="key">How to get to the percentage [0-1] from any obj.</param>
+    /// <param name="key">How to get to the percentage [0-1] from any
+    /// obj.</param>
     /// <returns></returns>
     public static IEnumerable<T> RandomSelectMany<T>(this IEnumerable<T> objs,
         Func<T, float> key)
@@ -372,7 +539,8 @@ public static class RNGExt
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="objs"></param>
-    /// <param name="key">How to get to the percentage [0-1] from any obj.</param>
+    /// <param name="key">How to get to the percentage [0-1] from any
+    /// obj.</param>
     /// <returns></returns>
     public static T RandomSelectOne<T>(this IEnumerable<T> objs, Func<T, float> key)
     {
@@ -402,9 +570,7 @@ public static class RNGExt
         {
             n--;
             int k = RandomInt(n + 1);
-            T value = list[k];
-            list[k] = list[n];
-            list[n] = value;
+            (list[n], list[k]) = (list[k], list[n]);
         }
     }
 

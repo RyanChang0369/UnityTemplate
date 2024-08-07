@@ -1,7 +1,9 @@
 using System.Collections;
+using IOPath = System.IO.Path;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
+using System.IO;
 
 /// <summary>
 /// Contains classes pertaining to editor stuff.
@@ -207,6 +209,31 @@ public static class EditorExt
             // Did not find a custom property drawer. Use default.
             return defaultHeight;
         }
+    }
+    #endregion
+
+    #region IO
+    /// <summary>
+    /// Creates and saves a scriptable object to the disk.
+    /// </summary>
+    /// <typeparam name="T">Type of scriptable object to create.</typeparam>
+    /// <param name="path">Path to save the file to.</param>
+    /// <returns>The created scriptable object.</returns>
+    public static T CreateAndSaveScriptableObject<T>(
+        string path = "Assets/ScriptableObjects") where T : ScriptableObject
+    {
+        var so = ScriptableObject.CreateInstance<T>();
+
+        Directory.CreateDirectory(path);
+
+        string fn = IOPath.ChangeExtension(typeof(T).ToString(), ".asset");
+        AssetDatabase.CreateAsset(so, IOPath.Combine(path, fn));
+        AssetDatabase.SaveAssets();
+
+        EditorUtility.FocusProjectWindow();
+
+        Selection.activeObject = so;
+        return so;
     }
     #endregion
 }

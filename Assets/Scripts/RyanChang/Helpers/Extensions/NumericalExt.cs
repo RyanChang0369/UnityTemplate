@@ -1,4 +1,3 @@
-
 using System;
 using UnityEngine;
 
@@ -29,31 +28,6 @@ public static class NumericalExt
     public static bool Approx(this float a, float b)
     {
         return Mathf.Approximately(a, b);
-    }
-
-    /// <summary>
-    /// Evaluates if <paramref name="values"/> to determine if all members are
-    /// equal.
-    /// </summary>
-    /// <param name="values">The values to evaluate.</param>
-    /// <returns>True if all members of <paramref name="values"/>, or if there
-    /// are less than 2 values in <paramref name="values"/>. False
-    /// otherwise.</returns>
-    public static bool AllEqual<T>(params T[] values)
-        where T : IEquatable<T>
-    {
-        if (values.Length < 2)
-            return true;
-
-        T temp = values[0];
-        
-        for (int i = 1; i < values.Length; i++)
-        {
-            if (temp.Equals(values[i]))
-                return false;
-        }
-
-        return true;
     }
 
     /// <summary>
@@ -183,7 +157,8 @@ public static class NumericalExt
     /// <param name="number">The float to round.</param>
     /// <param name="mode">How to round <paramref name="number"/>.</param>
     /// <returns></returns>
-    public static int Round(this float number, RoundMode mode = RoundMode.NearestInt)
+    public static int RoundToInt(this float number,
+        RoundMode mode = RoundMode.NearestInt)
     {
         switch (mode)
         {
@@ -210,6 +185,15 @@ public static class NumericalExt
                     return 0;
         }
     }
+
+    /// <summary>
+    /// Alias for <see cref="Mathf.Round(float)"/>.
+    /// </summary>
+    /// <param name="number">Number to round.</param>
+    /// <param name="digits">Places after zero to round to.</param>
+    /// <returns>The rounded value.</returns>
+    public static float Round(this float number, int digits = 0) =>
+        (float)Math.Round(number, digits);
     #endregion
 
     #region Misc Operations

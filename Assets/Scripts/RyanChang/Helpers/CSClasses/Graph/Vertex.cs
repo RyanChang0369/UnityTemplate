@@ -8,7 +8,7 @@ using UnityEngine;
 /// Vertex used in graph. Weights are stored in the graph.
 /// </summary>
 /// <typeparam name="T">Any IEquatable type.</typeparam>
-[System.Serializable]
+[Serializable]
 public class Vertex<T> : ISerializationCallbackReceiver, IEquatable<Vertex<T>> where T : IEquatable<T>
 {
     #region Fields
@@ -18,7 +18,7 @@ public class Vertex<T> : ISerializationCallbackReceiver, IEquatable<Vertex<T>> w
     public T id;
 
     [SerializeField]
-    private List<PathNode> nodes;
+    private List<IPathNode> nodes;
 
     /// <summary>
     /// Dictionary of outgoing edges. <id, graph weight>.
@@ -75,7 +75,7 @@ public class Vertex<T> : ISerializationCallbackReceiver, IEquatable<Vertex<T>> w
     /// </summary>
     public int Degree => Adjacent.Count;
 
-    public List<PathNode> Nodes
+    public List<IPathNode> Nodes
     {
         get
         {

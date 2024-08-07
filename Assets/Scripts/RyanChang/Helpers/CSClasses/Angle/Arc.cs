@@ -1,5 +1,13 @@
 using UnityEngine;
+using static FloatAngle;
 
+/// <summary>
+/// Defines an arc defined by two angles.
+/// </summary>
+/// 
+/// <remarks>
+/// Authors: Ryan Chang (2024)
+/// </remarks>
 public class Arc
 {
     #region Variables
@@ -69,7 +77,10 @@ public class Arc
             Collider2D collider = results[i];
             Vector2 hitPos = collider.transform.position;
             Vector2 diff = hitPos - position;
-            FloatAngle theta = new(Mathf.Atan2(diff.y, diff.x), FloatAngle.Units.Radians);
+            FloatAngle theta = new(
+                Mathf.Atan2(diff.y, diff.x), 
+                Units.Radians
+            );
 
             if (!theta.IsBetween(minAngle, maxAngle))
             {

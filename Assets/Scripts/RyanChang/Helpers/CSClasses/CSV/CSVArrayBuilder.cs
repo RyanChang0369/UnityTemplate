@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -27,12 +26,12 @@ public class CSVArrayBuilder
     /// represents one array. There also exists one builder, with the key of the
     /// empty string, that holds all non-array values.
     /// </summary>
-    private Dictionary<string, CSVBuilder> builders = new();
+    private readonly Dictionary<string, CSVBuilder> builders = new();
 
     /// <summary>
     /// Maps fully qualified headers to shorter headers.
     /// </summary>
-    private Dictionary<string, string> headerMap = new();
+    private readonly Dictionary<string, string> headerMap = new();
 
     #region Regex
     /// <summary>

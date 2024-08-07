@@ -6,40 +6,57 @@ using UnityEngine;
 /// Priority queue with a min heap. Allows for updates to any priority.
 /// Assumes all values are unique.
 /// </summary>
-/// <typeparam name="T"></typeparam>
-public class PriorityQueue<T>
+/// <typeparam name="TVal"></typeparam>
+/// <remarks>Authors: Ryan Chang (2022)</remarks>
+public class PriorityQueue<TKey, TVal> where TKey : IComparable<TKey>
 {
     #region Structs
     /// <summary>
     /// Priority queue element.
     /// </summary>
-    public struct PriorityElement
+    public struct PriorityElement : IComparable<PriorityElement>, IComparable
     {
+        #region Fields
         /// <summary>
         /// Priority of the element. Smaller = higher priority.
         /// </summary>
-        public float priority;
+        public TKey priority;
 
         /// <summary>
         /// The element's value.
         /// </summary>
-        public T value;
+        public TVal value;
+        #endregion
 
+        #region Constructors
         /// <summary>
         /// Constructs a new priority queue element.
         /// </summary>
         /// <param name="priority">The priority to assign to this.</param>
         /// <param name="value">The element's value.</param>
-        public PriorityElement(float priority, T value)
+        public PriorityElement(TKey priority, TVal value)
         {
             this.priority = priority;
             this.value = value;
         }
+        #endregion
 
-        public override string ToString()
+        #region Methods
+        public override readonly string ToString()
         {
             return $"PQElement: priority {priority}, {value}";
         }
+
+        public int CompareTo(PriorityElement other)
+        {
+            return priority.CompareTo(other.priority);
+        }
+
+        public int CompareTo(object obj)
+        {
+            return obj != null && obj is PriorityElement other ? CompareTo(other) : 1;
+        }
+        #endregion
     }
 
     /// <summary>
@@ -47,6 +64,7 @@ public class PriorityQueue<T>
     /// </summary>
     private struct LocatorElement : IComparable
     {
+        #region Fields
         /// <summary>
         /// Element this locator is pointing at.
         /// </summary>
@@ -55,7 +73,7 @@ public class PriorityQueue<T>
         /// <summary>
         /// A counter value to do tie breaks.
         /// </summary>
-        private int tieBreaker;
+        private readonly int tieBreaker;
 
         /// <summary>
         /// The static counter value. See <paramref name="tieBreaker"/>.
@@ -66,7 +84,9 @@ public class PriorityQueue<T>
         /// Index of <paramref name="pqElement"/> in <paramref name="data"/>.
         /// </summary>
         public int index;
+        #endregion
 
+        #region Constructors
         /// <summary>
         /// Creates a new locator.
         /// </summary>
@@ -80,40 +100,43 @@ public class PriorityQueue<T>
             tieBreaker = tieBreakerCounter;
             tieBreakerCounter++;
         }
+        #endregion
 
-        public int CompareTo(object other)
+        #region Methods
+        public readonly int CompareTo(object other)
         {
-            if (other == null) return 1;
-
-            var otherLocator = (LocatorElement)other;
-
-            if (pqElement.priority == otherLocator.pqElement.priority)
+            if (other != null && other is LocatorElement otherLocator)
             {
-                return tieBreaker - otherLocator.tieBreaker;
+                int compared = pqElement.CompareTo(otherLocator);
+
+                return compared switch
+                {
+                    0 => tieBreaker.CompareTo(otherLocator.tieBreaker),
+                    _ => compared,
+                };
             }
-            else
-            {
-                return Mathf.RoundToInt(otherLocator.pqElement.priority - pqElement.priority);
-            }
+
+            return 1;
         }
 
-        public override string ToString()
+        public override readonly string ToString()
         {
             return $"LocatorElement: index {index}, {pqElement}";
-        }
+        } 
+        #endregion
     }
     #endregion
 
-    #region Variables
+    #region Fields
     /// <summary>
     /// Underlying container for this queue.
     /// </summary>
-    private List<PriorityElement> data;
+    private readonly List<PriorityElement> data = new();
 
     /// <summary>
     /// Dictionary to locate the data to update.
     /// </summary>
-    private Dictionary<T, LocatorElement> locator;
+    private readonly Dictionary<TVal, LocatorElement> locator = new();
     #endregion
 
     #region Properties
@@ -137,11 +160,11 @@ public class PriorityQueue<T>
     /// Creates a <see cref="PriorityQueue{T}"/> with the specified elements.
     /// </summary>
     /// <param name="elements">The collection of elements to add.</param>
-    public PriorityQueue(IEnumerable<PriorityElement> elements) : this()
+    public PriorityQueue(IEnumerable<Tuple<TKey, TVal>> elements)
     {
         foreach (var elem in elements)
         {
-            Enqueue(elem);
+            Enqueue(elem.Item1, elem.Item2);
         }
     }
     #endregion
@@ -153,22 +176,11 @@ public class PriorityQueue<T>
     /// <param name="priority">Priority of the value. Smaller = more
     /// priority.</param>
     /// <param name="value">Value to insert.</param>
-    public void Enqueue(float priority, T value)
+    public void Enqueue(TKey priority, TVal value)
     {
-        var element = new PriorityElement(priority, value);
-        data.Add(element);
-        locator.Add(value, new LocatorElement(element, Count - 1));
-        PercolateUp(Count - 1);
-    }
-
-    /// <summary>
-    /// Enqueues a <see cref="PriorityElement"/> directly.
-    /// </summary>
-    /// <param name="element"></param>
-    public void Enqueue(PriorityElement element)
-    {
-        data.Add(element);
-        locator.Add(element.value, new LocatorElement(element, Count - 1));
+        var newPQElem = new PriorityElement(priority, value);
+        data.Add(newPQElem);
+        locator.Add(value, new LocatorElement(newPQElem, Count - 1));
         PercolateUp(Count - 1);
     }
 
@@ -176,16 +188,16 @@ public class PriorityQueue<T>
     /// Returns the element at the front of the queue.
     /// </summary>
     /// <returns></returns>
-    public T Peek() => data[0].value;
+    public TVal Peek() => data[0].value;
 
     /// <summary>
-    /// Removes and returns the element and its priority at the front of the
-    /// queue.
+    /// Removes and returns the element with its value and priority at the front
+    /// of the queue.
     /// </summary>
     /// <returns>A tuple of (priority, value).</returns>
-    public PriorityElement DequeueElement()
+    public PriorityElement Dequeue()
     {
-        T value = data[0].value;
+        TVal value = data[0].value;
         var valueElement = data[0];
 
         // Get values of the datas.
@@ -217,13 +229,10 @@ public class PriorityQueue<T>
     }
 
     /// <summary>
-    /// Removes and returns the element at the front of the queue.
+    /// Removes and returns the elements value at the front of the queue.
     /// </summary>
-    /// <returns>The minimum value.</returns>
-    public T DequeueValue()
-    {
-        return DequeueElement().value;
-    }
+    /// <returns>The value that was dequeued.</returns>
+    public TVal DequeueValue() => Dequeue().value;
 
     /// <summary>
     /// Updates the key.
@@ -231,7 +240,7 @@ public class PriorityQueue<T>
     /// <param name="newPriority">The new priority to assign.</param>
     /// <param name="key">The value to assign the new priority to.</param>
     /// <returns>True if update successful.</returns>
-    public bool Update(float newPriority, T key)
+    public bool Update(TKey newPriority, TVal key)
     {
         if (!locator.ContainsKey(key))
             return false;
@@ -249,7 +258,7 @@ public class PriorityQueue<T>
         locator[key] = currLocator;
         locator[swapData.value] = swapLocator;
 
-        DequeueValue();
+        Dequeue();
 
         Enqueue(newPriority, currLocator.pqElement.value);
 
@@ -324,7 +333,10 @@ public class PriorityQueue<T>
 
         if (childIL < Count && childIR < Count)
         {
-            return (data[childIL].priority < data[childIR].priority) ? childIL : childIR;
+            int comparison = data[childIL].priority.CompareTo(
+                data[childIR].priority
+            );
+            return (comparison < 0) ? childIL : childIR;
         }
         else if (childIL < Count)
         {
@@ -383,7 +395,7 @@ public class PriorityQueue<T>
             if (parentI == index)
                 break;
 
-            if (data[index].priority < data[parentI].priority)
+            if (data[index].priority.CompareTo(data[parentI].priority) < 0)
             {
                 // Parent's child has more priority, Swap elements.
                 (data[parentI], data[index]) = (data[index], data[parentI]);
@@ -411,7 +423,8 @@ public class PriorityQueue<T>
         {
             var childI = GetMinChildIndex(index);
 
-            if (childI >= 0 && data[childI].priority < data[index].priority)
+            if (childI >= 0 &&
+                data[childI].priority.CompareTo(data[index].priority) < 0)
             {
                 // Child has more priority. Swap elements.
                 (data[childI], data[index]) = (data[index], data[childI]);

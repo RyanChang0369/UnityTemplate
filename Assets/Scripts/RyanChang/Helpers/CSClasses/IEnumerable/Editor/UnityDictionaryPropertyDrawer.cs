@@ -1,12 +1,14 @@
 using UnityEditor;
 using UnityEngine;
 
-[CustomPropertyDrawer(typeof(UnityDictionary<,>))]
-public class UnityDictionaryDrawerUIE : PropertyDrawer
+[CustomPropertyDrawer(typeof(UnityDictionary<,>), true)]
+public class UnityDictionaryPropertyDrawer : PropertyDrawer
 {
-    private float errorBoxHeight = EditorGUIUtility.singleLineHeight * 2;
+    #region Constants
+    private readonly float errorBoxHeight = EditorGUIUtility.singleLineHeight * 2;
 
     private const float LIST_ERROR_SPACING = 5;
+    #endregion
 
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
@@ -14,9 +16,10 @@ public class UnityDictionaryDrawerUIE : PropertyDrawer
         {
             // First, load the unityDictionary. This enables us to check for
             // errors.
-            dynamic unityDict = property.GetObjectFromReflection();
+            property.GetObjectFromReflection(out IUnityDictionary unityDict);
             UnityDictionaryErrorCode ec = unityDict.ValidateKVPs();
-            // First drop into the first child, which will be the keyValuePairs.
+
+            // Drop into the first child, which will be the keyValuePairs.
             property.Next(true);
 
             // Then, draw only the keyValuePairs.
@@ -61,30 +64,31 @@ public class UnityDictionaryDrawerUIE : PropertyDrawer
     {
         // First, load the unityDictionary. This enables us to check for
         // errors.
-        dynamic unityDict = property.GetObjectFromReflection();
+        property.GetObjectFromReflection(out IUnityDictionary unityDict);
         UnityDictionaryErrorCode ec = unityDict.ValidateKVPs();
 
-        float heightAddition = 0;
+        float height = 0;
 
         if (ec != UnityDictionaryErrorCode.None)
         {
-            heightAddition += LIST_ERROR_SPACING * 2;
+            height += LIST_ERROR_SPACING * 2;
         }
 
         if (ec == UnityDictionaryErrorCode.DuplicateKeys)
         {
-            heightAddition += errorBoxHeight;
+            height += errorBoxHeight;
         }
 
         if (ec == UnityDictionaryErrorCode.NullKeys)
         {
-            heightAddition += errorBoxHeight;
+            height += errorBoxHeight;
         }
 
         // Then drop into the first child, which will be the keyValuePairs.
         property.Next(true);
 
         // Then get height.
-        return EditorGUI.GetPropertyHeight(property, label) + heightAddition;
+        height += EditorGUI.GetPropertyHeight(property);
+        return height;
     }
 }

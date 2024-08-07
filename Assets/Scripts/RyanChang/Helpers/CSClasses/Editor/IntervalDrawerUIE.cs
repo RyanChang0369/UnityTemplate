@@ -66,12 +66,12 @@ public class IntervalDrawerUIE : PropertyDrawer
                     break;
                 case Range.RangePattern.Curves:
                     EditorGUI.PropertyField(value1Rect, property.FindPropertyRelative(rangeAddition + nameof(Range.curve)));
-                    EditorGUI.PropertyField(value2Rect, property.FindPropertyRelative(rangeAddition + nameof(Range.modifer)));
+                    EditorGUI.PropertyField(value2Rect, property.FindPropertyRelative(rangeAddition + nameof(Range.modifier)));
                     EditorGUI.PropertyField(value3Rect, property.FindPropertyRelative(nameof(Interval.timer)));
                     break;
                 case Range.RangePattern.Perlin:
                     EditorGUI.PropertyField(value1Rect, property.FindPropertyRelative(rangeAddition + nameof(Range.perlinCrawlSpeed)));
-                    EditorGUI.PropertyField(value2Rect, property.FindPropertyRelative(rangeAddition + nameof(Range.modifer)));
+                    EditorGUI.PropertyField(value2Rect, property.FindPropertyRelative(rangeAddition + nameof(Range.modifier)));
                     EditorGUI.PropertyField(value3Rect, property.FindPropertyRelative(nameof(Interval.timer)));
                     break;
             }

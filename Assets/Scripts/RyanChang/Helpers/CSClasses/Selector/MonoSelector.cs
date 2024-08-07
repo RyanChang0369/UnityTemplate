@@ -8,6 +8,9 @@
 public class MonoSelector<T>
 {
     #region Variables
+    /// <summary>
+    /// The elements to select from.
+    /// </summary>
     [Tooltip("The elements to select from.")]
     [SerializeField]
     private SelectorElement<T>[] elements;

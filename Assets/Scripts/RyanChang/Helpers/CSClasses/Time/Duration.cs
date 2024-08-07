@@ -38,6 +38,12 @@ public class Duration
     #endregion
 
     #region Constructors
+    /// <summary>
+    /// Creates a new duration that will last for <paramref name="duration"/>
+    /// seconds long.
+    /// </summary>
+    /// <param name="duration">Amount of time, in seconds, to set the duration
+    /// to.</param>
     public Duration(float duration)
     {
         maxTime = duration;
@@ -143,30 +149,60 @@ public class Duration
         return false;
     }
 
+    #region Callback Methods
     /// <summary>
-    /// Creates a coroutine on <paramref name="unityObject"/> that calls
-    /// <paramref name="callback"/> once <see cref="maxTime"/> has passed. This
-    /// does not affect any values within this <see cref="Duration"/>. Only one
-    /// callback is allowed to be running at a time.
+    /// Creates a coroutine on <paramref name="host"/> that calls <paramref
+    /// name="callback"/> once <see cref="maxTime"/> has passed. This does not
+    /// affect any values within this <see cref="Duration"/>. Only one callback
+    /// per instance of <see cref="Duration"/> is allowed to be running at a
+    /// time.
     /// </summary>
-    /// <param name="unityObject">The behavior to attach the coroutine
-    /// to.</param>
+    /// <param name="host">The behavior to attach the coroutine to.</param>
     /// <param name="callback">The callback to perform.</param>
-    /// <param name="repeat">If true, keeps repeating the coroutine.</param>
     /// <param name="unscaledTime">Whether or not to use unscaled time.</param>
+    /// <param name="options">The options to include with the callback.</param>
     /// <returns>False if another callback is running. True otherwise.</returns>
-    public bool CreateCallback(MonoBehaviour unityObject, Action callback,
-        Options options)
+    public bool CreateCallback(MonoBehaviour host, Action callback,
+        Options options = Options.None)
     {
         if (CallbackActive)
             return false;
 
-        callbackMB = unityObject;
-        callbackCR = unityObject.StartCoroutine(WaitUntilDone_CR(
+        callbackMB = host;
+        callbackCR = host.StartCoroutine(WaitUntilDone_CR(
             callback, options
         ));
 
         return true;
+    }
+
+    /// <summary>
+    /// A static callback create method that binds a callback to a <paramref
+    /// name="host"/>. Unlike <see cref="CreateCallback(MonoBehaviour, Action,
+    /// Options)"/>, there is no limit to the amount of created callbacks
+    /// running at the same time (as this method does not operate on instances
+    /// of <see cref="Duration"/>).
+    /// </summary>
+    /// <remarks>
+    /// The callback will be called once a fixed update is available (using <see
+    /// cref="WaitForFixedUpdate"/>).
+    /// </remarks>
+    /// <inheritdoc cref="CreateCallback(MonoBehaviour, Action, Options)"/>
+    public static void CreateFixedUpdateCallback(MonoBehaviour host,
+        Action callback)
+    {
+        host.StartCoroutine(WaitForFixedUpdate_CR(callback));
+    }
+
+    /// <inheritdoc cref="CreateFixedUpdateCallback(MonoBehaviour, Action)"/>
+    /// <remarks>
+    /// The callback will be called once the current frame has ended (using <see
+    /// cref="WaitForEndOfFrame"/>).
+    /// </remarks>
+    public static void CreateEndOfFrameCallback(MonoBehaviour host,
+        Action callback)
+    {
+        host.StartCoroutine(WaitForEndOfFrame_CR(callback));
     }
 
     /// <summary>
@@ -187,6 +223,7 @@ public class Duration
         return false;
     }
 
+    #region Coroutines (Members)
     private IEnumerator WaitUntilDone_CR(Action callback, Options options)
     {
         do
@@ -204,4 +241,18 @@ public class Duration
 
         callbackCR = null;
     }
+
+    private static IEnumerator WaitForFixedUpdate_CR(Action callback)
+    {
+        yield return new WaitForFixedUpdate();
+        callback();
+    }
+
+    private static IEnumerator WaitForEndOfFrame_CR(Action callback)
+    {
+        yield return new WaitForEndOfFrame();
+        callback();
+    }
+    #endregion
+    #endregion
 }

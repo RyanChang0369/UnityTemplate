@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using NaughtyAttributes;
 using UnityEngine;
 
 /// <summary>
@@ -11,7 +12,8 @@ using UnityEngine;
 /// <typeparam name="TKey">A unity-serializable value.</typeparam>
 /// <typeparam name="TValue">A unity-serializable value.</typeparam>
 [Serializable]
-public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>
+public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
+    IUnityDictionary
 {
     #region Structs
     [Serializable]
@@ -33,10 +35,10 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>
 
         #region Properties
         /// <inheritdoc cref="key"/>
-        public TKey Key => key;
+        public readonly TKey Key => key;
 
         /// <inheritdoc cref="value"/>
-        public TValue Value => value;
+        public readonly TValue Value => value;
         #endregion
 
         public InspectorKeyValuePair(TKey key, TValue value)
@@ -64,9 +66,14 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     /// The list of <see cref="InspectorKeyValuePair"/> used by the inspector.
     /// </summary>
     [SerializeField]
+    [OnValueChanged(nameof(ResetInternalDict))]
     private List<InspectorKeyValuePair> keyValuePairs;
     private int prevKVPsHash;
 
+    /// <summary>
+    /// The "real" dictionary. If a change is made to the internal dictionary,
+    /// it should be reflected with the keyValuePairs.
+    /// </summary>
     private Dictionary<TKey, TValue> internalDict;
 
     private Dictionary<TKey, TValue> BufferedDict
@@ -75,7 +82,7 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>
         {
             // The function only regenerates the internal dictionary if a
             // difference has been found.
-            GenerateInternalDict();
+            ValidateInternalDict();
             return internalDict;
         }
     }
@@ -133,6 +140,7 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     public UnityDictionary()
     {
         keyValuePairs = new();
+        internalDict = new();
     }
 
     /// <summary>
@@ -141,64 +149,95 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     /// <param name="collection">The aforementioned collection.</param>
     public UnityDictionary(IEnumerable<KeyValuePair<TKey, TValue>> collection)
     {
-        var items = collection.Select(c => new InspectorKeyValuePair(c));
-
-        if (items.Any())
-            keyValuePairs = new(items);
+        if (collection.IsNullOrEmpty())
+        {
+            // No items in collection
+            keyValuePairs = new();
+            internalDict = new();
+        }
+        else
+        {
+            // There are items in the collection.
+            keyValuePairs = new(collection.Select(
+                c => new InspectorKeyValuePair(c)
+            ));
+            internalDict = new(collection);
+        }
     }
     #endregion
 
     #region Helper Functions
-    private void GenerateInternalDict()
+    /// <summary>
+    /// Determines if the internal dictionary matches <see
+    /// cref="keyValuePairs"/>, and regenerates it if not.
+    /// </summary>
+    /// <returns>True if update was performed.</returns>
+    private bool ValidateInternalDict()
     {
-        if (keyValuePairs == null)
-        {
-            ResetInternalDict();
-            prevKVPsHash = keyValuePairs.GetHashCode();
-        }
-        else
-        {
-            // Check the hash to avoid unneeded updates.
-            int KVPsHash = keyValuePairs.GetHashCode();
-            if (internalDict == null || KVPsHash != prevKVPsHash)
-            {
-                ResetInternalDict();
-                prevKVPsHash = KVPsHash;
-            }
-        }
+        // if (keyValuePairs.NotEmpty())
+        // {
+        //     // Check the hash to avoid unneeded updates. 
+        //     int KVPsHash = keyValuePairs.GetHashCode();
+        //     if (KVPsHash != prevKVPsHash)
+        //     {
+        //         ResetInternalDict(KVPsHash);
+        //         Debug.LogWarning(
+        //             "Difference in InternalDict found " +
+        //             $"[{keyValuePairs.Count}, {internalDict.Count}]"
+        //         );
+        //         return true;
+        //     }
+        // }
+
+        return false;
     }
 
-    private void ResetInternalDict()
+    /// <summary>
+    /// Resets the internal dictionary to match the <see cref="keyValuePairs"/>
+    /// displayed in the editor.
+    /// </summary>
+    /// <param name="hash">If non-zero, use this as a hash for the <see
+    /// cref="prevKVPsHash"/>. Otherwise, generate the hash from <see
+    /// cref="keyValuePairs"/>.</param>
+    public void ResetInternalDict(int hash = 0)
     {
-        internalDict = new();
+        // Clear();
 
-        keyValuePairs ??= new();
+        // foreach (var keyValue in keyValuePairs)
+        // {
+        //     internalDict[keyValue.Key] = keyValue.Value;
+        // }
 
-        foreach (var keyValue in keyValuePairs)
-        {
-            internalDict[keyValue.Key] = keyValue.Value;
-        }
+        // if (hash == 0)
+        //     prevKVPsHash = keyValuePairs.GetHashCode();
+        // else
+        //     prevKVPsHash = hash;
+
+        internalDict = keyValuePairs.ToDictionary(
+            (kvp) => kvp.Key,
+            (kvp) => kvp.Value
+        );
     }
     #endregion
 
     #region IDictionary Implementation
-    public ICollection<TKey> Keys => ((IDictionary<TKey, TValue>)BufferedDict).Keys;
+    public ICollection<TKey> Keys => BufferedDict.Keys;
 
-    public ICollection<TValue> Values => ((IDictionary<TKey, TValue>)BufferedDict).Values;
+    public ICollection<TValue> Values => BufferedDict.Values;
 
-    public int Count => ((ICollection<KeyValuePair<TKey, TValue>>)BufferedDict).Count;
+    public int Count => BufferedDict.Count;
 
-    public bool IsReadOnly => ((ICollection<KeyValuePair<TKey, TValue>>)BufferedDict).IsReadOnly;
+    public bool IsReadOnly => false;
 
     public TValue this[TKey key]
     {
         get
         {
-            return ((IDictionary<TKey, TValue>)BufferedDict)[key];
+            return BufferedDict[key];
         }
         set
         {
-            ((IDictionary<TKey, TValue>)BufferedDict)[key] = value;
+            BufferedDict[key] = value;
 
 #if UNITY_EDITOR
             // This code only runs in the editor as that is the only time when
@@ -209,96 +248,84 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>
                 keyValuePairs[i] = new(keyValuePairs[i].Key, value);
             else
                 keyValuePairs.Add(new(key, value));
-
-            // Recompute the hash so internalDict doesn't get rebuilt.
-            prevKVPsHash = keyValuePairs.GetHashCode();
 #endif
         }
     }
 
     public void Add(TKey key, TValue value)
     {
-        ((IDictionary<TKey, TValue>)BufferedDict).Add(key, value);
-
-#if UNITY_EDITOR
+        BufferedDict.Add(key, value);
         keyValuePairs.Add(new(key, value));
-#endif
     }
 
     public bool ContainsKey(TKey key)
     {
-        return ((IDictionary<TKey, TValue>)BufferedDict).ContainsKey(key);
+        return BufferedDict.ContainsKey(key);
     }
 
     public bool Remove(TKey key)
     {
-        bool removed = ((IDictionary<TKey, TValue>)BufferedDict).Remove(key);
+        bool removed = BufferedDict.Remove(key);
 
-#if UNITY_EDITOR
-        // We only need to manage the keyValuePairs in the editor. When the game
-        // is compiled, keyValuePairs can no longer be edited.
         if (removed)
             keyValuePairs.RemoveAll(kvp => kvp.Key.Equals(key));
-#endif
 
         return removed;
     }
 
     public bool TryGetValue(TKey key, out TValue value)
     {
-        return ((IDictionary<TKey, TValue>)BufferedDict).TryGetValue(key, out value);
+        return BufferedDict.TryGetValue(key, out value);
     }
 
     public void Add(KeyValuePair<TKey, TValue> item)
     {
-        ((ICollection<KeyValuePair<TKey, TValue>>)BufferedDict).Add(item);
-
-#if UNITY_EDITOR
+        BufferedDict.Add(item.Key, item.Value);
         keyValuePairs.Add(new(item));
-#endif
     }
 
     public void Clear()
     {
-        ((ICollection<KeyValuePair<TKey, TValue>>)BufferedDict).Clear();
-
-#if UNITY_EDITOR
+        BufferedDict.Clear();
         keyValuePairs.Clear();
-#endif
     }
 
     public bool Contains(KeyValuePair<TKey, TValue> item)
     {
-        return ((ICollection<KeyValuePair<TKey, TValue>>)BufferedDict).Contains(item);
+        return BufferedDict.Contains(item);
     }
 
     public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
     {
-        ((ICollection<KeyValuePair<TKey, TValue>>)BufferedDict).CopyTo(array, arrayIndex);
+        ((IDictionary<TKey, TValue>)BufferedDict).CopyTo(array, arrayIndex);
     }
 
     public bool Remove(KeyValuePair<TKey, TValue> item)
     {
-        bool removed = ((ICollection<KeyValuePair<TKey, TValue>>)BufferedDict).Remove(item);
+        bool removed = BufferedDict.Remove(item.Key);
 
-#if UNITY_EDITOR
         if (removed)
             keyValuePairs.RemoveAll(kvp => kvp.Key.Equals(item.Key));
-#endif
 
         return removed;
     }
 
     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
     {
-        return ((IEnumerable<KeyValuePair<TKey, TValue>>)BufferedDict).GetEnumerator();
+        return BufferedDict.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
     {
-        return ((IEnumerable)BufferedDict).GetEnumerator();
+        return BufferedDict.GetEnumerator();
     }
     #endregion
+
+    public override string ToString()
+    {
+        var kvpStr = this.Select(d => $"({d.Key}, {d.Value})");
+        return $"<{string.Join(", ", kvpStr)}>";
+    }
 }
 
 #region Enums
@@ -317,5 +344,21 @@ public enum UnityDictionaryErrorCode
     /// <see cref="keyValuePairs"/> has at least 1 null key.
     /// </summary>
     NullKeys = 2
+}
+#endregion
+
+#region Interfaces
+/// <summary>
+/// Interface used solely by the <see cref="UnityDictionary<,>"/>, to allow
+/// certain methods to be used without requiring the specification of type
+/// params.
+/// </summary>
+///
+/// <remarks>
+/// Authors: Ryan Chang (2024)
+/// </remarks>
+public interface IUnityDictionary
+{
+    public UnityDictionaryErrorCode ValidateKVPs();
 }
 #endregion

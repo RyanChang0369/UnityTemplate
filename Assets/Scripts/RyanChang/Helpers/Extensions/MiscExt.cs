@@ -1,4 +1,5 @@
 ﻿using System;
+
 /// <summary>
 /// Contains methods pertaining to miscellaneous things, usually low level
 /// things that don't fit anywhere else.
@@ -9,6 +10,7 @@
 /// </summary>
 public static class MiscExt
 {
+    #region Swap
     /// <summary>
     /// Swaps two values around. No performance benefits, just use if you are
     /// lazy.
@@ -18,11 +20,11 @@ public static class MiscExt
     /// <param name="b">To be assigned the value of a.</param>
     public static void Swap<T>(ref T a, ref T b)
     {
-        T t = a;
-        a = b;
-        b = t;
+        (b, a) = (a, b);
     }
+    #endregion
 
+    #region Type Checking
     /// <summary>
     /// 
     /// </summary>
@@ -42,7 +44,9 @@ public static class MiscExt
             || value is double
             || value is decimal;
     }
+    #endregion
 
+    #region Diff
     /// <summary>
     /// Detects if there is any difference between <paramref name="target"/> and
     /// <paramref name="newValue"/>. If there is, set the value of <paramref
@@ -60,5 +64,6 @@ public static class MiscExt
 
         target = newValue;
         return true;
-    }
+    } 
+    #endregion
 }

@@ -31,8 +31,10 @@ public class Interval
     /// <summary>
     /// Updates the interval.
     /// </summary>
-    /// <param name="deltaTime">Amount of time that has passed since last update.</param>
-    /// <returns>True if the interval has reached its internal timer. Most likely Time.deltaTime.</returns>
+    /// <param name="deltaTime">Amount of time that has passed since last
+    /// update.</param>
+    /// <returns>True if the interval has reached its internal timer. Most
+    /// likely Time.deltaTime.</returns>
     public bool UpdateInterval(float deltaTime)
     {
         if (timer >= range.Select())

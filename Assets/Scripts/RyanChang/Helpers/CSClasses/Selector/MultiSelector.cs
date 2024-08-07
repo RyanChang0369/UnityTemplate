@@ -10,9 +10,24 @@ using UnityEngine;
 public class MultiSelector<T>
 {
     #region Variables
+    /// <summary>
+    /// The elements to select from.
+    /// </summary>
     [Tooltip("The elements to select from.")]
     [SerializeField]
     private SelectorElement<T>[] elements;
+    #endregion
+
+    #region Constructors
+    public MultiSelector()
+    {
+        elements = new SelectorElement<T>[0];
+    }
+
+    public MultiSelector(params SelectorElement<T>[] elements)
+    {
+        this.elements = elements;
+    }
     #endregion
 
     #region Methods
