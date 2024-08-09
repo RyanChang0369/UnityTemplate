@@ -17,7 +17,7 @@ public class UnityDictionaryPropertyDrawer : PropertyDrawer
             // First, load the unityDictionary. This enables us to check for
             // errors.
             property.GetObjectFromReflection(out IUnityDictionary unityDict);
-            UnityDictionaryErrorCode ec = unityDict.ValidateKVPs();
+            UnityDictionaryErrorCode ec = unityDict.CalculateErrorCode();
 
             // Drop into the first child, which will be the keyValuePairs.
             property.Next(true);
@@ -25,32 +25,22 @@ public class UnityDictionaryPropertyDrawer : PropertyDrawer
             // Then, draw only the keyValuePairs.
             EditorGUI.PropertyField(position, property, label, true);
 
-            if (ec != UnityDictionaryErrorCode.None)
-            {
-                position.y += EditorGUI.GetPropertyHeight(property, label)
-                    + LIST_ERROR_SPACING;
-            }
-
             if (ec.HasFlag(UnityDictionaryErrorCode.DuplicateKeys))
             {
-                EditorGUI.HelpBox(
-                    new(position.x, position.y, position.width, errorBoxHeight),
+                position = ShowDictErrCode(
+                    position, property, label,
                     "Duplicate keys detected in the Unity Dictionary. " +
-                    "Duplicate keys are not allowed in dictionaries.",
-                    MessageType.Error
+                    "Duplicate keys are not allowed in dictionaries."
                 );
-                position.y += errorBoxHeight;
             }
 
             if (ec.HasFlag(UnityDictionaryErrorCode.NullKeys))
             {
-                EditorGUI.HelpBox(
-                    new(position.x, position.y, position.width, errorBoxHeight),
+                position = ShowDictErrCode(
+                    position, property, label,
                     "Null keys detected in the Unity Dictionary. " +
-                    "Null keys are not allowed in dictionaries.",
-                    MessageType.Error
+                    "Null keys are not allowed in dictionaries."
                 );
-                position.y += errorBoxHeight;
             }
         }
         catch (System.ArgumentNullException)
@@ -60,12 +50,27 @@ public class UnityDictionaryPropertyDrawer : PropertyDrawer
         }
     }
 
+    private Rect ShowDictErrCode(Rect position, SerializedProperty property,
+        GUIContent label, string errBoxMsg)
+    {
+        position.y += EditorGUI.GetPropertyHeight(property, label)
+                            + LIST_ERROR_SPACING;
+        EditorGUI.HelpBox(
+            new(position.x, position.y, position.width, errorBoxHeight),
+            errBoxMsg,
+            MessageType.Error
+        );
+        position.y += errorBoxHeight;
+        
+        return position;
+    }
+
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
         // First, load the unityDictionary. This enables us to check for
         // errors.
         property.GetObjectFromReflection(out IUnityDictionary unityDict);
-        UnityDictionaryErrorCode ec = unityDict.ValidateKVPs();
+        UnityDictionaryErrorCode ec = unityDict.CalculateErrorCode();
 
         float height = 0;
 

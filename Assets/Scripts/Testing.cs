@@ -46,7 +46,7 @@ public class Testing : MonoBehaviour
         Mould = 21
     }
 
-    public EnumDictionary<TestEnum, GameObject> testEnumDictionary = new();
+    // public EnumDictionary<TestEnum, GameObject> testEnumDictionary = new();
 
     public UnityDictionary<string, int> testUnityDict = new();
 
@@ -201,5 +201,18 @@ public class Testing : MonoBehaviour
         }
 
         print((LayerMask)3);
+    }
+
+    [Button]
+    private void StressTestUnityDict()
+    {
+        testUnityDict.Clear();
+
+        for (int i = 0; i < 500; i++)
+        {
+            testUnityDict[RNGExt.RandomHashString()] = RNGExt.RandomInt();
+        }
+
+        testUnityDict.Testing();
     }
 }
