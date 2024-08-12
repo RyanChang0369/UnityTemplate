@@ -42,6 +42,7 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
         public readonly TValue Value => value;
         #endregion
 
+        #region Constructors
         public InspectorKeyValuePair(TKey key, TValue value)
         {
             this.key = key;
@@ -59,6 +60,17 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
             this.key = keyValuePair.Key;
             this.value = keyValuePair.Value;
         }
+        #endregion
+
+        #region Converters
+        public static implicit operator KeyValuePair<TKey, TValue>(
+            InspectorKeyValuePair kvp) =>
+            new(kvp.Key, kvp.Value);
+
+        public static explicit operator InspectorKeyValuePair(
+            KeyValuePair<TKey, TValue> kvp) =>
+            new(kvp.Key, kvp.Value);
+        #endregion
     }
     #endregion
 
@@ -114,7 +126,12 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     {
         public bool Equals(InspectorKeyValuePair x, InspectorKeyValuePair y)
         {
-            return x.Key.Equals(y.Key);
+            if (x.Key == null && y.Key == null)
+                return true;
+            else if (x.Key == null || y.Key == null)
+                return false;
+            else
+                return x.Key.Equals(y.Key);
         }
 
         public int GetHashCode(InspectorKeyValuePair obj)
@@ -161,48 +178,7 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     public void OnBeforeSerialize()
     {
         // Need to save the KVPs.
-        if (keyValuePairs.NotEmpty() && internalDict.NotEmpty())
-        {
-            // Need to keep duplicate keys as duplicate keys are automatically
-            // added when keyValuePairs is added to in the inspector. ToList is
-            // required to avoid changing keyValuePairs whilst the foreach loop
-            // runs in SelectKeepingDuplicates().
-            keyValuePairs = new(SelectKeepingDuplicates().ToList());
-        }
-    }
-
-    private IEnumerable<InspectorKeyValuePair> SelectKeepingDuplicates()
-    {
-        // In relation to the internalDict, a key (in the KVPs) can be:
-        // 1. Unique in the KVPs and unchanged.
-        //    - Report it.
-        // 2. Unique in the KVPs but different.
-        //    - Report the one from the dictionary.
-        // 3. Absent from the KVPs.
-        //    - Report from the dictionary.
-        // 4. Duplicated in the KVPs, with all copies matching the one in
-        //    internalDict.
-        //    - Report all copies as-is, but display error (handled in drawer).
-        // 5. Duplicated in the KVPs, but not all copies match the one in
-        //    internalDict.
-        //    - Report all copies as-is, but display error (handled in drawer).
-
-        var notInKVPs = internalDict.Keys.
-            Except(
-                keyValuePairs.
-                    Select(kvp => kvp.Key)
-            ).
-            ToList();
-
-        foreach (var kvp in keyValuePairs)
-        {
-            yield return kvp;
-        }
-
-        foreach (var key in notInKVPs)
-        {
-            yield return new (key, internalDict[key]);
-        }
+        ResetInspectorKVPs();
     }
 
     public void OnAfterDeserialize()
@@ -212,11 +188,41 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     }
     #endregion
 
-    #region Helper Functions
-    /// <summary>
-    /// Resets the internal dictionary to match the <see cref="keyValuePairs"/>
-    /// displayed in the editor.
-    /// </summary>
+    #region IUnityDictionary Implementation
+    public void ResetInspectorKVPs()
+    {
+        // Local function (see
+        // https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic?view=netstandard-2.1).
+        // Good idea to use these if you have redundant code that is specific to
+        // one method/constructor/etc. See
+        // https://www.reddit.com/r/csharp/comments/wi1ifu/comment/ij96ua2/ for
+        // additional reasoning.
+        void MakeKVPs()
+        {
+            keyValuePairs = new(
+                internalDict.Select(static kvp => (InspectorKeyValuePair)kvp)
+            );
+        }
+
+        if (keyValuePairs.Count >= 2)
+        {
+            var last0 = keyValuePairs[^1];
+            var last1 = keyValuePairs[^2];
+
+            MakeKVPs();
+
+            if (last0.Key.Equals(last1.Key))
+            {
+                // Keep last duplicate (may be added recently).
+                keyValuePairs.Add(last0);
+            }
+        }
+        else
+        {
+            MakeKVPs();
+        }
+    }
+
     public void ResetInternalDict()
     {
         internalDict.Clear();
@@ -247,16 +253,16 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
         {
             internalDict[key] = value;
 
-// #if UNITY_EDITOR
-//             // This code only runs in the editor as that is the only time when
-//             // keyValuePairs is modifiable.
-//             int i = keyValuePairs.FindIndex(kvp => kvp.Key.Equals(key));
+            // #if UNITY_EDITOR
+            //             // This code only runs in the editor as that is the only time when
+            //             // keyValuePairs is modifiable.
+            //             int i = keyValuePairs.FindIndex(kvp => kvp.Key.Equals(key));
 
-//             if (i >= 0)
-//                 keyValuePairs[i] = new(keyValuePairs[i].Key, value);
-//             else
-//                 keyValuePairs.Add(new(key, value));
-// #endif
+            //             if (i >= 0)
+            //                 keyValuePairs[i] = new(keyValuePairs[i].Key, value);
+            //             else
+            //                 keyValuePairs.Add(new(key, value));
+            // #endif
         }
     }
 
@@ -337,6 +343,8 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
 
     public void Testing()
     {
+        ResetInspectorKVPs();
+
         Assert.AreEqual(
             internalDict.Count, keyValuePairs.Count,
             $"InDict ({internalDict.Count}) and " +
@@ -359,40 +367,3 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
         Debug.Log("Tests passed");
     }
 }
-
-#region Enums
-[Flags]
-public enum UnityDictionaryErrorCode
-{
-    /// <summary>
-    /// <see cref="keyValuePairs"/> has been successfully validated.
-    /// </summary>
-    None = 0,
-    /// <summary>
-    /// <see cref="keyValuePairs"/> has at least 2 duplicate keys.
-    /// </summary>
-    DuplicateKeys = 1,
-    /// <summary>
-    /// <see cref="keyValuePairs"/> has at least 1 null key.
-    /// </summary>
-    NullKeys = 2
-}
-#endregion
-
-#region Interfaces
-/// <summary>
-/// Interface used solely by the <see cref="UnityDictionary<,>"/>, to allow
-/// certain methods to be used without requiring the specification of type
-/// params.
-/// </summary>
-///
-/// <remarks>
-/// Authors: Ryan Chang (2024)
-/// </remarks>
-public interface IUnityDictionary
-{
-    public UnityDictionaryErrorCode CalculateErrorCode();
-
-    public void ResetInternalDict();
-}
-#endregion

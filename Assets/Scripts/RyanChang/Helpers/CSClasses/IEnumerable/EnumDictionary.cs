@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 /// <summary>
 /// Represents a dictionary of enums, where each enum is mapped to a value.
@@ -21,31 +22,18 @@ public class EnumDictionary<TEnum, TValue> :
     }
 
     #region StackedKeyDictionary Implementation
-    public override bool AssignEditorDictionary(UnityEngine.Object targetObject)
+    public override void GenerateStaticKeys(UnityEngine.Object targetObject)
     {
-        bool noChanges = true;
-
         foreach (TEnum enumIndex in EnumExt.GetValues<TEnum>())
         {
-            if (!editorDict.ContainsKey(enumIndex))
-            {
-                // No key. Fix it.
-                editorDict[enumIndex] = default;
-                noChanges = false;
-            }
+            // If key missing, then adds it with a default value.
+            this.TryAdd(enumIndex, default);
         }
-
-        return noChanges;
     }
 
     public override string LabelFromKey(TEnum key)
     {
         return Enum.GetName(typeof(TEnum), key);
     }
-    #endregion
-
-    #region Public Methods
-    /// <inheritdoc cref="UnityDictionary{TKey, TValue}.ResetInternalDict"/>
-    public void ResetInternalDict() => editorDict.ResetInternalDict();
     #endregion
 }

@@ -26,7 +26,7 @@ public abstract class StaticKeyedDictionary<TKey, TValue> :
     #endregion
 
     #region IStaticKeyedDictionary Implementation
-    public abstract bool AssignEditorDictionary(UnityEngine.Object targetObject);
+    public abstract void GenerateStaticKeys(UnityEngine.Object targetObject);
 
     /// <inheritdoc cref="LabelFromKey(object)"/>
     public abstract string LabelFromKey(TKey key);
@@ -40,6 +40,13 @@ public abstract class StaticKeyedDictionary<TKey, TValue> :
 
         throw new ArgumentException($"{key} not of correct type ({typeof(TKey)}).");
     }
+
+    public UnityDictionaryErrorCode CalculateErrorCode() =>
+        editorDict.CalculateErrorCode();
+
+    public void ResetInternalDict() => editorDict.ResetInternalDict();
+
+    public void ResetInspectorKVPs() => editorDict.ResetInspectorKVPs();
     #endregion
 
     #region IDictionary Implementation
@@ -86,28 +93,4 @@ public abstract class StaticKeyedDictionary<TKey, TValue> :
     #endregion
 
     public override string ToString() => editorDict.ToString();
-}
-
-/// <summary>
-/// Interface for the <see cref="StaticKeyedDictionary{TKey, TValue}"/>. Allows
-/// certain functions to be called without knowing the specific typeparams for
-/// the object.
-/// </summary>
-public interface IStaticKeyedDictionary
-{
-    #region Methods
-    /// <summary>
-    /// Used by <see cref="StaticKeyedDictionaryPropertyDrawer"/> to fix/assign
-    /// the editor dictionary, if needed.
-    /// </summary>
-    /// <returns>True if no changes were made, false otherwise.</returns>
-    public bool AssignEditorDictionary(UnityEngine.Object targetObject);
-
-    /// <summary>
-    /// Retrieve a label from the provided <paramref name="key"/>.
-    /// </summary>
-    /// <param name="key">The key.</param>
-    /// <returns></returns>
-    public string LabelFromKey(object key);
-    #endregion
 }

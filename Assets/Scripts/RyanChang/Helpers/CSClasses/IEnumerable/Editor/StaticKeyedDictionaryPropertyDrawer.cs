@@ -8,12 +8,12 @@ public class StaticKeyedDictionaryPropertyDrawer : PropertyDrawer
     public override void OnGUI(Rect position, SerializedProperty property,
         GUIContent label)
     {
-        // position.Translate(RNGExt.RandomVector2(5));
         try
         {
             // Fix the enum dictionary if needed.
             property.GetObjectFromReflection(out IStaticKeyedDictionary dict);
-            dict.AssignEditorDictionary(property.serializedObject.targetObject);
+            dict.GenerateStaticKeys(property.serializedObject.targetObject);
+            dict.ResetInspectorKVPs();
 
             // Check if the base property is expanded or not. If not, don't draw
             // anything.

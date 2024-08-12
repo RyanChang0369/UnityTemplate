@@ -208,9 +208,39 @@ public class Testing : MonoBehaviour
     {
         testUnityDict.Clear();
 
+        HashSet<string> randomHashes = new();
+
         for (int i = 0; i < 500; i++)
         {
-            testUnityDict[RNGExt.RandomHashString()] = RNGExt.RandomInt();
+            // Testing random new writes.
+            var hash = RNGExt.RandomHashString();
+            randomHashes.Add(hash);
+            testUnityDict[hash] = RNGExt.RandomInt();
+        }
+
+        for (int i = 0; i < 500; i++)
+        {
+            // Testing random new writes and writes to old data.
+            if (RNGExt.PercentChance(0.5f))
+            {
+                // Writes to old data.
+                testUnityDict[randomHashes.GetRandomValue()] = RNGExt.RandomInt();
+            }
+            else
+            {
+                // Writes to new data.
+                var hash = RNGExt.RandomHashString();
+                randomHashes.Add(hash);
+                testUnityDict[hash] = RNGExt.RandomInt();
+            }
+        }
+
+        for (int i = 0; i < 285; i++)
+        {
+            // Random deletes
+            string toRemove = randomHashes.GetRandomValue();
+            randomHashes.Remove(toRemove);
+            testUnityDict.Remove(toRemove);
         }
 
         testUnityDict.Testing();

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -18,10 +19,8 @@ public class BonesDictionary<TValue> :
     private SkinnedMeshRenderer skinnedMesh;
 
     #region StaticKeyedDictionary Implementation
-    public override bool AssignEditorDictionary(UnityEngine.Object targetObject)
+    public override void GenerateStaticKeys(UnityEngine.Object targetObject)
     {
-        bool noChanges = true;
-
         if (!skinnedMesh)
         {
             if (targetObject is Component component)
@@ -37,15 +36,9 @@ public class BonesDictionary<TValue> :
 
         foreach (var bone in skinnedMesh.bones)
         {
-            if (!ContainsKey(bone))
-            {
-                // No key. Fix it.
-                editorDict[bone] = default;
-                noChanges = false;
-            }
+            // If key missing, then adds it with a default value.
+            this.TryAdd(bone, default);
         }
-
-        return noChanges;
     }
 
     public override string LabelFromKey(Transform key) => key.gameObject.name;
