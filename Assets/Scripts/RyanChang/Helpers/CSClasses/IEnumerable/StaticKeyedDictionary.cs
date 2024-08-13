@@ -15,7 +15,7 @@ using UnityEngine;
 /// </remarks>
 [Serializable]
 public abstract class StaticKeyedDictionary<TKey, TValue> :
-    IDictionary<TKey, TValue>, IStaticKeyedDictionary
+    IReadOnlyDictionary<TKey, TValue>, IStaticKeyedDictionary
 {
     #region Variables
     /// <summary>
@@ -23,6 +23,16 @@ public abstract class StaticKeyedDictionary<TKey, TValue> :
     /// </summary>
     [SerializeField]
     protected UnityDictionary<TKey, TValue> editorDict = new();
+    #endregion
+
+    #region Properties
+    #region IReadOnlyDictionary Implementation
+    public IEnumerable<TKey> Keys => editorDict.Keys;
+
+    public IEnumerable<TValue> Values => editorDict.Values;
+
+    public int Count => editorDict.Count;
+    #endregion
     #endregion
 
     #region IStaticKeyedDictionary Implementation
@@ -49,48 +59,25 @@ public abstract class StaticKeyedDictionary<TKey, TValue> :
     public void ResetInspectorKVPs() => editorDict.ResetInspectorKVPs();
     #endregion
 
-    #region IDictionary Implementation
+    #region IReadOnlyDictionary Implementation
     public TValue this[TKey key]
     {
         get => editorDict[key];
         set => editorDict[key] = value;
     }
 
-    public ICollection<TKey> Keys => editorDict.Keys;
-
-    public ICollection<TValue> Values => editorDict.Values;
-
-    public int Count => editorDict.Count;
-
-    public bool IsReadOnly => editorDict.IsReadOnly;
-
-    public void Add(TKey key, TValue value) => editorDict.Add(key, value);
-
-    public void Add(KeyValuePair<TKey, TValue> item) => editorDict.Add(item);
-
-    public void Clear() => editorDict.Clear();
-
-    public bool Contains(KeyValuePair<TKey, TValue> item) =>
-        editorDict.Contains(item);
-
     public bool ContainsKey(TKey key) => editorDict.ContainsKey(key);
-
-    public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex) =>
-        editorDict.CopyTo(array, arrayIndex);
-
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() =>
-        editorDict.GetEnumerator();
-
-    public bool Remove(TKey key) => editorDict.Remove(key);
-
-    public bool Remove(KeyValuePair<TKey, TValue> item) =>
-        editorDict.Remove(item);
 
     public bool TryGetValue(TKey key, out TValue value) =>
         editorDict.TryGetValue(key, out value);
 
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() =>
+        editorDict.GetEnumerator();
+
     IEnumerator IEnumerable.GetEnumerator() => editorDict.GetEnumerator();
     #endregion
 
+    #region Other Methods
     public override string ToString() => editorDict.ToString();
+    #endregion
 }

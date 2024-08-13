@@ -27,7 +27,7 @@ public class EnumDictionary<TEnum, TValue> :
         foreach (TEnum enumIndex in EnumExt.GetValues<TEnum>())
         {
             // If key missing, then adds it with a default value.
-            this.TryAdd(enumIndex, default);
+            editorDict.TryAdd(enumIndex, default);
         }
     }
 
