@@ -335,13 +335,14 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     }
     #endregion
 
+    #region Other Methods
     public override string ToString()
     {
         var kvpStr = this.Select(d => $"({d.Key}, {d.Value})");
         return $"<{string.Join(", ", kvpStr)}>";
     }
 
-    public void Testing()
+    public void TestValidation()
     {
         ResetInspectorKVPs();
 
@@ -366,4 +367,6 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
 
         Debug.Log("Tests passed");
     }
+    #endregion
 }
+

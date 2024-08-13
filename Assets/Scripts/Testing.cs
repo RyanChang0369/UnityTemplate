@@ -243,6 +243,6 @@ public class Testing : MonoBehaviour
             testUnityDict.Remove(toRemove);
         }
 
-        testUnityDict.Testing();
+        testUnityDict.TestValidation();
     }
 }
