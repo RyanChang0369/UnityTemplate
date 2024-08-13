@@ -37,7 +37,7 @@ public class BonesDictionary<TValue> :
         foreach (var bone in skinnedMesh.bones)
         {
             // If key missing, then adds it with a default value.
-            this.TryAdd(bone, default);
+            editorDict.TryAdd(bone, default);
         }
     }
 
