@@ -63,14 +63,21 @@ public class Arc
     }
     #endregion
 
-    public int OverlapCollidersNonAlloc(Vector2 position, Collider2D[] results,
-        int layerMask, float minDepth, float maxDepth)
+    #region Collider Overlap
+    /// <summary>
+    /// Overlap all colliders that fit in this arc centered at <paramref
+    /// name="position"/>.
+    /// </summary>
+    /// <inheritdoc cref="Physics2D.OverlapCircle(Vector2, float,
+    /// ContactFilter2D, Collider2D[])"/>
+    public int OverlapColliders(Vector2 position, ContactFilter2D contactFilter,
+        Collider2D[] results)
     {
-        int cnt = Physics2D.OverlapCircleNonAlloc(position, radius, results,
-            layerMask, minDepth, maxDepth);
+        int cnt = Physics2D.OverlapCircle(position, radius, contactFilter,
+            results);
 
         int lPtr = results.Length - 1;
-        
+
         for (int i = 0; i < cnt;)
         {
             // Determine if this point is within this arc.
@@ -78,7 +85,7 @@ public class Arc
             Vector2 hitPos = collider.transform.position;
             Vector2 diff = hitPos - position;
             FloatAngle theta = new(
-                Mathf.Atan2(diff.y, diff.x), 
+                Mathf.Atan2(diff.y, diff.x),
                 Units.Radians
             );
 
@@ -99,4 +106,5 @@ public class Arc
 
         return cnt;
     }
+    #endregion
 }
