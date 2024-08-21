@@ -317,6 +317,19 @@ MonoBehaviour:
     multiplier: 98
   - addition: 0
     multiplier: 1
+  testEnumDictionary:
+    editorDict:
+      keyValuePairs:
+      - key: 0
+        value: {fileID: 0}
+      - key: 1
+        value: {fileID: 0}
+      - key: 2
+        value: {fileID: 0}
+      - key: 21
+        value: {fileID: 0}
+      - key: -1
+        value: {fileID: 0}
   testUnityDict:
     keyValuePairs:
     - key: 70109442B03F32E860A27FB3711389E5
