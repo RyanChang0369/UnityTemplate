@@ -63,13 +63,13 @@ public static class JsonExt
     /// cref="JsonWriter"/>.</typeparam>
     /// <param name="writer">The JsonWriter.</param>
     /// <param name="values">Values to write.</param>
-    public static void WriteArrayParams<T>(this JsonWriter writer, params T[] values)
+    public static void WriteArray<T>(this JsonWriter writer, params T[] values)
     {
-        writer.WriteArray(values);
+        writer.WriteEnumerable(values);
     }
 
-    /// <inheritdoc cref="WriteArrayParams{T}(JsonWriter, T[])"/>
-    public static void WriteArray<T>(this JsonWriter writer,
+    /// <inheritdoc cref="WriteArray{T}(JsonWriter, T[])"/>
+    public static void WriteEnumerable<T>(this JsonWriter writer,
         IEnumerable<T> values)
     {
         writer.WriteStartArray();
