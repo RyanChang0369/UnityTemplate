@@ -156,12 +156,32 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     #endregion
 
     #region ISerializationCallbackReceiver Implementation
+    /// <summary>
+    /// Called right before this object is saved (serialized) in Unity. This
+    /// "resets" the <see cref="keyValuePairs"/> after they are changed in the
+    /// editor, which validates them and ensures that they remain consistent
+    /// with the <see cref="internalDict"/>.
+    /// </summary>
+    /// <remarks>
+    /// Note that this is not the same as JSON serialization. Unity uses its own
+    /// serialization thing internally to load prefabs and stuff. See
+    /// https://docs.unity3d.com/Manual/script-Serialization.html for what
+    /// things are serialized, and see
+    /// https://docs.unity3d.com/6000.0/Documentation/Manual/ScriptSerializationHowUnityUses.html
+    /// for when things are serialized.
+    /// </remarks>
     public void OnBeforeSerialize()
     {
         // Need to save the KVPs.
         ResetInspectorKVPs();
     }
 
+    /// <summary>
+    /// Called right after this object is loaded (deserialized). This "resets"
+    /// the <see cref="internalDict"/>, forcing them to match with the newly
+    /// loaded <see cref="keyValuePairs"/>.
+    /// </summary>
+    /// <inheritdoc cref="OnBeforeSerialize"/>
     public void OnAfterDeserialize()
     {
         // Set the dictionary based on the KVPs.
