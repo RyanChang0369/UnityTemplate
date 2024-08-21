@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using NaughtyAttributes;
 using Newtonsoft.Json;
@@ -15,7 +14,6 @@ using UnityEngine.Assertions;
 /// <typeparam name="TKey">A unity-serializable value.</typeparam>
 /// <typeparam name="TValue">A unity-serializable value.</typeparam>
 [JsonObject(MemberSerialization.OptIn)]
-// [JsonConverter(typeof(UnityDictionaryConverter))]
 [Serializable]
 public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     IDictionary, IUnityDictionary, ISerializationCallbackReceiver
@@ -47,6 +45,12 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Creates a new <see cref="InspectorKeyValuePair"/> from the provided
+        /// <paramref name="key"/> and <paramref name="value"/>.
+        /// </summary>
+        /// <param name="key">The provided key.</param>
+        /// <param name="value">The provided value.</param>
         public InspectorKeyValuePair(TKey key, TValue value)
         {
             this.key = key;
@@ -67,10 +71,20 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
         #endregion
 
         #region Converters
+        /// <summary>
+        /// Automatically converts from a <see cref="KeyValuePair{TKey,
+        /// TValue}"/> to a <see cref="InspectorKeyValuePair"/>.
+        /// </summary>
+        /// <param name="kvp">The value being converted.</param>
         public static implicit operator KeyValuePair<TKey, TValue>(
             InspectorKeyValuePair kvp) =>
             new(kvp.Key, kvp.Value);
 
+        /// <summary>
+        /// Allows conversion from a <see cref="InspectorKeyValuePair"/> to a
+        /// <see cref="KeyValuePair{TKey,TValue}"/>.
+        /// </summary>
+        /// <param name="kvp">The value being converted.</param>
         public static explicit operator InspectorKeyValuePair(
             KeyValuePair<TKey, TValue> kvp) =>
             new(kvp.Key, kvp.Value);
@@ -95,28 +109,6 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
 #pragma warning disable IDE0044 // Add readonly modifier
     private Dictionary<TKey, TValue> internalDict;
 #pragma warning restore IDE0044 // Add readonly modifier
-    #endregion
-
-    #region Input Checking
-    private static readonly InspectorKVPKeyComparer inspectorKVPKeyComparer = new();
-
-    private class InspectorKVPKeyComparer : IEqualityComparer<InspectorKeyValuePair>
-    {
-        public bool Equals(InspectorKeyValuePair x, InspectorKeyValuePair y)
-        {
-            if (x.Key == null && y.Key == null)
-                return true;
-            else if (x.Key == null || y.Key == null)
-                return false;
-            else
-                return x.Key.Equals(y.Key);
-        }
-
-        public int GetHashCode(InspectorKeyValuePair obj)
-        {
-            return obj.GetHashCode();
-        }
-    }
     #endregion
 
     #region Constructors
@@ -368,26 +360,3 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     #endregion
 }
 
-// public class UnityDictionaryConverter : JsonConverter<IUnityDictionary>
-// {
-//     public override IUnityDictionary ReadJson(JsonReader reader,
-//         Type objectType, IUnityDictionary existingValue,
-//         bool hasExistingValue, JsonSerializer serializer)
-//     {
-//         var dict = JsonConvert.DeserializeObject<IDictionary>((string)reader.Value);
-//         // return new IUnityDictionary();
-//         Type[] types = { typeof(IDictionary) };
-//         object[] parameters = { dict };
-//         var cInfo = objectType.GetConstructor(types);
-//         cInfo.Invoke(parameters);
-//         return null;
-//     }
-
-//     public override void WriteJson(JsonWriter writer, IUnityDictionary value,
-//         JsonSerializer serializer)
-//     {
-//         var dict = value.AsDictionary();
-//         string json = JsonConvert.SerializeObject(dict);
-//         writer.WriteRawValue(json);
-//     }
-// }
