@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using UnityEngine;
 
 /// <summary>
@@ -12,6 +13,7 @@ using UnityEngine;
 /// <remarks>
 /// Authors: Ryan Chang (2024)
 /// </remarks>
+[JsonObject(MemberSerialization.OptIn)]
 [Serializable]
 public abstract class StaticKeyedDictionary<TKey, TValue> :
     IReadOnlyDictionary<TKey, TValue>, IStaticKeyedDictionary
@@ -20,8 +22,27 @@ public abstract class StaticKeyedDictionary<TKey, TValue> :
     /// <summary>
     /// The dictionary explicitly used by the editor.
     /// </summary>
-    [SerializeField]
+    [JsonProperty, SerializeField]
     protected UnityDictionary<TKey, TValue> editorDict = new();
+    #endregion
+
+    #region Constructors
+    /// <summary>
+    /// Creates a new <see cref="StaticKeyedDictionary{TKey, TValue}"/> from the
+    /// provided <paramref name="dictionary"/>.
+    /// </summary>
+    /// <remarks>
+    /// This constructor is marked protected as it should only be used by the
+    /// JSON converter, and this constructor should not be used normally. See
+    /// the documentation for <see cref="ISaveLoadable{T}"/> for more
+    /// information on JSON.
+    /// </remarks>
+    /// <param name="dictionary">The provided dictionary.</param>
+    [JsonConstructor]
+    protected StaticKeyedDictionary(IDictionary<TKey, TValue> dictionary)
+    {
+        editorDict = new(dictionary);
+    }
     #endregion
 
     #region Properties
@@ -50,12 +71,16 @@ public abstract class StaticKeyedDictionary<TKey, TValue> :
         throw new ArgumentException($"{key} not of correct type ({typeof(TKey)}).");
     }
 
+    public IDictionary AsDictionary() => editorDict.AsDictionary();
+
     public UnityDictionaryErrorCode CalculateErrorCode() =>
         editorDict.CalculateErrorCode();
 
-    public void ResetInternalDict() => editorDict.ResetInternalDict();
+    public void ResetInternalDict(bool force = false) =>
+        editorDict.ResetInternalDict(force);
 
-    public void ResetInspectorKVPs() => editorDict.ResetInspectorKVPs();
+    public void ResetInspectorKVPs(bool force = false) =>
+        editorDict.ResetInspectorKVPs(force);
     #endregion
 
     #region IReadOnlyDictionary Implementation

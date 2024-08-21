@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-
 /// <summary>
 /// Extensions for coroutines
 /// </summary>
@@ -21,10 +20,22 @@ public static class CoroutineExt
     /// <inheritdoc cref="StopExclusiveCoroutine(MonoBehaviour, ref
     /// Coroutine)"/>
     public static void StartExclusiveCoroutine(this MonoBehaviour behaviour,
-        IEnumerator enumerator, ref Coroutine coroutine)
+        IEnumerator enumerator, ref Coroutine coroutine, bool doError = false)
     {
-        StopExclusiveCoroutine(behaviour, ref coroutine);
-        coroutine = behaviour.StartCoroutine(enumerator);
+        if (doError)
+        {
+            coroutine = coroutine == null
+                ? behaviour.StartCoroutine(enumerator)
+                : throw new InvalidOperationException(
+                    $"Coroutine {coroutine} in behaviour {behaviour} " +
+                    "already running."
+                );
+        }
+        else
+        {
+            StopExclusiveCoroutine(behaviour, ref coroutine, doError);
+            coroutine = behaviour.StartCoroutine(enumerator);
+        }
     }
 
     /// <summary>
@@ -34,12 +45,19 @@ public static class CoroutineExt
     /// running on.</param>
     /// <param name="coroutine">The coroutine.</param>
     public static void StopExclusiveCoroutine(this MonoBehaviour behaviour,
-        ref Coroutine coroutine)
+        ref Coroutine coroutine, bool doError = false)
     {
         if (coroutine != null)
         {
             behaviour.StopCoroutine(coroutine);
             coroutine = null;
+        }
+        else if (doError)
+        {
+            throw new InvalidOperationException(
+                $"Coroutine {coroutine} in behaviour {behaviour} " +
+                "is not running."
+            );
         }
     }
     #endregion

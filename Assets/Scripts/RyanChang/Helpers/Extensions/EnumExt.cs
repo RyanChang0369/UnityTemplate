@@ -40,7 +40,7 @@ public static class EnumExt
     /// </summary>
     /// <typeparam name="TEnum">Any enum type.</typeparam>
     /// <returns></returns>
-    public static Array GetValues<TEnum>()
-        where TEnum : struct, Enum => Enum.GetValues(typeof(TEnum));
+    public static TEnum[] GetValues<TEnum>()
+        where TEnum : struct, Enum => (TEnum[])Enum.GetValues(typeof(TEnum));
     #endregion
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 /// <summary>
 /// Represents a dictionary of enums, where each enum is mapped to a value.
@@ -13,13 +14,18 @@ public class EnumDictionary<TEnum, TValue> :
     StaticKeyedDictionary<TEnum, TValue>
     where TEnum : struct, Enum
 {
-    public EnumDictionary()
-    {
-        foreach (TEnum enumIndex in EnumExt.GetValues<TEnum>())
-        {
-            editorDict[enumIndex] = default;
-        }
-    }
+    #region Constructors
+    private static IDictionary<TEnum, TValue> DefaultEnumDict =>
+        EnumExt.GetValues<TEnum>().
+        ToDictionary<TEnum, TEnum, TValue>(d => d, d => default);
+
+    public EnumDictionary() : base(DefaultEnumDict)
+    { }
+
+    protected EnumDictionary(IDictionary<TEnum, TValue> dict) : base(dict)
+    { }
+
+    #endregion
 
     #region StackedKeyDictionary Implementation
     public override void GenerateStaticKeys(UnityEngine.Object targetObject)

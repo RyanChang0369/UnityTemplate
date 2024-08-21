@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using NaughtyAttributes;
+using Newtonsoft.Json;
 using UnityEngine;
 
 public class Testing : MonoBehaviour
@@ -46,7 +47,7 @@ public class Testing : MonoBehaviour
         Mould = 21
     }
 
-    // public EnumDictionary<TestEnum, GameObject> testEnumDictionary = new();
+    public EnumDictionary<TestEnum, GameObject> testEnumDictionary = new();
 
     public UnityDictionary<string, int> testUnityDict = new();
 
@@ -244,5 +245,14 @@ public class Testing : MonoBehaviour
         }
 
         testUnityDict.TestValidation();
+    }
+
+    [Button]
+    private void TestUnityDictSaveLoad()
+    {
+        var serialized = JsonConvert.SerializeObject(testUnityDict);
+        print(serialized);
+        var thingy = JsonConvert.DeserializeObject<UnityDictionary<string, int>>(serialized);
+        print(thingy);
     }
 }

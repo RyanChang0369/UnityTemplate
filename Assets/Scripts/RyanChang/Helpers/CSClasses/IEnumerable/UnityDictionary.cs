@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using NaughtyAttributes;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -12,9 +14,11 @@ using UnityEngine.Assertions;
 /// </summary>
 /// <typeparam name="TKey">A unity-serializable value.</typeparam>
 /// <typeparam name="TValue">A unity-serializable value.</typeparam>
+[JsonObject(MemberSerialization.OptIn)]
+// [JsonConverter(typeof(UnityDictionaryConverter))]
 [Serializable]
 public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
-    IUnityDictionary, ISerializationCallbackReceiver
+    IDictionary, IUnityDictionary, ISerializationCallbackReceiver
 {
     #region Structs
     [Serializable]
@@ -87,39 +91,13 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     /// The "real" dictionary. If a change is made to the internal dictionary,
     /// it should be reflected with the keyValuePairs.
     /// </summary>
+    [JsonProperty("dictionary")]
+#pragma warning disable IDE0044 // Add readonly modifier
     private Dictionary<TKey, TValue> internalDict;
+#pragma warning restore IDE0044 // Add readonly modifier
     #endregion
 
     #region Input Checking
-    /// <summary>
-    /// Checks if the <see cref="keyValuePairs"/> are valid and reports an error
-    /// code if they are not.
-    /// </summary>
-    public UnityDictionaryErrorCode CalculateErrorCode()
-    {
-        UnityDictionaryErrorCode code = UnityDictionaryErrorCode.None;
-
-        if (keyValuePairs == null)
-        {
-            return code;
-        }
-
-        if (keyValuePairs.Count != internalDict.Count)
-        {
-            code |= UnityDictionaryErrorCode.DuplicateKeys;
-        }
-
-        if (typeof(TKey).IsClass)
-        {
-            if (keyValuePairs.Any(kvp => kvp.Key == null))
-            {
-                code |= UnityDictionaryErrorCode.NullKeys;
-            }
-        }
-
-        return code;
-    }
-
     private static readonly InspectorKVPKeyComparer inspectorKVPKeyComparer = new();
 
     private class InspectorKVPKeyComparer : IEqualityComparer<InspectorKeyValuePair>
@@ -152,7 +130,8 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     }
 
     /// <summary>
-    /// Creates a new UnityDictionary from the collection of key value pairs.
+    /// Creates a new <see cref="UnityDictionary{TKey, TValue}"/> from the
+    /// collection of key value pairs.
     /// </summary>
     /// <param name="collection">The aforementioned collection.</param>
     public UnityDictionary(IEnumerable<KeyValuePair<TKey, TValue>> collection)
@@ -166,11 +145,21 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
         else
         {
             // There are items in the collection.
-            keyValuePairs = new(collection.Select(
-                c => new InspectorKeyValuePair(c)
-            ));
             internalDict = new(collection);
+            ResetInspectorKVPs(true);
         }
+    }
+
+    /// <summary>
+    /// Creates a new <see cref="UnityDictionary{TKey, TValue}"/> from the
+    /// provided <paramref name="dictionary"/>.
+    /// </summary>
+    /// <param name="dictionary">The provided dictionary.</param>
+    [JsonConstructor]
+    public UnityDictionary(IDictionary<TKey, TValue> dictionary)
+    {
+        internalDict = new(dictionary);
+        ResetInspectorKVPs(true);
     }
     #endregion
 
@@ -189,7 +178,7 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     #endregion
 
     #region IUnityDictionary Implementation
-    public void ResetInspectorKVPs()
+    public void ResetInspectorKVPs(bool force = false)
     {
         // Local function (see
         // https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic?view=netstandard-2.1).
@@ -204,7 +193,7 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
             );
         }
 
-        if (keyValuePairs.Count >= 2)
+        if (!force && keyValuePairs != null && keyValuePairs.Count >= 2)
         {
             var last0 = keyValuePairs[^1];
             var last1 = keyValuePairs[^2];
@@ -223,7 +212,7 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
         }
     }
 
-    public void ResetInternalDict()
+    public void ResetInternalDict(bool force = false)
     {
         internalDict.Clear();
 
@@ -232,9 +221,13 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
             internalDict[kvp.Key] = kvp.Value;
         }
     }
+
+    public IDictionary AsDictionary() =>
+        new Dictionary<TKey, TValue>(internalDict);
     #endregion
 
     #region IDictionary Implementation
+    #region Properties
     public ICollection<TKey> Keys => internalDict.Keys;
 
     public ICollection<TValue> Values => internalDict.Values;
@@ -243,99 +236,104 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
 
     public bool IsReadOnly => false;
 
+    public bool IsFixedSize => false;
+
+    ICollection IDictionary.Keys => (ICollection)Keys;
+
+    ICollection IDictionary.Values => (ICollection)Values;
+
+    public bool IsSynchronized => false;
+
+    public object SyncRoot => null;
+
+    public object this[object key]
+    {
+        get => this[(TKey)key];
+        set => this[(TKey)key] = (TValue)value;
+    }
+
     public TValue this[TKey key]
     {
-        get
-        {
-            return internalDict[key];
-        }
-        set
-        {
-            internalDict[key] = value;
-
-            // #if UNITY_EDITOR
-            //             // This code only runs in the editor as that is the only time when
-            //             // keyValuePairs is modifiable.
-            //             int i = keyValuePairs.FindIndex(kvp => kvp.Key.Equals(key));
-
-            //             if (i >= 0)
-            //                 keyValuePairs[i] = new(keyValuePairs[i].Key, value);
-            //             else
-            //                 keyValuePairs.Add(new(key, value));
-            // #endif
-        }
+        get => internalDict[key];
+        set => internalDict[key] = value;
     }
+    #endregion
 
-    public void Add(TKey key, TValue value)
-    {
-        internalDict.Add(key, value);
-        // keyValuePairs.Add(new(key, value));
-    }
+    #region Methods
+    public void Add(TKey key, TValue value) => internalDict.Add(key, value);
 
-    public bool ContainsKey(TKey key)
-    {
-        return internalDict.ContainsKey(key);
-    }
+    public bool ContainsKey(TKey key) => internalDict.ContainsKey(key);
 
-    public bool Remove(TKey key)
-    {
-        bool removed = internalDict.Remove(key);
+    public bool Remove(TKey key) => internalDict.Remove(key);
 
-        // if (removed)
-        //     keyValuePairs.RemoveAll(kvp => kvp.Key.Equals(key));
+    public bool TryGetValue(TKey key, out TValue value) =>
+        internalDict.TryGetValue(key, out value);
 
-        return removed;
-    }
-
-    public bool TryGetValue(TKey key, out TValue value)
-    {
-        return internalDict.TryGetValue(key, out value);
-    }
-
-    public void Add(KeyValuePair<TKey, TValue> item)
-    {
+    public void Add(KeyValuePair<TKey, TValue> item) =>
         internalDict.Add(item.Key, item.Value);
-        // keyValuePairs.Add(new(item));
-    }
 
-    public void Clear()
-    {
-        internalDict.Clear();
-        // keyValuePairs.Clear();
-    }
+    public void Clear() => internalDict.Clear();
 
     public bool Contains(KeyValuePair<TKey, TValue> item)
     {
         return internalDict.Contains(item);
     }
 
-    public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
-    {
+    public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex) =>
         ((IDictionary<TKey, TValue>)internalDict).CopyTo(array, arrayIndex);
-    }
 
-    public bool Remove(KeyValuePair<TKey, TValue> item)
-    {
-        bool removed = internalDict.Remove(item.Key);
+    public bool Remove(KeyValuePair<TKey, TValue> item) =>
+        internalDict.Remove(item.Key);
 
-        // if (removed)
-        //     keyValuePairs.RemoveAll(kvp => kvp.Key.Equals(item.Key));
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() =>
+        internalDict.GetEnumerator();
 
-        return removed;
-    }
+    IEnumerator IEnumerable.GetEnumerator() => internalDict.GetEnumerator();
 
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
-    {
-        return internalDict.GetEnumerator();
-    }
+    public void Add(object key, object value) => Add((TKey)key, (TValue)value);
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return internalDict.GetEnumerator();
-    }
+    public bool Contains(object key) => Contains((TKey)key);
+
+    IDictionaryEnumerator IDictionary.GetEnumerator() =>
+        (IDictionaryEnumerator)GetEnumerator();
+
+    public void Remove(object key) => Remove((TKey)key);
+
+    public void CopyTo(Array array, int index) =>
+        CopyTo((KeyValuePair<TKey, TValue>[])array, index);
+    #endregion
     #endregion
 
     #region Other Methods
+    /// <summary>
+    /// Checks if the <see cref="keyValuePairs"/> are valid and reports an error
+    /// code if they are not.
+    /// </summary>
+    public UnityDictionaryErrorCode CalculateErrorCode()
+    {
+        UnityDictionaryErrorCode code = UnityDictionaryErrorCode.None;
+
+        if (keyValuePairs == null)
+        {
+            return code;
+        }
+
+        if (keyValuePairs.Count != internalDict.Count)
+        {
+            code |= UnityDictionaryErrorCode.DuplicateKeys;
+        }
+
+        if (typeof(TKey).IsClass)
+        {
+            if (keyValuePairs.Any(kvp => kvp.Key == null))
+            {
+                code |= UnityDictionaryErrorCode.NullKeys;
+            }
+        }
+
+        return code;
+    }
+
     public override string ToString()
     {
         var kvpStr = this.Select(d => $"({d.Key}, {d.Value})");
@@ -370,3 +368,26 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     #endregion
 }
 
+// public class UnityDictionaryConverter : JsonConverter<IUnityDictionary>
+// {
+//     public override IUnityDictionary ReadJson(JsonReader reader,
+//         Type objectType, IUnityDictionary existingValue,
+//         bool hasExistingValue, JsonSerializer serializer)
+//     {
+//         var dict = JsonConvert.DeserializeObject<IDictionary>((string)reader.Value);
+//         // return new IUnityDictionary();
+//         Type[] types = { typeof(IDictionary) };
+//         object[] parameters = { dict };
+//         var cInfo = objectType.GetConstructor(types);
+//         cInfo.Invoke(parameters);
+//         return null;
+//     }
+
+//     public override void WriteJson(JsonWriter writer, IUnityDictionary value,
+//         JsonSerializer serializer)
+//     {
+//         var dict = value.AsDictionary();
+//         string json = JsonConvert.SerializeObject(dict);
+//         writer.WriteRawValue(json);
+//     }
+// }

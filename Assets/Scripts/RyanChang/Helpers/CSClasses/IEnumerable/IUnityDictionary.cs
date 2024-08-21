@@ -1,3 +1,4 @@
+using System.Collections;
 
 /// <summary>
 /// Interface used solely by the <see cref="UnityDictionary<,>"/>, to allow
@@ -16,11 +17,15 @@ public interface IUnityDictionary
     /// Resets the internal dictionary to match the internal inspector key value
     /// pairs displayed in the editor.
     /// </summary>
-    public void ResetInternalDict();
+    /// <param name="force">Whether or not to force a reset.</param>
+    public void ResetInternalDict(bool force = false);
 
     /// <summary>
     /// Resets the internal inspector key value pairs to match the internal
     /// dictionary.
     /// </summary>
-    public void ResetInspectorKVPs();
+    /// <param name="force">Whether or not to force a reset.</param>
+    public void ResetInspectorKVPs(bool force = false);
+    
+    public IDictionary AsDictionary();
 }
