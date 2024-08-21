@@ -122,6 +122,27 @@ public static class RNGExt
     }
     #endregion
 
+    #region Byte
+    /// <summary>
+    /// Gets a random byte string.
+    /// </summary>
+    /// <param name="bytes">How many bytes of RNG to generate?</param>
+    /// <returns></returns>
+    public static byte[] RandomHash(int bytes = 16)
+    {
+        byte[] arr = new byte[bytes];
+        RNGNum.NextBytes(arr);
+        return arr;
+    }
+
+    /// <inheritdoc cref="RandomHash(int)"/>
+    /// <summary>
+    /// Gets a random byte string as a hexadecimal hash.
+    /// </summary>
+    public static string RandomHashString(int bytes = 16) =>
+        BitConverter.ToString(RandomHash(bytes)).Replace("-", "");
+    #endregion
+
     #region Vector2
     /// <summary>
     /// Returns a Vector2 with all components ranging from -val (inclusive) to
@@ -418,25 +439,33 @@ public static class RNGExt
         RandomRect(bound.min, bound.max);
     #endregion
 
-    #region Byte
+    #region Curve
     /// <summary>
-    /// Gets a random byte string.
+    /// Retrieves a random value on the animation curve, allowing for the biased
+    /// selection of random values.
     /// </summary>
-    /// <param name="bytes">How many bytes of RNG to generate?</param>
-    /// <returns></returns>
-    public static byte[] RandomHash(int bytes = 16)
+    /// <param name="curve">The animation curve.</param>
+    public static float RandomValueOnCurve(this AnimationCurve curve)
     {
-        byte[] arr = new byte[bytes];
-        RNGNum.NextBytes(arr);
-        return arr;
-    }
+        if (curve == null)
+            throw new ArgumentNullException(
+                "Value of curve not set."
+            );
+        else if (curve.keys.IsEmpty())
+            throw new ArgumentOutOfRangeException(
+                "Curve does not have any keys."
+            );
 
-    /// <inheritdoc cref="RandomHash(int)"/>
-    /// <summary>
-    /// Gets a random byte string as a hexadecimal hash.
-    /// </summary>
-    public static string RandomHashString(int bytes = 16) =>
-        BitConverter.ToString(RandomHash(bytes)).Replace("-", "");
+        float min = curve.keys.First().time;
+        float max = curve.keys.Last().time;
+
+        if (min > max)
+            throw new ArgumentException(
+                "Curve is malformed (first key occurs before the last key)"
+            );
+
+        return curve.Evaluate(RandomFloat(min, max));
+    }
     #endregion
 
     #region IEnumerable & Related

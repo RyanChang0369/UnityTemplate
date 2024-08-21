@@ -6,17 +6,19 @@ using UnityEngine;
 
 /// <summary>
 /// Provides a base class to allow for easy creation of new dictionaries (with
-/// program-defined keys) that are visible to the unity editor. Utilizes the
-/// <see cref="UnityDictionary{TKey, TValue}"/>
+/// program-defined keys) that are visible to the unity editor; aka a read-only
+/// dictionary for unity. Utilizes the <see cref="UnityDictionary{TKey,
+/// TValue}"/>
 /// </summary>
 ///
 /// <remarks>
 /// Authors: Ryan Chang (2024)
 /// </remarks>
 [JsonObject(MemberSerialization.OptIn)]
+[JsonConverter(typeof(StaticKeyedDictionaryConverter))]
 [Serializable]
 public abstract class StaticKeyedDictionary<TKey, TValue> :
-    IReadOnlyDictionary<TKey, TValue>, IStaticKeyedDictionary
+    IStaticKeyedDictionary<TKey, TValue>
 {
     #region Variables
     /// <summary>
@@ -52,6 +54,28 @@ public abstract class StaticKeyedDictionary<TKey, TValue> :
     public IEnumerable<TValue> Values => editorDict.Values;
 
     public int Count => editorDict.Count;
+
+    public bool IsFixedSize => true;
+
+    public bool IsReadOnly => true;
+
+    ICollection IDictionary.Keys => editorDict.Keys;
+
+    ICollection IDictionary.Values => editorDict.Values;
+
+    public bool IsSynchronized => false;
+
+    public object SyncRoot => null;
+
+    ICollection<TKey> IDictionary<TKey, TValue>.Keys => editorDict.Keys;
+
+    ICollection<TValue> IDictionary<TKey, TValue>.Values => editorDict.Values;
+
+    object IDictionary.this[object key]
+    {
+        get => editorDict[key];
+        set => editorDict[key] = value;
+    }
     #endregion
     #endregion
 
@@ -71,8 +95,6 @@ public abstract class StaticKeyedDictionary<TKey, TValue> :
         throw new ArgumentException($"{key} not of correct type ({typeof(TKey)}).");
     }
 
-    public IDictionary AsDictionary() => editorDict.AsDictionary();
-
     public UnityDictionaryErrorCode CalculateErrorCode() =>
         editorDict.CalculateErrorCode();
 
@@ -83,7 +105,7 @@ public abstract class StaticKeyedDictionary<TKey, TValue> :
         editorDict.ResetInspectorKVPs(force);
     #endregion
 
-    #region IReadOnlyDictionary Implementation
+    #region IDictionary Implementation
     public TValue this[TKey key]
     {
         get => editorDict[key];
@@ -99,6 +121,49 @@ public abstract class StaticKeyedDictionary<TKey, TValue> :
         editorDict.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => editorDict.GetEnumerator();
+
+    private const string NOT_SUPPORTED_MSG =
+        "StaticKeyedDictionary has a fixed size and is read only.";
+
+    void IDictionary.Add(object key, object value) =>
+        throw new NotSupportedException(NOT_SUPPORTED_MSG);
+
+    void IDictionary.Clear() =>
+        throw new NotSupportedException(NOT_SUPPORTED_MSG);
+    bool IDictionary.Contains(object key) => ContainsKey((TKey)key);
+
+    IDictionaryEnumerator IDictionary.GetEnumerator() =>
+        (IDictionaryEnumerator)GetEnumerator();
+
+    void IDictionary.Remove(object key) =>
+        throw new NotSupportedException(NOT_SUPPORTED_MSG);
+
+    void ICollection.CopyTo(Array array, int index) =>
+        editorDict.CopyTo(array, index);
+
+    void IDictionary<TKey, TValue>.Add(TKey key, TValue value) =>
+        throw new NotSupportedException(NOT_SUPPORTED_MSG);
+
+    bool IDictionary<TKey, TValue>.Remove(TKey key) =>
+        throw new NotSupportedException(NOT_SUPPORTED_MSG);
+
+    void ICollection<KeyValuePair<TKey, TValue>>.Add(
+        KeyValuePair<TKey, TValue> item) =>
+        throw new NotSupportedException(NOT_SUPPORTED_MSG);
+
+    void ICollection<KeyValuePair<TKey, TValue>>.Clear() =>
+        throw new NotSupportedException(NOT_SUPPORTED_MSG);
+
+    bool ICollection<KeyValuePair<TKey, TValue>>.Contains(
+        KeyValuePair<TKey, TValue> item) =>
+        editorDict.Contains(item);
+
+    public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex) =>
+        editorDict.CopyTo(array, arrayIndex);
+
+    bool ICollection<KeyValuePair<TKey, TValue>>.Remove(
+        KeyValuePair<TKey, TValue> item) =>
+        throw new NotSupportedException(NOT_SUPPORTED_MSG);
     #endregion
 
     #region Other Methods

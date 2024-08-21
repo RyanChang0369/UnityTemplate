@@ -47,7 +47,7 @@ public class Testing : MonoBehaviour
         Mould = 21
     }
 
-    public EnumDictionary<TestEnum, GameObject> testEnumDictionary = new();
+    public EnumDictionary<TestEnum, Range> testEnumDictionary = new();
 
     public UnityDictionary<string, int> testUnityDict = new();
 
@@ -250,9 +250,15 @@ public class Testing : MonoBehaviour
     [Button]
     private void TestUnityDictSaveLoad()
     {
-        var serialized = JsonConvert.SerializeObject(testUnityDict);
+        SaveLoadDict(testUnityDict);
+        SaveLoadDict(testEnumDictionary);
+    }
+
+    private void SaveLoadDict<T>(T dictionary) where T : IUnityDictionary
+    {
+        var serialized = JsonConvert.SerializeObject(dictionary);
         print(serialized);
-        var thingy = JsonConvert.DeserializeObject<UnityDictionary<string, int>>(serialized);
+        var thingy = JsonConvert.DeserializeObject<T>(serialized);
         print(thingy);
     }
 }

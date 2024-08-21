@@ -665,6 +665,14 @@ public static class UnityObjectExt
         out T manager, ref Dictionary<Type, MonoBehaviour> managerCache,
         bool dontDestroyOnLoad) where T : MonoBehaviour
     {
+        if (!Application.isPlaying)
+        {
+            throw new InvalidOperationException(
+                "Cannot create a manager instance for " +
+                $"{typeof(T).Name} in editor mode."
+            );
+        }
+
         self.RequireComponentInChildren(out T tempManager);
 
         if (dontDestroyOnLoad)

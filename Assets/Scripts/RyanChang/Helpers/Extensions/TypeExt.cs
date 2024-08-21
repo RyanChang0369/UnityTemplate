@@ -46,9 +46,8 @@ public static class TypeExt
     public static IEnumerable<Type> FindAllDerivedTypes<T>()
         => FindAllDerivedTypes<T>(Assembly.GetAssembly(typeof(T)));
     #endregion
-    #endregion
 
-
+    #region Field Value
     /// <summary>
     /// Finds and returns the field value for <paramref name="obj"/>.
     /// </summary>
@@ -65,6 +64,13 @@ public static class TypeExt
         return (T)field.GetValue(obj);
     }
 
+    /// <summary>
+    /// Tries to find the field value for <paramref name="obj"/>.
+    /// </summary>
+    /// <param name="fieldValue">If found, the field value will be placed here.
+    /// Otherwise, null will be placed here.</param>
+    /// <returns>True if field value was found.</returns>
+    /// <inheritdoc cref="GetFieldValue{T}(object, string, BindingFlags)"/>
     public static bool TryGetFieldValue<T>(this object obj, string fieldName,
         BindingFlags flags, out T fieldValue)
     {
@@ -87,4 +93,6 @@ public static class TypeExt
             return false;
         }
     }
+    #endregion
+    #endregion
 }

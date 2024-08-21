@@ -32,7 +32,7 @@ public static class EnumExt
     /// <param name="enumValue">The enum value.</param>
     /// <typeparam name="TEnum">Any enum type.</typeparam>
     /// <returns></returns>
-    public static object GetName<TEnum>(this TEnum enumValue)
+    public static string GetName<TEnum>(this TEnum enumValue)
         where TEnum : struct, Enum => Enum.GetName(typeof(TEnum), enumValue);
 
     /// <summary>

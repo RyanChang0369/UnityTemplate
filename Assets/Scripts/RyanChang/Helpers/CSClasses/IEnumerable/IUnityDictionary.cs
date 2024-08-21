@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 
 /// <summary>
 /// Interface used solely by the <see cref="UnityDictionary<,>"/>, to allow
@@ -9,7 +10,7 @@ using System.Collections;
 /// <remarks>
 /// Authors: Ryan Chang (2024)
 /// </remarks>
-public interface IUnityDictionary
+public interface IUnityDictionary : IDictionary
 {
     public UnityDictionaryErrorCode CalculateErrorCode();
 
@@ -26,6 +27,15 @@ public interface IUnityDictionary
     /// </summary>
     /// <param name="force">Whether or not to force a reset.</param>
     public void ResetInspectorKVPs(bool force = false);
-    
-    public IDictionary AsDictionary();
+}
+
+/// <summary>
+/// Generic version of <see cref="IUnityDictionary"/>.
+/// </summary>
+/// <typeparam name="TKey">The dictionary key type.</typeparam>
+/// <typeparam name="TValue">The dictionary value type.</typeparam>
+public interface IUnityDictionary<TKey, TValue> : IUnityDictionary, IDictionary<TKey, TValue>,
+    IReadOnlyDictionary<TKey, TValue>
+{
+
 }

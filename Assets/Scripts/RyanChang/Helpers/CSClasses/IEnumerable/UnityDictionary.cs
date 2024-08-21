@@ -14,9 +14,9 @@ using UnityEngine.Assertions;
 /// <typeparam name="TKey">A unity-serializable value.</typeparam>
 /// <typeparam name="TValue">A unity-serializable value.</typeparam>
 [JsonObject(MemberSerialization.OptIn)]
+[JsonConverter(typeof(UnityDictionaryConverter))]
 [Serializable]
-public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
-    IDictionary, IUnityDictionary, ISerializationCallbackReceiver
+public class UnityDictionary<TKey, TValue> : IUnityDictionary<TKey, TValue>, ISerializationCallbackReceiver
 {
     #region Structs
     [Serializable]
@@ -233,16 +233,17 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
             internalDict[kvp.Key] = kvp.Value;
         }
     }
-
-    public IDictionary AsDictionary() =>
-        new Dictionary<TKey, TValue>(internalDict);
     #endregion
 
     #region IDictionary Implementation
     #region Properties
-    public ICollection<TKey> Keys => internalDict.Keys;
+    public Dictionary<TKey,TValue>.KeyCollection Keys => internalDict.Keys;
 
-    public ICollection<TValue> Values => internalDict.Values;
+    public Dictionary<TKey,TValue>.ValueCollection Values => internalDict.Values;
+
+    ICollection<TKey> IDictionary<TKey, TValue>.Keys => Keys;
+
+    ICollection<TValue> IDictionary<TKey, TValue>.Values => Values;
 
     public int Count => internalDict.Count;
 
@@ -250,13 +251,17 @@ public class UnityDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
 
     public bool IsFixedSize => false;
 
-    ICollection IDictionary.Keys => (ICollection)Keys;
+    ICollection IDictionary.Keys => Keys;
 
-    ICollection IDictionary.Values => (ICollection)Values;
+    ICollection IDictionary.Values => Values;
 
     public bool IsSynchronized => false;
 
     public object SyncRoot => null;
+
+    IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => Keys;
+
+    IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => Values;
 
     public object this[object key]
     {

@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 
 /// <summary>
 /// Interface for the <see cref="StaticKeyedDictionary{TKey, TValue}"/>. Allows
-/// certain functions to be called without knowing the specific typeparams for
-/// the object.
+/// certain functions to be called without knowing the specific type parameters
+/// for the object.
 /// </summary>
-/// 
+///
 /// <remarks>
 /// Authors: Ryan Chang (2024)
 /// </remarks>
@@ -26,4 +27,15 @@ public interface IStaticKeyedDictionary : IUnityDictionary
     /// <returns></returns>
     public string LabelFromKey(object key);
     #endregion
+}
+
+/// <summary>
+/// Generic version of <see cref="IStaticKeyedDictionary"/>.
+/// </summary>
+/// <typeparam name="TKey">The dictionary key type.</typeparam>
+/// <typeparam name="TValue">The dictionary value type.</typeparam>
+public interface IStaticKeyedDictionary<TKey, TValue> : IStaticKeyedDictionary,
+    IUnityDictionary<TKey, TValue>
+{
+
 }
