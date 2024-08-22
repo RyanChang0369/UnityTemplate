@@ -445,7 +445,12 @@ public static class RNGExt
     /// selection of random values.
     /// </summary>
     /// <param name="curve">The animation curve.</param>
-    public static float RandomValueOnCurve(this AnimationCurve curve)
+    /// <param name="floor">The absolute minimal value this method can
+    /// return. This is disabled if the value given is not finite.</param>
+    /// <param name="ceiling">The absolute maximal value this method can
+    /// return. This is disabled if the value given is not finite.</param>
+    public static float RandomValueOnCurve(this AnimationCurve curve,
+        float floor, float ceiling)
     {
         if (curve == null)
             throw new ArgumentNullException(
@@ -456,16 +461,27 @@ public static class RNGExt
                 "Curve does not have any keys."
             );
 
-        float min = curve.keys.First().time;
-        float max = curve.keys.Last().time;
+        float minT = curve.keys.First().time;
+        float maxT = curve.keys.Last().time;
 
-        if (min > max)
+        if (minT > maxT)
             throw new ArgumentException(
                 "Curve is malformed (first key occurs before the last key)"
             );
 
-        return curve.Evaluate(RandomFloat(min, max));
+        float val = curve.Evaluate(RandomFloat(minT, maxT));
+
+        if (float.IsFinite(floor))
+            val = Mathf.Max(val, floor);
+        if (float.IsFinite(ceiling))
+            val = Mathf.Min(val, ceiling);
+
+        return val;
     }
+
+    /// <inheritdoc cref="RandomValueOnCurve(AnimationCurve, float, float)"/>
+    public static float RandomValueOnCurve(this AnimationCurve curve) =>
+        RandomValueOnCurve(curve, float.NaN, float.NaN);
     #endregion
 
     #region IEnumerable & Related

@@ -10,7 +10,7 @@ public class Testing : MonoBehaviour
 {
     public static Testing singleton;
 
-    public ModifierChain test;
+    public ModifierChain testChain;
 
     public FixedList<Modifier> testFixedList = new()
     {
@@ -54,6 +54,10 @@ public class Testing : MonoBehaviour
     public Selector<float> testSelector;
 
     public Range testRange = new(69, 420);
+
+    public RNGPattern testRNG;
+
+    public Interval testInterval = new(0, 15);
 
     /// <summary>
     /// The genotype of the fish.
@@ -250,15 +254,21 @@ public class Testing : MonoBehaviour
     [Button]
     private void TestUnityDictSaveLoad()
     {
-        SaveLoadDict(testUnityDict);
-        SaveLoadDict(testEnumDictionary);
+        SaveLoadThing(testUnityDict);
+        SaveLoadThing(testEnumDictionary);
     }
 
-    private void SaveLoadDict<T>(T dictionary) where T : IUnityDictionary
+    [Button]
+    private void TestRNGSaveLoad()
     {
-        var serialized = JsonConvert.SerializeObject(dictionary);
+        SaveLoadThing(testRNG);
+    }
+
+    private void SaveLoadThing<T>(T thing)
+    {
+        var serialized = thing.ToJson();
         print(serialized);
-        var thingy = JsonConvert.DeserializeObject<T>(serialized);
+        T thingy = serialized.LoadFromJson<T>();
         print(thingy);
     }
 }

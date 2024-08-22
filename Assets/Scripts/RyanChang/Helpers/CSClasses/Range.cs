@@ -1,10 +1,24 @@
 ﻿using System;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Serialization;
 
+/// <summary>
+/// Defines a range of values to be used as a bounds for random number
+/// generation. This class breaks all sorts of OOP practices, in order for it to
+/// be compatible with the unity editor.
+/// </summary>
+///
+/// <remarks>
+/// Authors: Ryan Chang (2024)
+/// </remarks>
 [Serializable]
+[JsonConverter(typeof(RangeConverter))]
 public class Range
 {
+    /// <summary>
+    /// Determines the mode the RNG uses.
+    /// </summary>
     public enum RangePattern
     {
         Single,
@@ -19,9 +33,10 @@ public class Range
         "Option 3: Curves. Uses animation curve to select\n\tvalues.\n" +
         "Option 4: Perlin. Uses Perlin noise to select values.\n" +
         "\tPerlin noise is special in that it generates a\n" +
-        "\tsmoothrandomization, useful for things like\n" +
+        "\tsmooth randomization, useful for things like\n" +
         "\tBrownian movement.")]
-    public RangePattern rangePattern;
+    [FormerlySerializedAs("rangePattern")]
+    public RangePattern mode;
 
     // [Header("Option 1: Single value as float.")]
     public float singleValue = 0;
@@ -49,11 +64,6 @@ public class Range
     public bool unfoldedInInspector;
 
     /// <summary>
-    /// If true, disable range pattern selection dropdown in inspector.
-    /// </summary>
-    public bool fixedSelectionInInspector;
-
-    /// <summary>
     /// If true, then the Select method has been called and Range will return
     /// selectedVal when Select is called.
     /// </summary>
@@ -68,14 +78,11 @@ public class Range
     /// Constructs a single range.
     /// </summary>
     /// <param name="value">The value to set to.</param>
-    public Range(float value)
+    public Range(float value) : this(RangePattern.Single)
     {
         singleValue = value;
         scalarMax = value;
         scalarMin = value;
-        rangePattern = RangePattern.Single;
-        crawlPos = RNGExt.RandomVector2(1000);
-        crawlDir = RNGExt.OnCircle();
     }
 
     /// <summary>
@@ -83,14 +90,20 @@ public class Range
     /// </summary>
     /// <param name="min">Minimum value</param>
     /// <param name="max">Maximal value</param>
-    public Range(float min, float max)
+    public Range(float min, float max) : this(RangePattern.Linear)
     {
-        singleValue = (min + max) / 2;
         scalarMax = max;
         scalarMin = min;
-        rangePattern = RangePattern.Linear;
-        crawlPos = RNGExt.RandomVector2(1000);
-        crawlDir = RNGExt.OnCircle();
+    }
+
+    /// <summary>
+    /// Creates a new curve range with the specified <paramref name="curve"/>.
+    /// </summary>
+    /// <param name="curve">The animation curve used to generate the random
+    /// values.</param>
+    public Range(AnimationCurve curve) : this(RangePattern.Curves)
+    {
+        this.curve = curve;
     }
 
     /// <summary>
@@ -99,41 +112,28 @@ public class Range
     /// <param name="pattern">Pattern to use.</param>
     public Range(RangePattern pattern)
     {
-        rangePattern = pattern;
+        mode = pattern;
         crawlPos = RNGExt.RandomVector2(1000);
         crawlDir = RNGExt.OnCircle();
-    }
-
-    /// <summary>
-    /// Locks the range pattern in inspector (put in OnValidate).
-    /// </summary>
-    /// <param name="pattern">Pattern to lock to.</param>
-    public void LockRangePattern(RangePattern pattern)
-    {
-        rangePattern = pattern;
-        fixedSelectionInInspector = true;
     }
 
     /// <summary>
     /// Evaluates the range and returns the value generated.
     /// </summary>
     /// <returns>The value generated.</returns>
-    public float Evaluate()
+    public float Evaluate() => mode switch
     {
-        switch (rangePattern)
-        {
-            case RangePattern.Single:
-                return singleValue;
-            case RangePattern.Linear:
-                return RNGExt.RandomFloat(scalarMin, scalarMax);
-            case RangePattern.Curves:
-                return modifier.Modify(curve.Evaluate(RNGExt.RandomFloat()));
-            case RangePattern.Perlin:
-                crawlPos += crawlDir * perlinCrawlSpeed;
-                return modifier.Modify(Mathf.PerlinNoise(crawlPos.x, crawlPos.y));
-            default:
-                throw new ArgumentException("Developer needs to update Range Evaluate().");
-        }
+        RangePattern.Single => singleValue,
+        RangePattern.Linear => RNGExt.RandomFloat(scalarMin, scalarMax),
+        RangePattern.Curves => modifier.Modify(curve.Evaluate(RNGExt.RandomFloat())),
+        RangePattern.Perlin => EvalForPerlin(),
+        _ => throw new NotImplementedException(),
+    };
+    
+    private float EvalForPerlin()
+    {
+        crawlPos += crawlDir * perlinCrawlSpeed;
+        return modifier.Modify(Mathf.PerlinNoise(crawlPos.x, crawlPos.y));
     }
 
     /// <summary>
@@ -162,7 +162,7 @@ public class Range
 
     public override string ToString()
     {
-        return rangePattern switch
+        return mode switch
         {
             RangePattern.Single => $"{base.ToString()}, Single Value, {singleValue}",
             RangePattern.Linear => $"{base.ToString()}, Linear, [{scalarMin}, {scalarMax}]",

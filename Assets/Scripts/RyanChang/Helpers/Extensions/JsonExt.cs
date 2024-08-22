@@ -134,6 +134,13 @@ public static class JsonExt
         return (T)reader.Value;
     }
 
+    /// <inheritdoc cref="ReadProperty{T}(JsonReader, string)"/>
+    public static void ReadProperty<T>(this JsonReader reader,
+        string propertyName, out T value)
+    {
+        value = ReadProperty<T>(reader, propertyName);
+    }
+
     public static T[] ReadArray<T>(this JsonReader reader)
     {
         return DoRead<T>(reader).ToArray();

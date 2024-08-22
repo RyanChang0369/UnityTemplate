@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -17,28 +18,32 @@ using UnityEngine.Assertions;
 /// </summary>
 public class UnityValueConverter : JsonConverter
 {
+    // Am I missing a type? Add it here.
+    private static Type[] validTypes = {
+        typeof(Vector2),
+        typeof(Vector2Int),
+        typeof(Vector3),
+        typeof(Vector3Int),
+        typeof(Vector4),
+        typeof(Quaternion),
+        typeof(Color),
+        typeof(Color32),
+        typeof(Rect),
+        typeof(RectInt),
+        typeof(Bounds),
+        typeof(BoundsInt),
+        typeof(AnimationCurve),
+        typeof(Keyframe),
+    };
+
     /// <summary>
     /// Returns true if we can convert this objectType.
     /// </summary>
     /// <param name="objectType">The type we are checking for if we can
     /// convert.</param>
     /// <returns></returns>
-    public override bool CanConvert(Type objectType)
-    {
-        // Am I missing a type? Add it here.
-        return    objectType == typeof(Vector2)
-               || objectType == typeof(Vector2Int)
-               || objectType == typeof(Vector3)
-               || objectType == typeof(Vector3Int)
-               || objectType == typeof(Vector4)
-               || objectType == typeof(Quaternion)
-               || objectType == typeof(Color)
-               || objectType == typeof(Color32)
-               || objectType == typeof(Rect)
-               || objectType == typeof(RectInt)
-               || objectType == typeof(Bounds)
-               || objectType == typeof(BoundsInt);
-    }
+    public override bool CanConvert(Type objectType) =>
+        validTypes.Contains(objectType);
 
     public override object ReadJson(JsonReader reader, Type objectType,
         object existingValue, JsonSerializer serializer)
@@ -117,6 +122,23 @@ public class UnityValueConverter : JsonConverter
                 reader.ReadProperty<Vector2>(nameof(BoundsInt.size))
             );
         }
+        else if (objectType == typeof(AnimationCurve))
+        {
+            return new AnimationCurve(
+                reader.ReadArray<Keyframe>()
+            );
+        }
+        else if (objectType == typeof(Keyframe))
+        {
+            return new Keyframe(
+                reader.ReadProperty<float>(nameof(Keyframe.time)),
+                reader.ReadProperty<float>(nameof(Keyframe.value)),
+                reader.ReadProperty<float>(nameof(Keyframe.inTangent)),
+                reader.ReadProperty<float>(nameof(Keyframe.outTangent)),
+                reader.ReadProperty<float>(nameof(Keyframe.inWeight)),
+                reader.ReadProperty<float>(nameof(Keyframe.outWeight))
+            );
+        }
         else
         {
             return JsonUtility.FromJson(reader.Value.ToString(), objectType);
@@ -168,6 +190,19 @@ public class UnityValueConverter : JsonConverter
                 writer.WriteStartObject();
                 writer.WriteProperty(nameof(BoundsInt.center), b.center.ToJson());
                 writer.WriteProperty(nameof(BoundsInt.size), b.size.ToJson());
+                writer.WriteEndObject();
+                break;
+            case AnimationCurve c:
+                writer.WriteArray(c.keys);
+                break;
+            case Keyframe k:
+                writer.WriteStartObject();
+                writer.WriteProperty(nameof(Keyframe.time), k.time);
+                writer.WriteProperty(nameof(Keyframe.value), k.value);
+                writer.WriteProperty(nameof(Keyframe.inTangent), k.inTangent);
+                writer.WriteProperty(nameof(Keyframe.outTangent), k.outTangent);
+                writer.WriteProperty(nameof(Keyframe.inWeight), k.inWeight);
+                writer.WriteProperty(nameof(Keyframe.outWeight), k.outWeight);
                 writer.WriteEndObject();
                 break;
             default:

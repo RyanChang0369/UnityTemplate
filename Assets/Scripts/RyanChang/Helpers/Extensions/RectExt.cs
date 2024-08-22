@@ -38,6 +38,28 @@ public static class RectExt
     {
         rect.Translate(new(x, y));
     }
+
+    /// <summary>
+    /// Translates the rectangle in the x axis by <paramref name="x"/> amount.
+    /// </summary>
+    /// <inheritdoc cref="Translate(ref Rect, float, float)"/>
+    public static void TranslateX(this ref Rect rect, float x) =>
+        rect.Translate(x, 0);
+    
+    /// <inheritdoc cref="TranslateX(ref Rect, float)"/>
+    public static void TranslateX(this ref RectInt rect, int x) =>
+        rect.Translate(x, 0);
+
+    /// <summary>
+    /// Translates the rectangle in the y axis by <paramref name="y"/> amount.
+    /// </summary>
+    /// <inheritdoc cref="Translate(ref Rect, float, float)"/>
+    public static void TranslateY(this ref Rect rect, float y) =>
+        rect.Translate(0, y);
+    
+    /// <inheritdoc cref="TranslateY(ref Rect, float)"/>
+    public static void TranslateY(this ref RectInt rect, int y) =>
+        rect.Translate(0, y);
     #endregion
 
     #region Conversions

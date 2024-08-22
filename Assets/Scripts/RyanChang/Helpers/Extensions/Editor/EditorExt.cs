@@ -4,6 +4,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using System.IO;
+using System.Collections.Generic;
 
 /// <summary>
 /// Contains classes pertaining to editor stuff.
@@ -209,6 +210,44 @@ public static class EditorExt
             // Did not find a custom property drawer. Use default.
             return defaultHeight;
         }
+    }
+
+    /// <summary>
+    /// Alias for <see cref="EditorGUI.GetPropertyHeight(SerializedProperty)"/>
+    /// </summary>
+    public static float GetPropertyHeight(this SerializedProperty property, 
+        GUIContent label = null, bool includeChildren = true) =>
+        EditorGUI.GetPropertyHeight(property, label, includeChildren);
+
+    /// <summary>
+    /// Retrieves all immediate children of <paramref name="property"/>.
+    /// </summary>
+    /// <param name="property"></param>
+    /// <returns></returns>
+    public static IEnumerable<SerializedProperty> GetImmediateChildren(
+        this SerializedProperty property, bool visibleOnly = true)
+    {
+        if (property.hasVisibleChildren)
+        {
+            var end = property.GetEndProperty();
+            Next(property, visibleOnly, true);
+
+            while (!SerializedProperty.EqualContents(property, end))
+            {
+                yield return property;
+
+                Next(property, visibleOnly, false);
+            }
+        }
+    }
+
+    public static void Next(this SerializedProperty property,
+        bool visibleOnly, bool enterChildren)
+    {
+        if (visibleOnly)
+            property.NextVisible(enterChildren);
+        else
+            property.Next(enterChildren);
     }
     #endregion
 

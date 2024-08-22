@@ -1,21 +1,35 @@
+using System;
+using NaughtyAttributes;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-[System.Serializable]
+[Serializable]
 public class Interval
 {
-    [Tooltip("The range used.")]
-    public Range range;
+    #region Variables
+    /// <summary>
+    /// The RNG pattern used.
+    /// </summary>
+    [Tooltip("The RNG pattern used.")]
+    [FormerlySerializedAs("range")]
+    public RNGPattern pattern;
 
-    [Tooltip("The timer used for the interval. Informational only. Do not change in inspector.")]
+    /// <summary>
+    /// The timer used for the interval.
+    /// </summary>
+    [Tooltip("The timer used for the interval.")]
+    [ReadOnly]
     public float timer;
+    #endregion
 
+    #region Constructors
     /// <summary>
     /// Constructs an interval with a single range.
     /// </summary>
     /// <param name="value">The value to set to.</param>
     public Interval(float value)
     {
-        range = new(value);
+        pattern = new(value);
     }
 
     /// <summary>
@@ -25,9 +39,11 @@ public class Interval
     /// <param name="max">Maximal value</param>
     public Interval(float min, float max)
     {
-        range = new(min, max);
+        pattern = new(min, max);
     }
+    #endregion
 
+    #region Methods
     /// <summary>
     /// Updates the interval.
     /// </summary>
@@ -37,9 +53,9 @@ public class Interval
     /// likely Time.deltaTime.</returns>
     public bool UpdateInterval(float deltaTime)
     {
-        if (timer >= range.Select())
+        if (timer >= pattern.Select())
         {
-            range.Reset();
+            pattern.Reset();
             timer = 0;
             return true;
         }
@@ -56,7 +72,7 @@ public class Interval
     /// </summary>
     public void WindToEnd()
     {
-        timer = range.Select() + 1;
+        timer = pattern.Select() + 1;
     }
 
     /// <summary>
@@ -75,6 +91,7 @@ public class Interval
     public void Restart()
     {
         WindToStart();
-        range.Reset();
+        pattern.Reset();
     }
+    #endregion
 }

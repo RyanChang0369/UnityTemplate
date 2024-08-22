@@ -4,6 +4,8 @@ using UnityEngine;
 [CustomPropertyDrawer(typeof(Range))]
 public class RangeDrawerUIE : PropertyDrawer
 {
+    private bool fixedSelectionInInspector;
+
     private Range GetRangeObject(SerializedProperty property)
     {
         return (Range)property.GetObjectFromReflection();
@@ -43,12 +45,12 @@ public class RangeDrawerUIE : PropertyDrawer
             var value3Rect = new Rect(position.x, position.y + 4 * lnHeight, position.width, lnHeight);
 
             // Draw fields
-            using (new EditorGUI.DisabledScope(range.fixedSelectionInInspector))
+            using (new EditorGUI.DisabledScope(fixedSelectionInInspector))
             {
-                EditorGUI.PropertyField(patternRect, property.FindPropertyRelative(nameof(Range.rangePattern)));
+                EditorGUI.PropertyField(patternRect, property.FindPropertyRelative(nameof(Range.mode)));
             }
             
-            switch (range.rangePattern)
+            switch (range.mode)
             {
                 case Range.RangePattern.Single:
                     EditorGUI.PropertyField(value1Rect, property.FindPropertyRelative(nameof(Range.singleValue)));
@@ -90,7 +92,7 @@ public class RangeDrawerUIE : PropertyDrawer
     
             int lines = 0;
     
-            switch (range.rangePattern)
+            switch (range.mode)
             {
                 case Range.RangePattern.Single:
                     lines = 3;

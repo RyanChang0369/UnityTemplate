@@ -321,15 +321,90 @@ MonoBehaviour:
     editorDict:
       keyValuePairs:
       - key: 0
-        value: {fileID: 0}
+        value:
+          mode: 0
+          singleValue: 0
+          scalarMin: 0
+          scalarMax: 0
+          curve:
+            serializedVersion: 2
+            m_Curve: []
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          perlinCrawlSpeed: 0
+          modifier:
+            addition: 0
+            multiplier: 0
+          unfoldedInInspector: 0
       - key: 1
-        value: {fileID: 0}
+        value:
+          mode: 0
+          singleValue: 0
+          scalarMin: 0
+          scalarMax: 0
+          curve:
+            serializedVersion: 2
+            m_Curve: []
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          perlinCrawlSpeed: 0
+          modifier:
+            addition: 0
+            multiplier: 0
+          unfoldedInInspector: 0
       - key: 2
-        value: {fileID: 0}
+        value:
+          mode: 0
+          singleValue: 0
+          scalarMin: 0
+          scalarMax: 0
+          curve:
+            serializedVersion: 2
+            m_Curve: []
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          perlinCrawlSpeed: 0
+          modifier:
+            addition: 0
+            multiplier: 0
+          unfoldedInInspector: 0
       - key: 21
-        value: {fileID: 0}
+        value:
+          mode: 0
+          singleValue: 0
+          scalarMin: 0
+          scalarMax: 0
+          curve:
+            serializedVersion: 2
+            m_Curve: []
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          perlinCrawlSpeed: 0
+          modifier:
+            addition: 0
+            multiplier: 0
+          unfoldedInInspector: 0
       - key: -1
-        value: {fileID: 0}
+        value:
+          mode: 0
+          singleValue: 0
+          scalarMin: 0
+          scalarMax: 0
+          curve:
+            serializedVersion: 2
+            m_Curve: []
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          perlinCrawlSpeed: 0
+          modifier:
+            addition: 0
+            multiplier: 0
+          unfoldedInInspector: 0
   testUnityDict:
     keyValuePairs:
     - key: 70109442B03F32E860A27FB3711389E5
@@ -1258,7 +1333,7 @@ MonoBehaviour:
     selectionMode: 0
     elements: []
   testRange:
-    rangePattern: 1
+    mode: 1
     singleValue: 0
     scalarMin: 69
     scalarMax: 420
@@ -1273,7 +1348,18 @@ MonoBehaviour:
       addition: 0
       multiplier: 1
     unfoldedInInspector: 0
-    fixedSelectionInInspector: 0
+  testRNG:
+    model:
+      rid: 6376566524692398085
+  references:
+    version: 2
+    RefIds:
+    - rid: 6376566524692398085
+      type: {class: PerlinRNGModel, ns: , asm: Assembly-CSharp}
+      data:
+        crawlSpeed: 0
+        crawlPos: {x: 0, y: 5}
+        crawlDir: {x: 0, y: 0}
 --- !u!4 &848942548
 Transform:
   m_ObjectHideFlags: 0
@@ -1311,7 +1397,7 @@ MonoBehaviour:
   manualControl: 0
   controls: []
   characterDelay:
-    rangePattern: 1
+    mode: 1
     singleValue: 0.05
     scalarMin: 0.05
     scalarMax: 0.05
@@ -1326,7 +1412,6 @@ MonoBehaviour:
       addition: 0
       multiplier: 1
     unfoldedInInspector: 0
-    fixedSelectionInInspector: 0
 --- !u!1 &2063589114
 GameObject:
   m_ObjectHideFlags: 0

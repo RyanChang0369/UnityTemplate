@@ -19,9 +19,10 @@ public class FixedListPropertyDrawer : PropertyDrawer
             EditorGUI.indentLevel++;
 
             position.xMin += EditorGUIUtility.singleLineHeight;  // Some padding
-            position.Translate(new(0,
-                EditorGUIUtility.singleLineHeight
-                + EditorGUIUtility.standardVerticalSpacing));
+            position.Translate(new(
+                0,
+                EditorExt.SpacedLineHeight
+            ));
 
             for (int i = 0; i < arrLen; i++)
             {

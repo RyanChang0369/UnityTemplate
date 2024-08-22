@@ -95,4 +95,32 @@ public static class TypeExt
     }
     #endregion
     #endregion
+
+    #region Type Testing
+    /// <summary>
+    /// Determines if <paramref name="type"/> is a struct.
+    /// </summary>
+    public static bool IsStruct(this Type type) =>
+        type.IsValueType && !type.IsEnum;
+
+    /// <summary>
+    /// Determines if <paramref name="type"/> is a class or struct.
+    /// </summary>
+    public static bool IsClassOrStruct(this Type type) =>
+        type.IsClass || type.IsStruct();
+    #endregion
+
+    #region Assembly
+    /// <summary>
+    /// The current executing assembly.
+    /// </summary>
+    public static Assembly CurrentAssembly => Assembly.GetExecutingAssembly();
+
+    /// <summary>
+    /// Gets all the types that implements <paramref name="type"/>.
+    /// </summary>
+    public static IEnumerable<Type> GetInherited(this Type type) =>
+        Assembly.GetAssembly(type).GetTypes().
+        Where(t => t.IsClassOrStruct() && type.IsAssignableFrom(t));
+    #endregion
 }
