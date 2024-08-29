@@ -1347,19 +1347,36 @@ MonoBehaviour:
     modifier:
       addition: 0
       multiplier: 1
-    unfoldedInInspector: 0
+    unfoldedInInspector: 1
   testRNG:
     model:
-      rid: 6376566524692398085
+      rid: 6376566524692398087
+  testInterval:
+    pattern:
+      model:
+        rid: 6376566524692398086
+    timer: 0
   references:
     version: 2
     RefIds:
-    - rid: 6376566524692398085
-      type: {class: PerlinRNGModel, ns: , asm: Assembly-CSharp}
+    - rid: 6376566524692398086
+      type: {class: LinearRNGModel, ns: , asm: Assembly-CSharp}
       data:
-        crawlSpeed: 0
-        crawlPos: {x: 0, y: 5}
-        crawlDir: {x: 0, y: 0}
+        min: 0
+        max: 15
+    - rid: 6376566524692398087
+      type: {class: CurveRNGModel, ns: , asm: Assembly-CSharp}
+      data:
+        curve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        enableFloor: 0
+        floor: 0
+        enableCeiling: 0
+        ceiling: 0
 --- !u!4 &848942548
 Transform:
   m_ObjectHideFlags: 0

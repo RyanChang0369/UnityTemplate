@@ -148,10 +148,22 @@ public static class JsonExt
 
     private static IEnumerable<T> DoRead<T>(JsonReader reader)
     {
-        Assert.AreEqual(reader.TokenType, JsonToken.StartArray);
-        while (reader.Read() && reader.TokenType != JsonToken.EndArray)
+        switch (reader.TokenType)
         {
-            yield return JsonConvert.DeserializeObject<T>(reader.Value.ToString());
+            case JsonToken.StartArray:
+                while (reader.Read() && reader.TokenType != JsonToken.EndArray)
+                {
+                    yield return JsonConvert.DeserializeObject<T>(
+                        reader.Value.ToString()
+                    );
+                }
+                break;
+            case JsonToken.Null:
+                break;
+            default:
+                throw new JsonException(
+                    "Invalid token type " + reader.TokenType
+                );
         }
     }
     #endregion

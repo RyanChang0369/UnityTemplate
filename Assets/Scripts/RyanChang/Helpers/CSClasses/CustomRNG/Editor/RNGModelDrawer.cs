@@ -9,10 +9,6 @@ public class RNGModelDrawer : PropertyDrawer
     public override void OnGUI(Rect position, SerializedProperty property,
         GUIContent label)
     {
-        // // Set up where everything needs to be drawn.
-        // EditorGUI.indentLevel = property.depth;
-        // position = EditorGUI.IndentedRect(position);
-
         EditorGUI.BeginProperty(
             position,
             label,

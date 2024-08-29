@@ -40,6 +40,7 @@ public class RNGPattern
     /// Creates a custom RNG using <paramref name="model"/>.
     /// </summary>
     /// <param name="model">The pattern.</param>
+    [JsonConstructor]
     public RNGPattern(IRNGModel model)
     {
         this.model = model;

@@ -65,7 +65,10 @@ public class RNGPatternDrawer : PropertyDrawer
 
             // Show popup
             int index = EditorGUI.Popup(
-                position,
+                new Rect(position)
+                {
+                    height = EditorExt.SpacedLineHeight
+                },
                 new GUIContent("Type"),
                 patternTypeIndex,
                 typeNameList.ToArray()
