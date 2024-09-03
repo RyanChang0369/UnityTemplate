@@ -19,7 +19,7 @@ public static class TypeExt
     /// </summary>
     /// <param name="type">The derivitive type.</param>
     /// <returns>The derived types.</returns>
-    public static IEnumerable<Type> FindInherited(Type type)
+    public static IEnumerable<Type> FindInherited(this Type type)
     {
         return type.Assembly
             .GetTypes()
@@ -42,7 +42,7 @@ public static class TypeExt
     /// derived from <paramref name="type"/>.
     /// </summary>
     /// <inheritdoc cref="FindInherited(Type)"/>
-    public static IEnumerable<Type> FindInheritedConcrete(Type type) =>
+    public static IEnumerable<Type> FindInheritedConcrete(this Type type) =>
         FindInherited(type).Where(t => !t.IsAbstract && !t.IsInterface);
 
     /// <inheritdoc cref="FindInheritedConcrete(Type)"/>

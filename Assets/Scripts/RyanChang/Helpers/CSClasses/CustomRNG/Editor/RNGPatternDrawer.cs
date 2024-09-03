@@ -47,7 +47,7 @@ public class RNGPatternDrawer : PropertyDrawer
             SerializedProperty patternProperty = null;
 
             // Get list of type options
-            List<Type> types = new(typeof(IRNGModel).GetInherited());
+            List<Type> types = new(typeof(IRNGModel).FindInherited());
 
             List<GUIContent> typeNameList = new() { new("------") };
             typeNameList.AddRange(

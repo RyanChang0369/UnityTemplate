@@ -270,5 +270,7 @@ public class Testing : MonoBehaviour
         print(serialized);
         T thingy = serialized.LoadFromJson<T>();
         print(thingy);
+
+        print("Tests passed");
     }
 }
