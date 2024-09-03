@@ -50,7 +50,8 @@ public class StaticKeyedDictionaryPropertyDrawer : PropertyDrawer
                             key,
                             new GUIContent(keyName),
                             GUILayout.ExpandHeight(true),
-                            GUILayout.ExpandWidth(true));
+                            GUILayout.ExpandWidth(true)
+                        );
                     }
                     else
                     {
@@ -69,15 +70,5 @@ public class StaticKeyedDictionaryPropertyDrawer : PropertyDrawer
             base.OnGUI(position, property, label);
             return;
         }
-    }
-
-    public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-    {
-        // First drop into the first child, which will be the UnityDict.
-        property.Next(true);
-
-        // Then get height.
-        var height = EditorGUI.GetPropertyHeight(property, label);
-        return height;
     }
 }

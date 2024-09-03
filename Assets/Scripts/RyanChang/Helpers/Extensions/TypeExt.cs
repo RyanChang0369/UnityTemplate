@@ -13,38 +13,42 @@ using System.Reflection;
 public static class TypeExt
 {
     #region Query
-    #region Derived Types
+    #region Inherited Types
     /// <summary>
-    /// Returns all types that can be derived from <typeparamref name="T"/>
-    /// based on the provided assembly.
+    /// Returns all types that can be inherited from <paramref name="type"/>.
     /// </summary>
-    /// <param name="assembly">The assembly to search for the derived
-    /// types.</param>
-    /// <param name="type">The type to search for the derived types.</param>
+    /// <param name="type">The derivitive type.</param>
     /// <returns>The derived types.</returns>
-    public static IEnumerable<Type> FindAllDerivedTypes(Assembly assembly,
-        Type type)
+    public static IEnumerable<Type> FindInherited(Type type)
     {
-        return assembly
+        return type.Assembly
             .GetTypes()
             .Where(t =>
                 t != type &&
                 type.IsAssignableFrom(t)
-                );
+            );
     }
 
-    /// <inheritdoc cref="FindAllDerivedTypes{T}(Assembly)"/>
-    /// <typeparam name="T">The type to search for the derived types.</typeparam>
-    public static IEnumerable<Type> FindAllDerivedTypes<T>(Assembly assembly)
-        => FindAllDerivedTypes(assembly, typeof(T));
+    /// <summary>
+    /// Returns all types that can be derived from <typeparamref name="T"/>.
+    /// </summary>
+    /// <typeparam name="T">The derivitive type.</typeparam>
+    /// <returns>The derived types.</returns>
+    public static IEnumerable<Type> FindInherited<T>()
+        => FindInherited(typeof(T));
 
-    /// <inheritdoc cref="FindAllDerivedTypes(Assembly, Type)"/>
-    public static IEnumerable<Type> FindAllDerivedTypes(Type type)
-        => FindAllDerivedTypes(Assembly.GetAssembly(type), type);
+    /// <summary>
+    /// Returns all concrete types (not abstract or interfaces) that can be
+    /// derived from <paramref name="type"/>.
+    /// </summary>
+    /// <inheritdoc cref="FindInherited(Type)"/>
+    public static IEnumerable<Type> FindInheritedConcrete(Type type) =>
+        FindInherited(type).Where(t => !t.IsAbstract && !t.IsInterface);
 
-    /// <inheritdoc cref="FindAllDerivedTypes{T}()"/>
-    public static IEnumerable<Type> FindAllDerivedTypes<T>()
-        => FindAllDerivedTypes<T>(Assembly.GetAssembly(typeof(T)));
+    /// <inheritdoc cref="FindInheritedConcrete(Type)"/>
+    /// <inheritdoc cref="FindInherited{T}()"/>
+    public static IEnumerable<Type> FindInheritedConcrete<T>() =>
+        FindInheritedConcrete(typeof(T));
     #endregion
 
     #region Field Value
@@ -87,11 +91,119 @@ public static class TypeExt
             fieldValue = (T)field.GetValue(obj);
             return true;
         }
-        catch (System.InvalidCastException)
+        catch (InvalidCastException)
         {
             fieldValue = default;
             return false;
         }
+    }
+    #endregion
+
+    #region Constructors
+    /// <summary>
+    /// Attempt to obtain a parameterless constructor for the specified type.
+    /// </summary>
+    /// <param name="type">The specified type.</param>
+    /// <param name="constructor">The constructor, or null if not found.</param>
+    /// <param name="bindingFlags">The binding flags.</param>
+    /// <returns>True if found, false otherwise.</returns>
+    public static bool TryGetParameterlessConstructor(this Type type,
+        out ConstructorInfo constructor,
+        BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance)
+    {
+        constructor = type.GetConstructor(
+            bindingFlags,
+            Type.DefaultBinder,
+            Type.EmptyTypes,
+            new ParameterModifier[] { }
+        );
+        return constructor != null;
+    }
+
+    /// <typeparam name="T">The specified type.</typeparam>
+    /// <inheritdoc cref="TryGetParameterlessConstructor(Type, out
+    /// ConstructorInfo, BindingFlags)"/>
+    public static bool TryGetParameterlessConstructor<T>(
+        out ConstructorInfo constructor,
+        BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance) =>
+        TryGetParameterlessConstructor(
+            typeof(T),
+            out constructor,
+            bindingFlags
+        );
+
+    /// <summary>
+    /// Attempt to call a parameterless constructor for the specified type.
+    /// </summary>
+    /// <param name="instance">The instance to assign to.</param>
+    /// <inheritdoc cref="TryGetParameterlessConstructor(Type, out
+    /// ConstructorInfo, BindingFlags)"/>
+    public static bool CallParameterlessConstructor(this Type type,
+        out object instance,
+        BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance)
+    {
+        bool hasConstr = type.TryGetParameterlessConstructor(
+            out ConstructorInfo constructor,
+            bindingFlags
+        );
+
+        if (hasConstr)
+        {
+            instance = constructor.Invoke(new object[] { });
+            return true;
+        }
+        else
+        {
+            instance = null;
+            return false;
+        }
+    }
+
+    /// <inheritdoc cref="CallParameterlessConstructor(Type, out object,
+    /// BindingFlags)"/>
+    /// <inheritdoc cref="TryGetParameterlessConstructor{T}(out ConstructorInfo,
+    /// BindingFlags)"/>
+    public static bool CallParameterlessConstructor<T>(
+        out T instance,
+        BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance)
+    {
+        bool hasConstr = CallParameterlessConstructor(
+            typeof(T),
+            out object nonGenericInstance,
+            bindingFlags
+        );
+        instance = (T)nonGenericInstance;
+
+        return hasConstr;
+    }
+
+    /// <returns>The newly created object of the specified type, or null if no
+    /// parameterless constructor can be found.</returns>
+    /// <inheritdoc cref="CallParameterlessConstructor(Type, out object,
+    /// BindingFlags)"/>
+    public static object CallParameterlessConstructor(this Type type,
+        BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance)
+    {
+        bool hasConstr = type.TryGetParameterlessConstructor(
+            out ConstructorInfo constructor,
+            bindingFlags
+        );
+
+        if (hasConstr)
+        {
+            return constructor.Invoke(new object[] { });
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    /// <inheritdoc cref="CallParameterlessConstructor(Type, BindingFlags)"/>
+    public static T CallParameterlessConstructor<T>(
+        BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance)
+    {
+        return (T)CallParameterlessConstructor(typeof(T), bindingFlags);
     }
     #endregion
     #endregion
@@ -115,12 +227,5 @@ public static class TypeExt
     /// The current executing assembly.
     /// </summary>
     public static Assembly CurrentAssembly => Assembly.GetExecutingAssembly();
-
-    /// <summary>
-    /// Gets all the types that implements <paramref name="type"/>.
-    /// </summary>
-    public static IEnumerable<Type> GetInherited(this Type type) =>
-        Assembly.GetAssembly(type).GetTypes().
-        Where(t => t.IsClassOrStruct() && type.IsAssignableFrom(t));
     #endregion
 }

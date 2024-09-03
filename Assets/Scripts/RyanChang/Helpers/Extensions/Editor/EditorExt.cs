@@ -5,10 +5,16 @@ using UnityEditor;
 using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
+using UnityEngine.Assertions;
+using System;
 
 /// <summary>
 /// Contains classes pertaining to editor stuff.
 /// </summary>
+/// 
+/// <remarks>
+/// Authors: Ryan Chang (2024)
+/// </remarks>
 public static class EditorExt
 {
     #region Numbers
@@ -24,15 +30,17 @@ public static class EditorExt
     /// <summary>
     /// Gets the proper object using reflection.
     /// </summary>
-    /// <param name="property"></param>
-    /// <returns></returns>
-    /// <exception cref="System.NullReferenceException"></exception>
+    /// <param name="property">The property.</param>
+    /// <exception cref="NullReferenceException">
+    /// If one or more of the properties (except for the last, target property)
+    /// in the path is null.
+    /// </exception>
     public static object GetObjectFromReflection(this SerializedProperty property)
     {
         // Get the target object and type. These will be modified when we are
         // traversing the path.
         object targetObject = property.serializedObject.targetObject;
-        System.Type targetType = targetObject.GetType();
+        Type targetType = targetObject.GetType();
 
         string fullPath = property.propertyPath;
         fullPath = fullPath.Replace("Array.data[", "[");
@@ -42,6 +50,12 @@ public static class EditorExt
         // Path traversal.
         foreach (var name in path)
         {
+            if (targetObject == null)
+                throw new NullReferenceException(
+                    $"Trying to obtain field {name} from null reference. " +
+                    $"Full path is {fullPath}. Target type is {targetType}."
+                );
+
             // Check if there's a bracket. If so, that means that we have an
             // array.
             int bracketPos = name.IndexOf('[');
@@ -75,13 +89,9 @@ public static class EditorExt
                     name,
                     BindingFlags.NonPublic | BindingFlags.Public |
                     BindingFlags.Instance | BindingFlags.FlattenHierarchy
+                ) ?? throw new NullReferenceException(
+                    $"Field is null for {name}"
                 );
-
-                if (field == null)
-                {
-                    throw new System.NullReferenceException(
-                        $"Field is null for {name}");
-                }
 
                 targetType = field.FieldType;
                 targetObject = field.GetValue(targetObject);
@@ -112,8 +122,7 @@ public static class EditorExt
     /// cref="SerializedProperty.NextVisible(bool)"/> instead.</param>
     /// <return>True on success, false otherwise.</return>
     public static bool AdvancePropertyToType(this SerializedProperty property,
-        System.Type type,
-        bool visibleOnly = false)
+        Type type, bool visibleOnly = false)
     {
         do
         {
@@ -127,18 +136,29 @@ public static class EditorExt
         return false;
     }
     #endregion
-    
+
     #region Drawing
     /// <summary>
     /// Draws a bolded title at position.
     /// </summary>
     /// <param name="position">Where to draw this.</param>
     /// <param name="label">Label to use as a title.</param>
-    public static void DrawTitleLabel(ref Rect position, string label)
+    public static void TitleLabelField(ref Rect position, GUIContent label)
     {
         position.height = 24;
         EditorGUI.LabelField(position, label, EditorStyles.boldLabel);
-        position.Translate(new Vector2(0, position.height));
+        position.TranslateY(position.height);
+    }
+
+    /// <summary>
+    /// Draws a label at position.
+    /// </summary>
+    /// <inheritdoc cref="TitleLabelField(ref Rect, GUIContent)"/>
+    public static void LabelField(ref Rect position, GUIContent label)
+    {
+        position.height = 24;
+        EditorGUI.LabelField(position, label);
+        position.TranslateY(position.height);
     }
 
     /// <summary>
@@ -149,7 +169,7 @@ public static class EditorExt
     /// <param name="position">Where to draw the property.</param>
     /// <param name="label">Label to use with custom property drawers, if found
     /// </param>
-    public static void DrawSerializedProperty(this SerializedProperty property,
+    public static void PropertyField(this SerializedProperty property,
         ref Rect position, GUIContent label)
     {
         // Try to find property drawer, if we can.
@@ -170,7 +190,7 @@ public static class EditorExt
             EditorGUI.PropertyField(position, property, true);
         }
 
-        position.Translate(new Vector2(0, position.height));
+        position.TranslateY(position.height);
     }
 
     /// <summary>
@@ -179,10 +199,10 @@ public static class EditorExt
     /// </summary>
     /// <param name="property">Property to draw.</param>
     /// <param name="position">Where to draw the property.</param>
-    public static void DrawSerializedProperty(this SerializedProperty property,
+    public static void PropertyField(this SerializedProperty property,
         ref Rect position)
     {
-        property.DrawSerializedProperty(ref position, GUIContent.none);
+        property.PropertyField(ref position, GUIContent.none);
     }
 
     /// <summary>
@@ -215,7 +235,7 @@ public static class EditorExt
     /// <summary>
     /// Alias for <see cref="EditorGUI.GetPropertyHeight(SerializedProperty)"/>
     /// </summary>
-    public static float GetPropertyHeight(this SerializedProperty property, 
+    public static float GetPropertyHeight(this SerializedProperty property,
         GUIContent label = null, bool includeChildren = true) =>
         EditorGUI.GetPropertyHeight(property, label, includeChildren);
 

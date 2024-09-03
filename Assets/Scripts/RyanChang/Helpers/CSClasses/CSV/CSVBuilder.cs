@@ -39,7 +39,7 @@ public class CSVBuilder
     /// necessary.</param>
     public void AddAt(string header, string data, int index)
     {
-        List<string> list = internalData.GetOrCreate(header);
+        List<string> list = internalData.GetValueOrNew(header);
         list.AddOrReplaceWithBuffer(data, index);
     }
 

@@ -28,7 +28,7 @@ public class FixedListPropertyDrawer : PropertyDrawer
             {
                 // Draw each of the elements in internalList.
                 var elem = property.GetArrayElementAtIndex(i);
-                elem.DrawSerializedProperty(ref position, new($"Element {i}"));
+                elem.PropertyField(ref position, new($"Element {i}"));
             }
             EditorGUI.indentLevel--;
         }

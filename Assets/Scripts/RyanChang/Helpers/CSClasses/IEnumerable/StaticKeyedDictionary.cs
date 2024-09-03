@@ -26,6 +26,12 @@ public abstract class StaticKeyedDictionary<TKey, TValue> :
     /// </summary>
     [JsonProperty, SerializeField]
     protected UnityDictionary<TKey, TValue> editorDict = new();
+
+    /// <summary>
+    /// The loaded json keys, if any. This can be null if there are no json
+    /// keys, or non-null if there are loaded json keys.
+    /// </summary>
+    private Dictionary<string, TValue> jsonValues = new();
     #endregion
 
     #region Constructors
@@ -40,10 +46,21 @@ public abstract class StaticKeyedDictionary<TKey, TValue> :
     /// information on JSON.
     /// </remarks>
     /// <param name="dictionary">The provided dictionary.</param>
-    [JsonConstructor]
     protected StaticKeyedDictionary(IDictionary<TKey, TValue> dictionary)
     {
         editorDict = new(dictionary);
+    }
+
+    /// <summary>
+    /// Pre-loads any json keys into this <see
+    /// cref="StaticKeyedDictionary{TKey, TValue}"/>.
+    /// </summary>
+    /// <param name="jsonValues">The keys.</param>
+    /// <inheritdoc cref="StaticKeyedDictionary{TKey, TValue}(IDictionary{TKey,
+    /// TValue})"/>
+    protected StaticKeyedDictionary(Dictionary<string, TValue> jsonValues)
+    {
+        this.jsonValues = jsonValues;
     }
     #endregion
 
@@ -80,7 +97,22 @@ public abstract class StaticKeyedDictionary<TKey, TValue> :
     #endregion
 
     #region IStaticKeyedDictionary Implementation
-    public abstract void GenerateStaticKeys(UnityEngine.Object targetObject);
+    public void GenerateStaticKeys(UnityEngine.Object targetObject)
+    {
+        GenerateStaticKeys(targetObject, jsonValues);
+        jsonValues = null;
+    }
+
+    /// <summary>
+    /// Generates static keys while allowing the import of json keys (if
+    /// loaded).
+    /// </summary>
+    /// <param name="jsonValues">The loaded json keys, if any. This can be
+    /// null if there are no json keys, or non-null if there are loaded json
+    /// keys.</param>
+    /// <inheritdoc cref="GenerateStaticKeys(UnityEngine.Object)"/>
+    protected abstract void GenerateStaticKeys(UnityEngine.Object targetObject,
+        Dictionary<string, TValue> jsonValues);
 
     /// <inheritdoc cref="LabelFromKey(object)"/>
     public abstract string LabelFromKey(TKey key);
@@ -93,6 +125,29 @@ public abstract class StaticKeyedDictionary<TKey, TValue> :
         }
 
         throw new ArgumentException($"{key} not of correct type ({typeof(TKey)}).");
+    }
+
+    protected void LoadJsonValues(IEnumerable<TKey> keys, Func<TKey, string> keyNameFunc)
+    {
+        foreach (var key in keys)
+        {
+            if (!editorDict.ContainsKey(key))
+            {
+                if (jsonValues == null)
+                {
+                    editorDict[key] = TypeExt.
+                        CallParameterlessConstructor<TValue>();
+                }
+                else
+                {
+                    editorDict[key] = jsonValues.
+                        GetValueOrDefault(
+                            keyNameFunc(key),
+                            TypeExt.CallParameterlessConstructor<TValue>()
+                        );
+                }
+            }
+        }
     }
 
     public UnityDictionaryErrorCode CalculateErrorCode() =>

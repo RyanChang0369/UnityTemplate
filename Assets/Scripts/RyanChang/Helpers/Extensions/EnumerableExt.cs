@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -102,6 +103,38 @@ public static class EnumerableExt
     {
         return index.WrapAroundLength(to - from + 1) + from;
     }
+
+    /// <summary>
+    /// Alias for <see cref="Enumerable.SequenceEqual"/>, with added checks for
+    /// nullity and reference matching.
+    /// </summary>
+    /// <typeparam name="T">The IEquatable type.</typeparam>
+    /// <param name="collection1">The first collection.</param>
+    /// <param name="collection2">The second collection.</param>
+    /// <returns></returns>
+    public static bool EnumerableMatches<T>(this IEnumerable<T> collection1,
+        IEnumerable<T> collection2)
+    {
+        if (collection1 == collection2)
+            return true;
+        else if (collection1 == null || collection2 == null)
+            return false;
+
+        return collection1.SequenceEqual(collection2);
+    }
+
+    /// <inheritdoc cref="EnumerableMatches{T}(IEnumerable{T}, IEnumerable{T})"/>
+    /// <param name="comparer">The compairer to use for the IEnumerable.</param>
+    public static bool EnumerableMatches<T>(this IEnumerable<T> collection1,
+        IEnumerable<T> collection2, IEqualityComparer<T> comparer)
+    {
+        if (collection1 == collection2)
+            return true;
+        else if (collection1 == null || collection2 == null)
+            return false;
+
+        return collection1.SequenceEqual(collection2, comparer);
+    }
     #endregion
 
     #region List
@@ -199,45 +232,23 @@ public static class EnumerableExt
     #endregion
 
     #region Dictionary
-    /// <summary>
-    /// Attempts to retrieve the value of <typeparamref name="TVal"/> using
-    /// <typeparamref name="TKey"/>. Creates a new instance of <typeparamref
-    /// name="TVal"/> if the specified key does not exist in the provided
-    /// dictionary.
-    /// </summary>
-    /// <typeparam name="TKey">The key type.</typeparam>
-    /// <typeparam name="TVal">The member type.</typeparam>
-    /// <param name="dictionary">The provided dictionary.</param>
-    /// <param name="key">The specified key.</param>
-    /// <returns>The newly created or found instance of <typeparamref
-    /// name="TVal"/>.</returns>
-    public static TVal GetOrCreate<TKey, TVal>(this IDictionary<TKey,
-        TVal> dictionary, TKey key) where TVal : class, new()
-    {
-        if (!dictionary.ContainsKey(key) || dictionary[key] == null)
-        {
-            dictionary[key] = new();
-        }
-
-        return dictionary[key];
-    }
-
+    #region Value Getters
     /// <summary>
     /// Tries to get the value from <paramref name="dictionary"/>. If found,
     /// returns that value. Otherwise, return the value assigned to <paramref
     /// name="defaultValue"/>.
     /// </summary>
     /// <typeparam name="TKey">The type of key in the dictionary.</typeparam>
-    /// <typeparam name="TVal">The type of value in the dictionary.</typeparam>
+    /// <typeparam name="TValue">The type of value in the dictionary.</typeparam>
     /// <returns>The value from <paramref name="dictionary"/>, or <paramref
     /// name="defaultValue"/>.</returns>
-    /// <inheritdoc cref="GetOrCreate{TKey, TVal}(IReadOnlyDictionary{TKey,
-    /// TVal}, TKey)"/>
-    public static TVal GetValueOrDefault<TKey, TVal>(
-        this IReadOnlyDictionary<TKey, TVal> dictionary,
-        TKey key, TVal defaultValue = default)
+    /// <inheritdoc cref="GetOrCreate{TKey, TValue}(IReadOnlyDictionary{TKey,
+    /// TValue}, TKey)"/>
+    public static TValue GetValueOrDefault<TKey, TValue>(
+        this IReadOnlyDictionary<TKey, TValue> dictionary,
+        TKey key, TValue defaultValue = default)
     {
-        if (dictionary.TryGetValue(key, out TVal value))
+        if (dictionary.TryGetValue(key, out TValue value))
         {
             return value;
         }
@@ -249,28 +260,51 @@ public static class EnumerableExt
     /// Tries to get the value from <paramref name="dictionary"/>. If found,
     /// returns that value. Otherwise, return <see cref="null"/>.
     /// </summary>
-    /// <returns>The value from <paramref name="dictionary"/>, or
-    /// null.</returns>
+    /// <returns>
+    /// The value from <paramref name="dictionary"/>, or null.
+    /// </returns>
     /// <inheritdoc cref="GetValueOrDefault{TKey,
-    /// TVal}(IReadOnlyDictionary{TKey, TVal}, TKey, TVal)"/>
-    public static TVal GetValueOrNull<TKey, TVal>(
-        this IReadOnlyDictionary<TKey, TVal> dictionary,
-        TKey key) where TVal : class =>
+    /// TValue}(IReadOnlyDictionary{TKey, TValue}, TKey, TValue)"/>
+    public static TValue GetValueOrNull<TKey, TValue>(
+        this IReadOnlyDictionary<TKey, TValue> dictionary,
+        TKey key) where TValue : class =>
         GetValueOrDefault(dictionary, key, null);
 
+    /// <summary>
+    /// Tries to get the value from <paramref name="dictionary"/>. If found,
+    /// returns that value. Otherwise, return <see cref="new()"/>.
+    /// </summary>
+    /// <returns>
+    /// The value from <paramref name="dictionary"/>, or new().
+    /// </returns>
+    /// <inheritdoc cref="GetValueOrDefault{TKey,
+    /// TValue}(IReadOnlyDictionary{TKey, TValue}, TKey, TValue)"/>
+    public static TValue GetValueOrNew<TKey, TValue>(
+        this IReadOnlyDictionary<TKey, TValue> dictionary,
+        TKey key) where TValue : new()
+    {
+        if (dictionary.TryGetValue(key, out TValue val))
+            return val == null ? new() : val;
+
+        return new();
+    }
+    #endregion
+
+    #region Dictionary List
     /// <summary>
     /// Adds an addition to a list in the dictionary. Creates the list and adds
     /// the addition if the specified key does not exist in the dictionary.
     /// <typeparam name="TKey">The type of key to add.</typeparam>
-    /// <typeparam name="TVal">The type of value to add.</typeparam>
+    /// <typeparam name="TValue">The type of value to add.</typeparam>
     /// <param name="dict">The dictionary to add to.</param>
     /// <param name="key">The specified key.</param>
     /// <param name="value">What to add to the list.</param>
     /// </summary>
-    public static void AddToDictList<TKey, TVal>(this IDictionary<TKey,
-        List<TVal>> dict, TKey key, TVal value)
+    public static void AddToDictList<TKey, TValue>(
+        this IReadOnlyDictionary<TKey, List<TValue>> dict,
+        TKey key, TValue value)
     {
-        dict.GetOrCreate(key).Add(value);
+        dict.GetValueOrNew(key).Add(value);
     }
 
     /// <summary>
@@ -279,7 +313,7 @@ public static class EnumerableExt
     /// cref="AddOrReplace{T}(IList{T}, T, int)"/>.
     /// </summary>
     /// <typeparam name="TKey">The type of key to add.</typeparam>
-    /// <typeparam name="TVal">The type of value to add.</typeparam>
+    /// <typeparam name="TValue">The type of value to add.</typeparam>
     /// <param name="dict">The dictionary of lists.</param>
     /// <param name="key">The key that targets the list to add to. Must be
     /// non-null.</typeparam>
@@ -287,18 +321,19 @@ public static class EnumerableExt
     /// <param name="index">Index to add the object at.</param>
     /// <param name="buffered">If true, add a buffer to the internal list. See
     /// <see cref="AddOrReplaceWithBuffer{T}(IList{T}, T, int)"/></param>
-    public static void AddOrReplaceToDictList<TKey, TVal>(
-        this IDictionary<TKey, List<TVal>> dict, TKey key,
-        TVal obj, int index, bool buffered = false)
+    public static void AddOrReplaceToDictList<TKey, TValue>(
+        this IReadOnlyDictionary<TKey, List<TValue>> dict, TKey key,
+        TValue obj, int index, bool buffered = false)
     {
         if (buffered)
         {
-            dict.GetOrCreate(key).AddOrReplaceWithBuffer(obj, index);
+            dict.GetValueOrNew(key).AddOrReplaceWithBuffer(obj, index);
         }
         else
         {
-            dict.GetOrCreate(key).AddOrReplace(obj, index);
+            dict.GetValueOrNew(key).AddOrReplace(obj, index);
         }
     }
+    #endregion
     #endregion
 }

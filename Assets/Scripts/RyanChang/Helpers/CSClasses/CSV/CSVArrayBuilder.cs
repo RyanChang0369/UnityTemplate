@@ -119,13 +119,13 @@ public class CSVArrayBuilder
                 $"{preHeader}.{arrHeader}";
 
             // Add stuff to the builders.
-            builders.GetOrCreate(builderHeader).Add(postHeader, data);
+            builders.GetValueOrNew(builderHeader).Add(postHeader, data);
             // AddToHeaderMap(builderHeader);
         }
         else
         {
             // We have a regular property. Simply add it to some default value.
-            builders.GetOrCreate("").Add(header, data);
+            builders.GetValueOrNew("").Add(header, data);
         }
     }
 

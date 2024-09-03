@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
+using UnityEngine;
 using UnityEngine.Assertions;
 
 /// <summary>
@@ -135,18 +136,28 @@ public static class JsonExt
     }
 
     /// <inheritdoc cref="ReadProperty{T}(JsonReader, string)"/>
+    /// <param name="value">If the property is found, its value will be placed
+    /// here.</param>
     public static void ReadProperty<T>(this JsonReader reader,
         string propertyName, out T value)
     {
         value = ReadProperty<T>(reader, propertyName);
     }
 
+    /// <summary>
+    /// Reads a JSON array with member types <typeparamref name="T"/>.
+    /// </summary>
+    /// <inheritdoc cref="ReadProperty{T}(JsonReader, string)"/>
     public static T[] ReadArray<T>(this JsonReader reader)
     {
-        return DoRead<T>(reader).ToArray();
+        return DoArrayRead<T>(reader).ToArray();
     }
 
-    private static IEnumerable<T> DoRead<T>(JsonReader reader)
+    /// <summary>
+    /// Helper method that preforms an array read.
+    /// </summary>
+    /// <inheritdoc cref="ReadArray{T}(JsonReader)"/>
+    private static IEnumerable<T> DoArrayRead<T>(JsonReader reader)
     {
         switch (reader.TokenType)
         {

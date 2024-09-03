@@ -61,11 +61,12 @@ public class UnityDictionaryPropertyDrawer : PropertyDrawer
             MessageType.Error
         );
         position.y += errorBoxHeight;
-        
+
         return position;
     }
 
-    public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+    public override float GetPropertyHeight(SerializedProperty property,
+        GUIContent label)
     {
         // First, load the unityDictionary. This enables us to check for
         // errors.
@@ -93,7 +94,7 @@ public class UnityDictionaryPropertyDrawer : PropertyDrawer
         property.Next(true);
 
         // Then get height.
-        height += EditorGUI.GetPropertyHeight(property);
+        height += (float)EditorGUI.GetPropertyHeight(property, label);
         return height;
     }
 }

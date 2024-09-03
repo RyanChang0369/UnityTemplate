@@ -14,11 +14,22 @@ public class EnumDictionary<TEnum, TValue> :
     StaticKeyedDictionary<TEnum, TValue>
     where TEnum : struct, Enum
 {
-    #region Constructors
+    #region Variables
+    /// <summary>
+    /// The default enum dictionary for this <see cref="TEnum"/> type.
+    /// </summary>
     private static IDictionary<TEnum, TValue> DefaultEnumDict =>
-        EnumExt.GetValues<TEnum>().
+        DefaultEnumValues.
         ToDictionary<TEnum, TEnum, TValue>(d => d, d => default);
 
+    /// <summary>
+    /// The default enum values for this <see cref="TEnum"/> type.
+    /// </summary>
+    public static IEnumerable<TEnum> DefaultEnumValues =>
+        EnumExt.GetValues<TEnum>();
+    #endregion
+
+    #region Constructors
     public EnumDictionary() : base(DefaultEnumDict)
     { }
 
@@ -28,13 +39,13 @@ public class EnumDictionary<TEnum, TValue> :
     #endregion
 
     #region StackedKeyDictionary Implementation
-    public override void GenerateStaticKeys(UnityEngine.Object targetObject)
+    protected override void GenerateStaticKeys(UnityEngine.Object targetObject,
+        Dictionary<string, TValue> jsonValues)
     {
-        foreach (TEnum enumIndex in EnumExt.GetValues<TEnum>())
-        {
-            // If key missing, then adds it with a default value.
-            editorDict.TryAdd(enumIndex, default);
-        }
+        LoadJsonValues(
+            EnumExt.GetValues<TEnum>(),
+            e => e.GetName()
+        );
     }
 
     public override string LabelFromKey(TEnum key)

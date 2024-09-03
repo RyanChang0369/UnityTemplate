@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Newtonsoft.Json;
 
 /// <summary>
@@ -23,7 +24,7 @@ public class UnityDictionaryConverter : JsonConverter
             {
                 var unityDictType = DictionaryType.
                     MakeGenericType(generics);
-                return objectType.Equals(unityDictType);
+                return objectType.IsAssignableFrom(unityDictType);
             }
         }
 
@@ -33,10 +34,11 @@ public class UnityDictionaryConverter : JsonConverter
     public override object ReadJson(JsonReader reader, Type objectType,
         object existingValue, JsonSerializer serializer)
     {
-        var generics = objectType.GenericTypeArguments;
-        var dictType = typeof(IDictionary<,>).
+        Type[] generics = GetBaseGenericTypeArguments(objectType);
+
+        Type dictType = typeof(IDictionary<,>).
             MakeGenericType(generics);
-        var unityDictType = DictionaryType.
+        Type unityDictType = DictionaryType.
             MakeGenericType(generics);
 
         object value = unityDictType.GetConstructor(
@@ -50,8 +52,7 @@ public class UnityDictionaryConverter : JsonConverter
 
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
-        Type objectType = value.GetType();
-        var generics = objectType.GenericTypeArguments;
+        var generics = GetBaseGenericTypeArguments(value.GetType());
 
         var dictType = typeof(Dictionary<,>).
             MakeGenericType(generics);
@@ -66,4 +67,27 @@ public class UnityDictionaryConverter : JsonConverter
 
         serializer.Serialize(writer, dictionary);
     }
+
+    /// <summary>
+    /// Gets an array of generic types the UnityDictionary type has.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    protected Type[] GetBaseGenericTypeArguments(Type type)
+    {
+        Type[] interfaces = type.FindInterfaces(
+            new TypeFilter(TypeNameFilter),
+            "IDictionary`2"
+        );
+
+        if (interfaces.Length == 0)
+            throw new ArgumentException(
+                type.Name + " does not inherit from IDictionary`2"
+            );
+        
+        return interfaces[0].GenericTypeArguments;
+    }
+
+    private bool TypeNameFilter(Type filter, object criteria) =>
+        filter.Name == (string)criteria;
 }

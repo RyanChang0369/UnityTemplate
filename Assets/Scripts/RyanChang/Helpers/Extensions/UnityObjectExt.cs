@@ -739,12 +739,9 @@ public static class UnityObjectExt
         bool doError = true
         ) where T : Component
     {
-        if (component)
-            return true;
-        else
-        {
-            return self.RequireComponent(out component, name, doError);
-        }
+        return component ?
+            true :
+            self.RequireComponent(out component, name, doError);
     }
 
     /// <inheritdoc cref="AutofillComponent{T}(Component, ref T, string,
@@ -790,6 +787,69 @@ public static class UnityObjectExt
         ) where T : Component
     {
         return self.AutofillComponent(
+            ref component,
+            typeof(T).ToString(),
+            doError
+        );
+    }
+
+    /// <summary>
+    /// Does the same thing as <see cref="RequireComponentInChildren"/>, but
+    /// does not set the value of <paramref name="component"/> if it is already
+    /// set to a valid value.
+    /// </summary>
+    /// <inheritdoc cref="AutofillComponent{T}(Component, ref T, string,
+    /// bool)"/>
+    public static bool AutofillComponentInChildren<T>(
+        this Component self,
+        ref T component,
+        string name,
+        bool doError = true
+        ) where T : Component
+    {
+        return component ?
+            true :
+            self.RequireComponentInChildren(out component, name, doError);
+    }
+
+    /// <inheritdoc cref="AutofillComponentInChildren{T}(Component, ref T,
+    /// string, bool)"/>
+    public static bool AutofillComponentInChildren<T>(
+        this Component self,
+        ref T component,
+        bool doError = true
+        ) where T : Component
+    {
+        return self.AutofillComponentInChildren(
+            ref component,
+            typeof(T).ToString(),
+            doError
+        );
+    }
+
+    /// <inheritdoc cref="AutofillComponentInChildren{T}(Component, ref T,
+    /// string, bool)"/>
+    public static bool AutofillComponentInChildren<T>(
+        this GameObject self,
+        ref T component,
+        string name,
+        bool doError = true
+        ) where T : Component
+    {
+        return component ?
+            true :
+            self.RequireComponentInChildren(out component, name, doError);
+    }
+
+    /// <inheritdoc cref="AutofillComponentInChildren{T}(GameObject, ref T,
+    /// string, bool)"/>
+    public static bool AutofillComponentInChildren<T>(
+        this GameObject self,
+        ref T component,
+        bool doError = true
+        ) where T : Component
+    {
+        return self.AutofillComponentInChildren(
             ref component,
             typeof(T).ToString(),
             doError
@@ -1141,7 +1201,7 @@ public static class UnityObjectExt
         {
             if (self == singleton && duplicatesOK)
                 return;
-            
+
             throw new ArgumentException($"Multiple instances of {typeof(T)}.");
         }
         else
@@ -1215,7 +1275,7 @@ public static class UnityObjectExt
     public static bool AutoDestroy(this Component unityObject) =>
         unityObject.gameObject.AutoDestroy();
 
-	/// <summary>
+    /// <summary>
     /// Destroys <paramref name="unityObject"/> if <paramref name="condition"/>
     /// evaluates to false.
     /// </summary>

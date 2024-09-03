@@ -6,6 +6,10 @@ using Newtonsoft.Json.Converters;
 
 /// <summary>
 /// Extensions for <see cref="ISaveLoadable{T}"/> and <see cref="ISaveState"/>.
+///
+/// <br/>
+///
+/// Authors: Ryan Chang (2024)
 /// </summary>
 public static class SaveLoadExt
 {
@@ -13,12 +17,12 @@ public static class SaveLoadExt
     private static readonly JsonSerializerSettings defaultJsonSettings = new()
     {
         Converters = {
-                new UnityValueConverter(),
-                new StringEnumConverter(),
-                new IsoDateTimeConverter(),
-                new SaveLoadableConverter(),
-                new BitArrayConverter(),
-            },
+            new UnityValueConverter(),
+            new StringEnumConverter(),
+            new IsoDateTimeConverter(),
+            new SaveLoadableConverter(),
+            new BitArrayConverter(),
+        },
         TypeNameHandling = TypeNameHandling.Auto,
         ObjectCreationHandling = ObjectCreationHandling.Replace
     };

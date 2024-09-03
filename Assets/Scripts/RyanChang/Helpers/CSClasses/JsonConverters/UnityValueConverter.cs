@@ -19,7 +19,7 @@ using UnityEngine.Assertions;
 public class UnityValueConverter : JsonConverter
 {
     // Am I missing a type? Add it here.
-    private static Type[] validTypes = {
+    private static readonly Type[] validTypes = {
         typeof(Vector2),
         typeof(Vector2Int),
         typeof(Vector3),

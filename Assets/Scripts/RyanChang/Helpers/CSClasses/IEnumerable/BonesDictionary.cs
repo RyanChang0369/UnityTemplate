@@ -6,9 +6,9 @@ using UnityEngine;
 /// Represents a dictionary of animation/model bones of a skinned mesh renderer.
 /// Use this to easily map bones to some other value, and have the mapping be
 /// editable in the unity editor.
-/// 
+///
 /// <br/>
-/// 
+///
 /// Can be used for fish appearance (in use) or NPC models (not in use yet).
 /// </summary>
 ///
@@ -28,11 +28,18 @@ public class BonesDictionary<TValue> :
     public BonesDictionary(IDictionary<Transform, TValue> dictionary) :
         base(dictionary)
     { }
+
+    public BonesDictionary() : base(new Dictionary<Transform, TValue>())
+    { }
     #endregion
-    
+
     #region StaticKeyedDictionary Implementation
-    public override void GenerateStaticKeys(UnityEngine.Object targetObject)
+    protected override void GenerateStaticKeys(UnityEngine.Object targetObject,
+        Dictionary<string, TValue> jsonValues)
     {
+        // Initialize editorDict if not already initialized.
+        editorDict ??= new();
+
         if (!skinnedMesh)
         {
             if (targetObject is Component component)
@@ -42,15 +49,15 @@ public class BonesDictionary<TValue> :
             else
             {
                 throw new InvalidOperationException(
-                    $"{this} must be attached to a Component");
+                    $"{this} must be attached to a Component"
+                );
             }
         }
 
-        foreach (var bone in skinnedMesh.bones)
-        {
-            // If key missing, then adds it with a default value.
-            editorDict.TryAdd(bone, default);
-        }
+        LoadJsonValues(
+            skinnedMesh.bones,
+            b => b.ToString()
+        );
     }
 
     public override string LabelFromKey(Transform key) => key.gameObject.name;
