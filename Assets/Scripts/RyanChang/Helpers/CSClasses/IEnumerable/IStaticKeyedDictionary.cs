@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 /// <summary>
 /// Interface for the <see cref="StaticKeyedDictionary{TKey, TValue}"/>. Allows
 /// certain functions to be called without knowing the specific type parameters
