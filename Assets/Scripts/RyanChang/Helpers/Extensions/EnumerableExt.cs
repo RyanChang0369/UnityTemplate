@@ -77,7 +77,8 @@ public static class EnumerableExt
     /// name="collection"/> count. If it lies outside of that bound, then wrap
     /// it.
     /// </summary>
-    public static int WrapAroundLength<T>(this int index, ICollection<T> collection)
+    public static int WrapAroundLength<T>(this int index,
+        ICollection<T> collection)
     {
         return index.WrapAroundLength(collection.Count);
     }
@@ -109,8 +110,8 @@ public static class EnumerableExt
     /// nullity and reference matching.
     /// </summary>
     /// <typeparam name="T">The IEquatable type.</typeparam>
-    /// <param name="collection1">The first collection.</param>
-    /// <param name="collection2">The second collection.</param>
+    /// <param name="collection1">The first enumerable.</param>
+    /// <param name="collection2">The second enumerable.</param>
     /// <returns></returns>
     public static bool EnumerableMatches<T>(this IEnumerable<T> collection1,
         IEnumerable<T> collection2)
@@ -124,7 +125,7 @@ public static class EnumerableExt
     }
 
     /// <inheritdoc cref="EnumerableMatches{T}(IEnumerable{T}, IEnumerable{T})"/>
-    /// <param name="comparer">The compairer to use for the IEnumerable.</param>
+    /// <param name="comparer">The comparer to use for the IEnumerable.</param>
     public static bool EnumerableMatches<T>(this IEnumerable<T> collection1,
         IEnumerable<T> collection2, IEqualityComparer<T> comparer)
     {
@@ -135,6 +136,40 @@ public static class EnumerableExt
 
         return collection1.SequenceEqual(collection2, comparer);
     }
+
+    #region Extrema
+    /// <summary>
+    /// Returns an element in <paramref name="collection"/> with a maximal value
+    /// determined by <paramref name="selector"/>.
+    /// </summary>
+    /// <param name="collection">The collection to operate on.</param>
+    /// <param name="selector">Selects the value used for the
+    /// comparison.</param>
+    /// <typeparam name="T">The type in <paramref
+    /// name="collection"/>.</typeparam>
+    /// <typeparam name="TSelect">The value used in the comparison.</typeparam>
+    public static T WithMaxValue<T, TSelect>(this IEnumerable<T> collection,
+        Func<T, TSelect> selector) where TSelect : IComparable<TSelect>
+    {
+        return collection.Aggregate(
+            (a, b) => selector(a).CompareTo(selector(b)) > 0 ? a : b
+        );
+    }
+
+    /// <inheritdoc cref="WithMaxValue{T, TSelect}(IEnumerable{T}, Func{T,
+    /// TSelect})"/>
+    /// <summary>
+    /// Returns an element in <paramref name="collection"/> with a minimal value
+    /// determined by <paramref name="selector"/>.
+    /// </summary>
+    public static T WithMinValue<T, TSelect>(this IEnumerable<T> collection,
+        Func<T, TSelect> selector) where TSelect : IComparable<TSelect>
+    {
+        return collection.Aggregate(
+            (a, b) => selector(a).CompareTo(selector(b)) < 0 ? a : b
+        );
+    }
+    #endregion
     #endregion
 
     #region List
