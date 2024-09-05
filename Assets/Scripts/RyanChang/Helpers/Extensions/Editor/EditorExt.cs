@@ -93,8 +93,8 @@ public static class EditorExt
                     $"Field is null for {name}"
                 );
 
-                targetType = field.FieldType;
                 targetObject = field.GetValue(targetObject);
+                targetType = targetObject.GetType();
             }
         }
 
@@ -104,10 +104,7 @@ public static class EditorExt
     /// <param name="obj">The object to assign the value to.</param>
     /// <inheritdoc cref="GetObjectFromReflection(SerializedProperty)"/>
     public static void GetObjectFromReflection<T>(this SerializedProperty property,
-        out T obj)
-    {
-        obj = (T)property.GetObjectFromReflection();
-    }
+        out T obj) => obj = (T)property.GetObjectFromReflection();
 
     /// <summary>
     /// Calls <see cref="SerializedProperty.Next(bool)"/> until a child is found
