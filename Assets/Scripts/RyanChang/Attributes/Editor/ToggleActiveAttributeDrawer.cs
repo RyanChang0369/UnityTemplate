@@ -1,9 +1,5 @@
 using UnityEngine;
 using UnityEditor;
-using Unity.VisualScripting;
-using System;
-using System.Reflection;
-using System.Linq;
 
 /// <summary>
 /// Drawer for <see cref="ToggleActiveAttribute"/>.
@@ -15,23 +11,33 @@ using System.Linq;
 [CustomPropertyDrawer(typeof(ToggleActiveAttribute), true)]
 public class ToggleActiveAttributeDrawer : PropertyDrawer
 {
-    public override void OnGUI(Rect position, SerializedProperty property, 
+    public override void OnGUI(Rect position, SerializedProperty property,
         GUIContent label)
     {
-        string toggleName = ((ToggleActiveAttribute)attribute).ToggleName;
-        Type type = property.GetObjectFromReflection(
-            property.propertyPath.SpliceWords(0..^1, '.')
-        ).GetType();
-
-        MemberInfo[] members = type.GetMember(
-            toggleName,
-            BindingFlags.Public | BindingFlags.NonPublic |
-            BindingFlags.Instance | BindingFlags.Static
+        string targetName = ((ToggleActiveAttribute)attribute).ToggledName;
+        SerializedProperty targetProperty = property.serializedObject.FindProperty(
+            property.propertyPath.SpliceWords(0..^1, '.') + '.' + targetName
         );
 
-        if (members.OneAndOnly(out MemberInfo info))
-        {
+        float h = EditorExt.SpacedLineHeight;
 
-        }
+        Rect togglePosition = new(
+            position.x, position.y,
+            h * 2, position.height
+        );
+        // h *= 2;
+        Rect targetPosition = new(
+            position.x + h, position.y,
+            position.width - h, position.height
+        );
+
+        property.boolValue = EditorGUI.ToggleLeft(
+            togglePosition,
+            "",
+            property.boolValue
+        );
+        EditorGUI.BeginDisabledGroup(!property.boolValue);
+        EditorGUI.PropertyField(targetPosition, targetProperty, label);
+        EditorGUI.EndDisabledGroup();
     }
 }

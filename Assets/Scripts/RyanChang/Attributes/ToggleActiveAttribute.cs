@@ -8,24 +8,26 @@ using UnityEngine;
 /// <remarks>
 /// Authors: Ryan Chang (2024)
 /// </remarks>
-[AttributeUsage(AttributeTargets.Field)]
+[AttributeUsage(AttributeTargets.Field |
+    AttributeTargets.Property |
+    AttributeTargets.Method)]
 [Serializable]
 public class ToggleActiveAttribute : PropertyAttribute
 {
     /// <summary>
-    /// The name of the boolean that activates the attribute.
+    /// The name of the attribute that is enabled/disabled by the boolean.
     /// </summary>
-    private readonly string toggler;
+    private readonly string toggled;
 
-    public string ToggleName => toggler;
+    public string ToggledName => toggled;
 
     /// <summary>
     /// Creates a toggle active attribute.
     /// </summary>
-    /// <param name="toggler">The name of the boolean that activates the
+    /// <param name="toggled">The name of the boolean that activates the
     /// attribute.</param>
-    public ToggleActiveAttribute(string toggler)
+    public ToggleActiveAttribute(string toggled)
     {
-        this.toggler = toggler;
+        this.toggled = toggled;
     }
 }

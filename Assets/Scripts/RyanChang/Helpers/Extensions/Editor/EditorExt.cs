@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using UnityEngine.Assertions;
 using System;
 using static NumericalExt;
+using System.Linq;
 
 /// <summary>
 /// Contains classes pertaining to editor stuff.
@@ -161,36 +162,71 @@ public static class EditorExt
         SeekToType(property, typeof(T), visibleOnly);
 
     /// <summary>
-    /// Gets a member by its name from some <paramref name="type"/>, using
-    /// whatever means nessisary.
+    /// Gets the value of a member by its name from some <paramref
+    /// name="target"/>, using whatever means nessisary. If such a member cannot
+    /// be found, then throws a <see cref="ArgumentException"/>.
     /// </summary>
-    /// <param name="memberName"></param>
-    /// <returns>True if some member was found, false otherwise.</returns>
-    public static bool ForceGetMember(this Type type, string memberName,
-        out object memberData)
+    /// <param name="target">The target object to obtain the member
+    /// value.</param>
+    /// <param name="outputType">The type of the return value.</param>
+    /// <param name="memberName">Name of the member.</param>
+    /// <returns>The value of the member.</returns>
+    public static object ForceGetMemberValue(this object target,
+        Type outputType, string memberName)
     {
-        // Part 1: Look for public instance members.
-        MemberInfo[] publicMembers = type.GetMember(
+        Type targetType = target.GetType();
+
+        MemberInfo[] members = targetType.GetMember(
             memberName,
-            BindingFlags.Public | BindingFlags.Instance
+            BindingFlags.Public | BindingFlags.NonPublic |
+            BindingFlags.Instance | BindingFlags.Static
         );
 
-        if (publicMembers.NotEmpty())
+        foreach (var member in members)
         {
-            memberData = publicMembers[0];
+            switch (member.MemberType)
+            {
+                case MemberTypes.Field:
+                    FieldInfo field = (FieldInfo)member;
+
+                    if (outputType.IsAssignableFrom(field.FieldType))
+                        return field.GetValue(target);
+
+                    break;
+                case MemberTypes.Property:
+                    PropertyInfo property = (PropertyInfo)member;
+
+                    if (outputType.IsAssignableFrom(property.PropertyType) &&
+                        property.CanRead)
+                    {
+                        return property.GetValue(target);
+                    }
+
+                    break;
+                case MemberTypes.Method:
+                    MethodInfo method = (MethodInfo)member;
+
+                    if (outputType.IsAssignableFrom(method.ReturnType) &&
+                        method.GetParameters().Any(p => !p.HasDefaultValue))
+                    {
+                        return method.Invoke(target, new object[0]);
+                    }
+
+                    break;
+            }
         }
 
-        MemberInfo[] privateMembers = type.GetMember(
-            memberName,
-            BindingFlags.NonPublic | BindingFlags.Instance
+        throw new ArgumentException(
+            $"Cannot find member: {memberName}"
         );
-
-        if (privateMembers.NotEmpty())
-        {
-            memberData = privateMembers[0];
-        }
-
-        throw new NotImplementedException();
+    }
+    
+    /// <inheritdoc cref="ForceGetMemberValue(object, Type, string)"/>
+    /// <typeparam name="T">The type of the return value.</typeparam>
+    public static T ForceGetMemberValue<T>(this object target,
+        string memberName)
+    {
+        return (T)ForceGetMemberValue(target, typeof(T), memberName);
     }
     #endregion
 
