@@ -138,7 +138,7 @@ public class FloatAngle
     /// </summary>
     /// <param name="other">The other angle you are comparing.</param>
     public int GetDirectionTo(FloatAngle other,
-        NumericalExt.ZeroSignBehavior signBehavior)
+        NumericalExt.SignBehavior signBehavior)
     {
         return (this - other).AsCentered().Sign(signBehavior);
     }

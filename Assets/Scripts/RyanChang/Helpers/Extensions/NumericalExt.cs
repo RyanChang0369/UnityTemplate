@@ -58,7 +58,7 @@ public static class NumericalExt
     /// How zero is handled by sign-determining functions (ie <see
     /// cref="IsPositive"/>, <see cref="IsNegative"/>, <see cref="Sign"/>, etc).
     /// </summary>
-    public enum ZeroSignBehavior
+    public enum SignBehavior
     {
         /// <summary>
         /// If number is zero, a boolean function will return false, and an
@@ -83,38 +83,103 @@ public static class NumericalExt
         ZeroIsNegative
     }
 
+    #region Positive
     /// <summary>
-    /// Returns true if <paramref name="number"/> is less than 0.
+    /// Returns true if <paramref name="number"/> is greater than 0.
     /// </summary>
-    /// <param name="number">The number to compare with.</param>
-    /// <returns></returns>
-    public static bool IsPositive<N>(this N number,
-        ZeroSignBehavior behavior = ZeroSignBehavior.ZeroIsPositive)
-        where N : IComparable => behavior switch
+    /// <inheritdoc cref="Sign(int, SignBehavior)"/>
+    /// <returns>True if <paramref name="number"/> is greater than 0.</returns>
+    public static bool IsPositive(this int number,
+        SignBehavior behavior = SignBehavior.ZeroIsPositive) =>
+        behavior switch
         {
-            ZeroSignBehavior.ZeroIsFalse => number.CompareTo(0.0) > 0,
-            ZeroSignBehavior.ZeroIsNegative => number.CompareTo(0.0) > 0,
-            ZeroSignBehavior.ZeroIsTrue => number.CompareTo(0.0) >= 0,
-            ZeroSignBehavior.ZeroIsPositive => number.CompareTo(0.0) >= 0,
+            SignBehavior.ZeroIsFalse => number > 0,
+            SignBehavior.ZeroIsNegative => number > 0,
+            SignBehavior.ZeroIsTrue => number >= 0,
+            SignBehavior.ZeroIsPositive => number >= 0,
             _ => throw new NotImplementedException(),
         };
 
+    /// <inheritdoc cref="IsPositive(int, SignBehavior)"/>
+    public static bool IsPositive(this byte number,
+        SignBehavior behavior = SignBehavior.ZeroIsPositive) =>
+        number.CompareTo(0).IsPositive(behavior);
+
+    /// <inheritdoc cref="IsPositive(int, SignBehavior)"/>
+    public static bool IsPositive(this short number,
+        SignBehavior behavior = SignBehavior.ZeroIsPositive) =>
+        number.CompareTo(0).IsPositive(behavior);
+
+    /// <inheritdoc cref="IsPositive(int, SignBehavior)"/>
+    public static bool IsPositive(this long number,
+        SignBehavior behavior = SignBehavior.ZeroIsPositive) =>
+        number.CompareTo(0).IsPositive(behavior);
+
+    /// <inheritdoc cref="IsPositive(int, SignBehavior)"/>
+    public static bool IsPositive(this float number,
+        SignBehavior behavior = SignBehavior.ZeroIsPositive) =>
+        number.CompareTo(0).IsPositive(behavior);
+
+    /// <inheritdoc cref="IsPositive(int, SignBehavior)"/>
+    public static bool IsPositive(this double number,
+        SignBehavior behavior = SignBehavior.ZeroIsPositive) =>
+        number.CompareTo(0).IsPositive(behavior);
+
+    /// <inheritdoc cref="IsPositive(int, SignBehavior)"/>
+    public static bool IsPositive(this decimal number,
+        SignBehavior behavior = SignBehavior.ZeroIsPositive) =>
+        number.CompareTo(0).IsPositive(behavior);
+    #endregion
+
+    #region Negative
     /// <summary>
     /// Returns true if <paramref name="number"/> is less than 0.
     /// </summary>
-    /// <param name="number">The number to compare with.</param>
-    /// <returns></returns>
-    public static bool IsNegative<N>(this N number,
-        ZeroSignBehavior behavior = ZeroSignBehavior.ZeroIsPositive)
-        where N : IComparable => behavior switch
+    /// <inheritdoc cref="Sign(int, SignBehavior)"/>
+    /// <returns>True if <paramref name="number"/> is less than 0.</returns>
+    public static bool IsNegative(this int number,
+        SignBehavior behavior = SignBehavior.ZeroIsPositive) =>
+        behavior switch
         {
-            ZeroSignBehavior.ZeroIsFalse => number.CompareTo(0.0) < 0,
-            ZeroSignBehavior.ZeroIsPositive => number.CompareTo(0.0) < 0,
-            ZeroSignBehavior.ZeroIsTrue => number.CompareTo(0.0) <= 0,
-            ZeroSignBehavior.ZeroIsNegative => number.CompareTo(0.0) <= 0,
+            SignBehavior.ZeroIsFalse => number < 0,
+            SignBehavior.ZeroIsPositive => number < 0,
+            SignBehavior.ZeroIsTrue => number <= 0,
+            SignBehavior.ZeroIsNegative => number <= 0,
             _ => throw new NotImplementedException(),
         };
 
+    /// <inheritdoc cref="IsNegative(int, SignBehavior)"/>
+    public static bool IsNegative(this byte number,
+        SignBehavior behavior = SignBehavior.ZeroIsPositive) =>
+        number.CompareTo(0).IsNegative(behavior);
+
+    /// <inheritdoc cref="IsNegative(int, SignBehavior)"/>
+    public static bool IsNegative(this short number,
+        SignBehavior behavior = SignBehavior.ZeroIsPositive) =>
+        number.CompareTo(0).IsNegative(behavior);
+
+    /// <inheritdoc cref="IsNegative(int, SignBehavior)"/>
+    public static bool IsNegative(this long number,
+        SignBehavior behavior = SignBehavior.ZeroIsPositive) =>
+        number.CompareTo(0).IsNegative(behavior);
+
+    /// <inheritdoc cref="IsNegative(int, SignBehavior)"/>
+    public static bool IsNegative(this float number,
+        SignBehavior behavior = SignBehavior.ZeroIsPositive) =>
+        number.CompareTo(0).IsNegative(behavior);
+
+    /// <inheritdoc cref="IsNegative(int, SignBehavior)"/>
+    public static bool IsNegative(this double number,
+        SignBehavior behavior = SignBehavior.ZeroIsPositive) =>
+        number.CompareTo(0).IsNegative(behavior);
+
+    /// <inheritdoc cref="IsNegative(int, SignBehavior)"/>
+    public static bool IsNegative(this decimal number,
+        SignBehavior behavior = SignBehavior.ZeroIsPositive) =>
+        number.CompareTo(0).IsNegative(behavior);
+    #endregion
+
+    #region Sign
     /// <summary>
     /// Returns the sign of number.
     /// </summary>
@@ -122,22 +187,41 @@ public static class NumericalExt
     /// <param name="behavior">The behavior of the method.</param>
     /// <returns>-1, 0, or 1, depending on the value of <paramref
     /// name="behavior"/>.</returns>
-    public static int Sign<N>(this N number,
-        ZeroSignBehavior behavior = ZeroSignBehavior.ZeroIsPositive)
-        where N : IComparable
-    {
-        int cmp = number.CompareTo(0.0);
-        cmp = (cmp == 0) ? 0 : (cmp / Math.Abs(cmp));
-
-        return behavior switch
+    public static int Sign(this int number,
+        SignBehavior behavior = SignBehavior.ZeroIsTrue) =>
+        behavior switch
         {
-            ZeroSignBehavior.ZeroIsFalse or
-                ZeroSignBehavior.ZeroIsTrue => cmp,
-            ZeroSignBehavior.ZeroIsNegative => cmp == 0 ? -1 : cmp,
-            ZeroSignBehavior.ZeroIsPositive => cmp == 0 ? 1 : cmp,
+            SignBehavior.ZeroIsFalse or SignBehavior.ZeroIsTrue =>
+                (number == 0) ? 0 : (number < 0 ? -1 : 1),
+            SignBehavior.ZeroIsNegative => number <= 0 ? -1 : 1,
+            SignBehavior.ZeroIsPositive => number >= 0 ? 1 : -1,
             _ => throw new NotImplementedException(),
         };
-    }
+
+    public static int Sign(this byte number,
+        SignBehavior behavior = SignBehavior.ZeroIsTrue) =>
+        number.CompareTo(0).Sign(behavior);
+
+    public static int Sign(this short number,
+        SignBehavior behavior = SignBehavior.ZeroIsTrue) =>
+        number.CompareTo(0).Sign(behavior);
+
+    public static int Sign(this long number,
+        SignBehavior behavior = SignBehavior.ZeroIsTrue) =>
+        number.CompareTo(0).Sign(behavior);
+
+    public static int Sign(this float number,
+        SignBehavior behavior = SignBehavior.ZeroIsTrue) =>
+        number.CompareTo(0).Sign(behavior);
+
+    public static int Sign(this double number,
+        SignBehavior behavior = SignBehavior.ZeroIsTrue) =>
+        number.CompareTo(0).Sign(behavior);
+
+    public static int Sign(this decimal number,
+        SignBehavior behavior = SignBehavior.ZeroIsTrue) =>
+        number.CompareTo(0).Sign(behavior);
+    #endregion
     #endregion
 
     #region Deltas

@@ -7,6 +7,7 @@ using System.IO;
 using System.Collections.Generic;
 using UnityEngine.Assertions;
 using System;
+using static NumericalExt;
 
 /// <summary>
 /// Contains classes pertaining to editor stuff.
@@ -65,6 +66,8 @@ public static class EditorExt
             int rBracket = name.IndexOf(']');
             if (lBracket >= 0 && rBracket >= 0)
             {
+                lBracket++;
+                // rBracket--;
                 // In an array
                 // This is an array element we are looking for.
                 int index = int.Parse(name[lBracket..rBracket]);
@@ -72,7 +75,7 @@ public static class EditorExt
                 // Iterate through the enumerable, until index is reached.
                 foreach (object thing in (IEnumerable)targetObject)
                 {
-                    if (index <= 0)
+                    if (index.IsNegative(SignBehavior.ZeroIsNegative))
                     {
                         targetObject = thing;
                         targetType = thing.GetType();
@@ -84,7 +87,9 @@ public static class EditorExt
             }
             else if (lBracket.Sign() != rBracket.Sign())
             {
-
+                throw new ArgumentException(
+                    $"Mismatched brackets: {name}"
+                );
             }
             else
             {

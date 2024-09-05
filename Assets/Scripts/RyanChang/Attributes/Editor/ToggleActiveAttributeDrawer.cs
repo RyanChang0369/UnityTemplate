@@ -18,17 +18,20 @@ public class ToggleActiveAttributeDrawer : PropertyDrawer
     public override void OnGUI(Rect position, SerializedProperty property, 
         GUIContent label)
     {
+        string toggleName = ((ToggleActiveAttribute)attribute).ToggleName;
         Type type = property.GetObjectFromReflection(
             property.propertyPath.SpliceWords(0..^1, '.')
         ).GetType();
-        
-        string toggleName = ((ToggleActiveAttribute)attribute).ToggleName;
 
         MemberInfo[] members = type.GetMember(
             toggleName,
             BindingFlags.Public | BindingFlags.NonPublic |
             BindingFlags.Instance | BindingFlags.Static
         );
-        Debug.Log(members.Length);
+
+        if (members.OneAndOnly(out MemberInfo info))
+        {
+
+        }
     }
 }

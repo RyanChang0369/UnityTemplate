@@ -9,69 +9,151 @@ using System.Linq;
 public static class EnumerableExt
 {
     #region Misc Collection
+    #region Is/Not Empty
     /// <summary>
-    /// Returns true if <see cref="collection"/> is null or contains no
+    /// Returns true if <paramref name="values"/> is null or contains no
     /// elements.
     /// </summary>
-    /// <param name="collection">The collection.</param>
-    public static bool IsNullOrEmpty<T>(this IEnumerable<T> collection) =>
-        collection == null || !collection.Any();
+    /// <param name="values">The collection.</param>
+    public static bool IsNullOrEmpty<T>(this IEnumerable<T> values) =>
+        values == null || !values.Any();
 
     /// <inheritdoc cref="IsNullOrEmpty{T}(IEnumerable{T})"/>
-    public static bool IsNullOrEmpty<T>(this ICollection<T> collection) =>
-        collection == null || collection.Count == 0;
+    public static bool IsNullOrEmpty<T>(this ICollection<T> values) =>
+        values == null || values.Count == 0;
 
     /// <summary>
-    /// Determines whether <see cref="collection"/> contains any elements.
+    /// Determines whether <paramref name="values"/> contains any elements.
     /// </summary>
     /// <inheritdoc cref="IsNullOrEmpty{T}(IEnumerable{T})"/>
-    public static bool IsEmpty<T>(this ICollection<T> collection) =>
-        collection.Count == 0;
+    public static bool IsEmpty<T>(this IEnumerable<T> values) =>
+        !values.Any();
+
+    /// <inheritdoc cref="IsEmpty{T}(IEnumerable{T})"/>
+    public static bool IsEmpty<T>(this ICollection<T> values) =>
+        values.Count == 0;
 
     /// <summary>
-    /// Determines whether <see cref="collection"/> contains none elements.
+    /// Determines whether <paramref name="values"/> contains none elements.
     /// </summary>
     /// <inheritdoc cref="IsNullOrEmpty{T}(IEnumerable{T})"/>
-    public static bool NotEmpty<T>(this ICollection<T> collection) =>
-        collection.Count > 0;
+    public static bool NotEmpty<T>(this IEnumerable<T> values) =>
+        values.Any();
 
+    /// <inheritdoc cref="NotEmpty{T}(IEnumerable{T})"/>
+    public static bool NotEmpty<T>(this ICollection<T> values) =>
+        values.Count > 0;
+    #endregion
+
+    #region Index in Range
     /// <summary>
     /// Returns true if <paramref name="index"/> is a valid indexer into
-    /// <paramref name="collection"/>. If <paramref name="collection"/> is null
+    /// <paramref name="values"/>. If <paramref name="values"/> is null
     /// or empty, returns false.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="collection">The collection to evaluate.</param>
+    /// <param name="values">The collection to evaluate.</param>
     /// <param name="index">The index to evaluate.</param>
     /// <returns>True if <paramref name="index"/> is a valid indexer into
-    /// <paramref name="collection"/>, false otherwise.</returns>
-    public static bool IndexInRange<T>(this IEnumerable<T> collection,
-        int index)
+    /// <paramref name="values"/>, false otherwise.</returns>
+    public static bool IndexInRange<T>(this IEnumerable<T> values, int index)
     {
-        if (collection == null)
+        if (values == null)
             return false;
 
-        return index >= 0 && index < collection.Count();
+        return index >= 0 && index < values.Count();
     }
 
     /// <summary>
     /// Returns true if <paramref name="index"/> is a valid indexer into
-    /// <paramref name="array"/>. If <paramref name="array"/> is null
+    /// <paramref name="values"/>. If <paramref name="values"/> is null
     /// or empty, returns false.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="array">The array to evaluate.</param>
+    /// <param name="values">The array to evaluate.</param>
     /// <param name="index">The index to evaluate.</param>
     /// <returns>True if <paramref name="index"/> is a valid indexer into
-    /// <paramref name="array"/>, false otherwise.</returns>
-    public static bool IndexInRange<T>(this T[] array, int index)
+    /// <paramref name="values"/>, false otherwise.</returns>
+    public static bool IndexInRange<T>(this T[] values, int index)
     {
-        if (array == null)
+        if (values == null)
             return false;
 
-        return index >= 0 && index < array.Length;
+        return index >= 0 && index < values.Length;
+    }
+    #endregion
+
+    #region One And Only
+    /// <summary>
+    /// Determines if <paramref name="values"/> contains only one element.
+    /// </summary>
+    /// <param name="values">The collection.</param>
+    /// <param name="first">The one and only element, or default if this method
+    /// returns false.</param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns>True if <paramref name="values"/> contains only one element,
+    /// false otherwise or if <paramref name="values"/> is null.</returns>
+    public static bool OneAndOnly<T>(this IEnumerable<T> values, out T first)
+    {
+        if (values == null)
+        {
+            first = default;
+            return false;
+        }
+        else
+        {
+            first = values.FirstOrDefault();
+            return values.Any();
+        }
     }
 
+    /// <inheritdoc cref="OneAndOnly{T}(IEnumerable{T}, out T)"/>
+    public static bool OneAndOnly<T>(this ICollection<T> values, out T first)
+    {
+        if (values == null)
+        {
+            first = default;
+            return false;
+        }
+        else
+        {
+            first = values.IsEmpty() ? default : values.First();
+            return values.Count == 1;
+        }
+    }
+
+    /// <inheritdoc cref="OneAndOnly{T}(IEnumerable{T}, out T)"/>
+    public static bool OneAndOnly<T>(this IList<T> values, out T first)
+    {
+        if (values == null)
+        {
+            first = default;
+            return false;
+        }
+        else
+        {
+            first = values.IsEmpty() ? default : values[0];
+            return values.Count == 1;
+        }
+    }
+
+    /// <inheritdoc cref="OneAndOnly{T}(IEnumerable{T}, out T)"/>
+    public static bool OneAndOnly<T>(this T[] values, out T first)
+    {
+        if (values == null)
+        {
+            first = default;
+            return false;
+        }
+        else
+        {
+            first = values.IsEmpty() ? default : values[0];
+            return values.Length == 1;
+        }
+    }
+    #endregion
+
+    #region Wrap Around
     /// <summary>
     /// Ensures that <paramref name="index"/> ranges from 0 to <paramref
     /// name="collection"/> count. If it lies outside of that bound, then wrap
@@ -104,7 +186,9 @@ public static class EnumerableExt
     {
         return index.WrapAroundLength(to - from + 1) + from;
     }
+    #endregion
 
+    #region Sequence Equals
     /// <summary>
     /// Alias for <see cref="Enumerable.SequenceEqual"/>, with added checks for
     /// nullity and reference matching.
@@ -136,6 +220,7 @@ public static class EnumerableExt
 
         return collection1.SequenceEqual(collection2, comparer);
     }
+    #endregion
 
     #region Extrema
     /// <summary>
