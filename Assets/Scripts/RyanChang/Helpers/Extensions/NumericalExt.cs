@@ -4,27 +4,28 @@ using UnityEngine;
 /// <summary>
 /// Contains methods pertaining to C# floats, doubles, and ints.
 /// </summary>
+/// 
+/// <remarks>
+/// Authors: Ryan Chang (2024)
+/// </remarks>
 public static class NumericalExt
 {
     #region Comparison
     /// <summary>
-    /// True if a differs from b by no more than margin
+    /// True if a differs from b by no more than <paramref name="margin"/>.
     /// </summary>
-    /// <param name="a"></param>
-    /// <param name="b"></param>
-    /// <param name="margin"></param>
-    /// <returns></returns>
+    /// <param name="a">The first number.</param>
+    /// <param name="b">The second number.</param>
+    /// <param name="margin">The margin.</param>
     public static bool Approx(this float a, float b, float margin)
     {
         return Mathf.Abs(a - b) <= margin;
     }
 
+    /// <inheritdoc cref="Approx(float, float, float)"/>
     /// <summary>
-    /// Alias to Mathf.Approximate
+    /// Alias to <see cref="Mathf.Approximately(float, float)"/>
     /// </summary>
-    /// <param name="a"></param>
-    /// <param name="b"></param>
-    /// <returns></returns>
     public static bool Approx(this float a, float b)
     {
         return Mathf.Approximately(a, b);
@@ -36,8 +37,7 @@ public static class NumericalExt
     /// <param name="number">The number to evaluate</param>
     /// <param name="boundsA">The lower bound</param>
     /// <param name="boundsB">The upper bound</param>
-    /// <param name="fixRange">Swaps bounds A and B if B < A</param>
-    /// <returns></returns>
+    /// <param name="fixRange">If true, swap bounds A and B if B < A.</param>
     public static bool IsBetween(this float number, float boundsA,
         float boundsB, bool fixRange = true)
     {
@@ -55,53 +55,88 @@ public static class NumericalExt
 
     #region Sign
     /// <summary>
-    /// Returns true if <paramref name="number"/> is greater than 0.
+    /// How zero is handled by sign-determining functions (ie <see
+    /// cref="IsPositive"/>, <see cref="IsNegative"/>, <see cref="Sign"/>, etc).
     /// </summary>
-    /// <param name="number"></param>
-    /// <returns></returns>
-    public static bool IsPositive(this float number) => number > 0;
+    public enum ZeroSignBehavior
+    {
+        /// <summary>
+        /// If number is zero, a boolean function will return false, and an
+        /// integer function will return zero.
+        /// </summary>
+        ZeroIsFalse,
+
+        /// <summary>
+        /// If number is zero, a boolean function will return true, and an
+        /// integer function will return zero.
+        /// </summary>
+        ZeroIsTrue,
+
+        /// <summary>
+        /// If number is zero, this function will treat the number as positive.
+        /// </summary>
+        ZeroIsPositive,
+
+        /// <summary>
+        /// If number is zero, this function will treat the number as negative.
+        /// </summary>
+        ZeroIsNegative
+    }
 
     /// <summary>
     /// Returns true if <paramref name="number"/> is less than 0.
     /// </summary>
-    /// <param name="number"></param>
+    /// <param name="number">The number to compare with.</param>
     /// <returns></returns>
-    public static bool IsNegative(this float number) => number < 0;
+    public static bool IsPositive<N>(this N number,
+        ZeroSignBehavior behavior = ZeroSignBehavior.ZeroIsPositive)
+        where N : IComparable => behavior switch
+        {
+            ZeroSignBehavior.ZeroIsFalse => number.CompareTo(0.0) > 0,
+            ZeroSignBehavior.ZeroIsNegative => number.CompareTo(0.0) > 0,
+            ZeroSignBehavior.ZeroIsTrue => number.CompareTo(0.0) >= 0,
+            ZeroSignBehavior.ZeroIsPositive => number.CompareTo(0.0) >= 0,
+            _ => throw new NotImplementedException(),
+        };
 
     /// <summary>
-    /// Returns sign of number.
+    /// Returns true if <paramref name="number"/> is less than 0.
     /// </summary>
-    /// <param name="number">The sign of the number. Zero is considered
-    /// positive.</param>
-    /// <returns>-1 if <paramref name="number"/> is negative, otherwise
-    /// 1.</returns>
-    public static int Sign(this float number)
-    {
-        return number < 0 ? -1 : 1;
-    }
-
-    /// <inheritdoc cref="Sign(float)"/>
-    public static int Sign<N>(this N number) where N : IComparable<int>
-    {
-        return number.CompareTo(0) < 0 ? -1 : 1;
-    }
+    /// <param name="number">The number to compare with.</param>
+    /// <returns></returns>
+    public static bool IsNegative<N>(this N number,
+        ZeroSignBehavior behavior = ZeroSignBehavior.ZeroIsPositive)
+        where N : IComparable => behavior switch
+        {
+            ZeroSignBehavior.ZeroIsFalse => number.CompareTo(0.0) < 0,
+            ZeroSignBehavior.ZeroIsPositive => number.CompareTo(0.0) < 0,
+            ZeroSignBehavior.ZeroIsTrue => number.CompareTo(0.0) <= 0,
+            ZeroSignBehavior.ZeroIsNegative => number.CompareTo(0.0) <= 0,
+            _ => throw new NotImplementedException(),
+        };
 
     /// <summary>
-    /// Returns either zero if number is zero or the sign of number if it is
-    /// not.
+    /// Returns the sign of number.
     /// </summary>
-    /// <param name="number">The number to evaluate.</param>
-    /// <returns>0 if <paramref name="number"/> is zero, the sign of <paramref
-    /// name="number"/> otherwise.</returns>
-    public static int ZeroOrSign(this float number)
+    /// <param name="number">The sign of the number.</param>
+    /// <param name="behavior">The behavior of the method.</param>
+    /// <returns>-1, 0, or 1, depending on the value of <paramref
+    /// name="behavior"/>.</returns>
+    public static int Sign<N>(this N number,
+        ZeroSignBehavior behavior = ZeroSignBehavior.ZeroIsPositive)
+        where N : IComparable
     {
-        return number == 0 ? 0 : number.Sign();
-    }
+        int cmp = number.CompareTo(0.0);
+        cmp = (cmp == 0) ? 0 : (cmp / Math.Abs(cmp));
 
-    /// <inheritdoc cref="ZeroOrSign(float)"/>
-    public static int ZeroOrSign<N>(this N number) where N : IComparable<int>
-    {
-        return number.CompareTo(0) == 0 ? 0 : number.Sign();
+        return behavior switch
+        {
+            ZeroSignBehavior.ZeroIsFalse or
+                ZeroSignBehavior.ZeroIsTrue => cmp,
+            ZeroSignBehavior.ZeroIsNegative => cmp == 0 ? -1 : cmp,
+            ZeroSignBehavior.ZeroIsPositive => cmp == 0 ? 1 : cmp,
+            _ => throw new NotImplementedException(),
+        };
     }
     #endregion
 
@@ -114,7 +149,7 @@ public static class NumericalExt
     /// <param name="target">The number to change towards.</param>
     /// <param name="margin">The maximal change.</param>
     /// <returns></returns>
-    public static float GetMinimumChange(this float value, float target,
+    public static float GetMinimumDelta(this float value, float target,
         float margin)
     {
         return value + Mathf.Sign(target)

@@ -133,14 +133,14 @@ public class FloatAngle
     }
 
     /// <summary>
-    /// Gets the direction to other. +1 for counterclockwise,
-    /// -1 for clockwise
+    /// Gets the direction to other. +1 for counterclockwise, -1 for clockwise,
+    /// 0 for if <paramref name="other"/> matches <see cref="this"/>.
     /// </summary>
     /// <param name="other">The other angle you are comparing.</param>
-    /// <returns>See above</returns>
-    public int GetDirectionTo(FloatAngle other)
+    public int GetDirectionTo(FloatAngle other,
+        NumericalExt.ZeroSignBehavior signBehavior)
     {
-        return (this - other).AsCentered().Sign();
+        return (this - other).AsCentered().Sign(signBehavior);
     }
 
     /// <summary>

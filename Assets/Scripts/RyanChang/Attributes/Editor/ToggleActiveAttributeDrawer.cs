@@ -1,5 +1,9 @@
 using UnityEngine;
 using UnityEditor;
+using Unity.VisualScripting;
+using System;
+using System.Reflection;
+using System.Linq;
 
 /// <summary>
 /// Drawer for <see cref="ToggleActiveAttribute"/>.
@@ -14,7 +18,17 @@ public class ToggleActiveAttributeDrawer : PropertyDrawer
     public override void OnGUI(Rect position, SerializedProperty property, 
         GUIContent label)
     {
-        property.GetObjectFromReflection(out IRNGModel model);
-        Debug.Log(model);
+        Type type = property.GetObjectFromReflection(
+            property.propertyPath.SpliceWords(0..^1, '.')
+        ).GetType();
+        
+        string toggleName = ((ToggleActiveAttribute)attribute).ToggleName;
+
+        MemberInfo[] members = type.GetMember(
+            toggleName,
+            BindingFlags.Public | BindingFlags.NonPublic |
+            BindingFlags.Instance | BindingFlags.Static
+        );
+        Debug.Log(members.Length);
     }
 }

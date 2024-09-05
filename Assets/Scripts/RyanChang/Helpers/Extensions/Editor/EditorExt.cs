@@ -31,18 +31,21 @@ public static class EditorExt
     /// Gets the proper object using reflection.
     /// </summary>
     /// <param name="property">The property.</param>
+    /// <param name="propertyPath">The custom property path to search for the
+    /// object.</param>
     /// <exception cref="NullReferenceException">
     /// If one or more of the properties (except for the last, target property)
     /// in the path is null.
     /// </exception>
-    public static object GetObjectFromReflection(this SerializedProperty property)
+    public static object GetObjectFromReflection(
+        this SerializedProperty property, string propertyPath)
     {
         // Get the target object and type. These will be modified when we are
         // traversing the path.
         object targetObject = property.serializedObject.targetObject;
         Type targetType = targetObject.GetType();
 
-        string fullPath = property.propertyPath;
+        string fullPath = propertyPath;
         fullPath = fullPath.Replace("Array.data[", "[");
 
         string[] path = fullPath.Split('.');
@@ -58,18 +61,16 @@ public static class EditorExt
 
             // Check if there's a bracket. If so, that means that we have an
             // array.
-            int bracketPos = name.IndexOf('[');
-            if (bracketPos >= 0)
+            int lBracket = name.IndexOf('[');
+            int rBracket = name.IndexOf(']');
+            if (lBracket >= 0 && rBracket >= 0)
             {
                 // In an array
                 // This is an array element we are looking for.
-                int index = int.Parse(name.Substring(bracketPos + 1,
-                    name.Length - bracketPos - 2));
-
-                var enumerable = (IEnumerable)targetObject;
+                int index = int.Parse(name[lBracket..rBracket]);
 
                 // Iterate through the enumerable, until index is reached.
-                foreach (var thing in enumerable)
+                foreach (object thing in (IEnumerable)targetObject)
                 {
                     if (index <= 0)
                     {
@@ -80,6 +81,10 @@ public static class EditorExt
 
                     index--;
                 }
+            }
+            else if (lBracket.Sign() != rBracket.Sign())
+            {
+
             }
             else
             {
@@ -93,18 +98,30 @@ public static class EditorExt
                     $"Field is null for {name}"
                 );
 
+                targetType = field.FieldType;
                 targetObject = field.GetValue(targetObject);
-                targetType = targetObject.GetType();
             }
         }
 
         return targetObject;
     }
 
+    /// <inheritdoc cref="GetObjectFromReflection(SerializedProperty)"/>
+    public static object GetObjectFromReflection(
+        this SerializedProperty property) =>
+        GetObjectFromReflection(property, property.propertyPath);
+
     /// <param name="obj">The object to assign the value to.</param>
     /// <inheritdoc cref="GetObjectFromReflection(SerializedProperty)"/>
-    public static void GetObjectFromReflection<T>(this SerializedProperty property,
-        out T obj) => obj = (T)property.GetObjectFromReflection();
+    public static void GetObjectFromReflection<T>(
+        this SerializedProperty property, out T obj) =>
+        obj = (T)property.GetObjectFromReflection();
+
+    /// <param name="obj">The object to assign the value to.</param>
+    /// <inheritdoc cref="GetObjectFromReflection(SerializedProperty)"/>
+    public static void GetObjectFromReflection<T>(
+        this SerializedProperty property, string propertyPath, out T obj) =>
+        obj = (T)property.GetObjectFromReflection(propertyPath);
 
     /// <summary>
     /// Calls <see cref="SerializedProperty.Next(bool)"/> until a child is found
@@ -118,19 +135,57 @@ public static class EditorExt
     /// <param name="visibleOnly">If true, then calls <see
     /// cref="SerializedProperty.NextVisible(bool)"/> instead.</param>
     /// <return>True on success, false otherwise.</return>
-    public static bool AdvancePropertyToType(this SerializedProperty property,
+    public static bool SeekToType(this SerializedProperty property,
         Type type, bool visibleOnly = false)
     {
         do
         {
-            string typename = type.Name;
-            if (property.type == typename)
+            if (property.type == type.Name)
                 return true;
         }
         while (visibleOnly ? property.NextVisible(true) : property.Next(true));
 
         property.Reset();
         return false;
+    }
+
+    /// <inheritdoc cref="SeekToType(SerializedProperty, Type, bool)"/>
+    /// <typeparam name="T">The type.</typeparam>
+    public static bool SeekToType<T>(this SerializedProperty property,
+        bool visibleOnly = false) =>
+        SeekToType(property, typeof(T), visibleOnly);
+
+    /// <summary>
+    /// Gets a member by its name from some <paramref name="type"/>, using
+    /// whatever means nessisary.
+    /// </summary>
+    /// <param name="memberName"></param>
+    /// <returns>True if some member was found, false otherwise.</returns>
+    public static bool ForceGetMember(this Type type, string memberName,
+        out object memberData)
+    {
+        // Part 1: Look for public instance members.
+        MemberInfo[] publicMembers = type.GetMember(
+            memberName,
+            BindingFlags.Public | BindingFlags.Instance
+        );
+
+        if (publicMembers.NotEmpty())
+        {
+            memberData = publicMembers[0];
+        }
+
+        MemberInfo[] privateMembers = type.GetMember(
+            memberName,
+            BindingFlags.NonPublic | BindingFlags.Instance
+        );
+
+        if (privateMembers.NotEmpty())
+        {
+            memberData = privateMembers[0];
+        }
+
+        throw new NotImplementedException();
     }
     #endregion
 

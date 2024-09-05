@@ -1,3 +1,5 @@
+using System;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 /// <summary>
@@ -30,8 +32,8 @@ public static class StringExt
         // First replace the member, underscore, and k prefixes (and also whitespace).
         str = memberPrefixRx.Replace(str, "$3").Trim();
 
-        // Make first character uppercase.
-        str = str.FirstCharUppercase();
+        // Make title case.
+        str = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(str);
 
         // Add spaces.
         str = capitalLetterRx.Replace(str, " $1");
@@ -39,18 +41,33 @@ public static class StringExt
     }
 
     /// <summary>
-    /// Returns a string with the first letter capitalized.
+    /// Splice <paramref name="str"/> via <paramref name="separator"/> into a
+    /// array of strings, use <paramref name="range"/> to select which words to
+    /// keep, then re-joins the array by <paramref name="separator"/>.
     /// </summary>
-    /// <param name="str">The string input.</param>
-    /// <returns>A string with the first letter capitalized.</returns>
-    public static string FirstCharUppercase(this string str)
+    /// <param name="str">The string to operate on.</param>
+    /// <param name="range">The range of words to select.</param>
+    /// <param name="separator">The separator to split <paramref name="str"/>
+    /// on.</param>
+    /// <param name="options">String split options.</param>
+    public static string SpliceWords(this string str, System.Range range,
+        char separator, StringSplitOptions options = StringSplitOptions.None)
     {
-        if (str.Length > 0)
-        {
-            return char.ToUpper(str[0]) + str[1..];
-        }
+        return string.Join(
+            separator,
+            str.Split(separator, options)[range]
+        );
+    }
 
-        return "";
+    /// <inheritdoc cref="SpliceWords(string, System.Range, char,
+    /// StringSplitOptions)"/>
+    public static string SpliceWords(this string str, System.Range range,
+        string separator, StringSplitOptions options = StringSplitOptions.None)
+    {
+        return string.Join(
+            separator,
+            str.Split(separator, options)[range]
+        );
     }
     #endregion
 }

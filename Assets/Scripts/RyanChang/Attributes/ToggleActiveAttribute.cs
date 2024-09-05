@@ -17,6 +17,8 @@ public class ToggleActiveAttribute : PropertyAttribute
     /// </summary>
     private readonly string toggler;
 
+    public string ToggleName => toggler;
+
     /// <summary>
     /// Creates a toggle active attribute.
     /// </summary>
