@@ -5,17 +5,14 @@ using UnityEngine;
 using UnityEngine.Assertions;
 
 /// <summary>
-
-/// </summary>
-/// <summary>
 /// A unity value converter that uses Unity's JsonUtility to convert
 /// Unity-specific objects and structs. Required to get Newtonsoft to play
 /// nicely with those Unity objects.
-///
-/// <br/>
-///
-/// Authors: Ryan Chang (2024)
 /// </summary>
+///
+/// <remarks>
+/// Authors: Ryan Chang (2024)
+/// </remarks>
 public class UnityValueConverter : JsonConverter
 {
     // Am I missing a type? Add it here.

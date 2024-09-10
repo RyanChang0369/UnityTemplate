@@ -75,7 +75,7 @@ public static class JsonExt
 
         foreach (var val in values)
         {
-            writer.WriteValue(val);
+            writer.WriteRawValue(val.ToJson());
         }
 
         writer.WriteEndArray();

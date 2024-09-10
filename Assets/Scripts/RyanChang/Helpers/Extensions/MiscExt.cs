@@ -26,10 +26,9 @@ public static class MiscExt
 
     #region Type Checking
     /// <summary>
-    /// 
+    /// Determine if <paramref name="value"/> is a number.
     /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
+    /// <param name="value">The value.</param>
     public static bool IsNumber(this object value)
     {
         return value is sbyte
@@ -43,6 +42,57 @@ public static class MiscExt
             || value is float
             || value is double
             || value is decimal;
+    }
+
+    /// <summary>
+    /// Determine if <paramref name="value"/> is a floating-point number.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public static bool IsFloatingPoint(this object value)
+    {
+        return value is float
+            || value is double
+            || value is decimal;
+    }
+
+    /// <summary>
+    /// Determine if <paramref name="value"/> is an integer number.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public static bool IsInteger(this object value)
+    {
+        return value is sbyte
+            || value is byte
+            || value is short
+            || value is ushort
+            || value is int
+            || value is uint
+            || value is long
+            || value is ulong;
+    }
+
+    /// <summary>
+    /// Determine if <paramref name="value"/> is an integer number.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public static bool IsSignedInteger(this object value)
+    {
+        return value is sbyte
+            || value is short
+            || value is int
+            || value is long;
+    }
+
+    /// <summary>
+    /// Determine if <paramref name="value"/> is an integer number.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public static bool IsUnsignedInteger(this object value)
+    {
+        return value is byte
+            || value is ushort
+            || value is uint
+            || value is ulong;
     }
     #endregion
 
@@ -64,6 +114,6 @@ public static class MiscExt
 
         target = newValue;
         return true;
-    } 
+    }
     #endregion
 }

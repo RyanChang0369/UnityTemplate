@@ -410,6 +410,27 @@ public static class EnumerableExt
     }
     #endregion
 
+    #region Value Setters
+    /// <summary>
+    /// Sets the value of <paramref name="dict"/> at <paramref name="key"/> if
+    /// such a value is null or if <paramref name="key"/> is not in <paramref
+    /// name="dict"/>.
+    /// </summary>
+    /// <param name="dict">The dictionary.</param>
+    /// <param name="key">Some key.</param>
+    /// <param name="defaultValue">The value to use if <paramref name="key"/> is
+    /// not in <paramref name="dict"/> or if the value at <paramref name="key"/>
+    /// is null.</param>
+    public static void SetIfKeyUndefined<TKey, TValue>(
+        this IDictionary<TKey, TValue> dict,
+        TKey key,
+        TValue defaultValue) where TKey : class
+    {
+        if (!dict.ContainsKey(key) || dict[key] == null)
+            dict[key] = defaultValue;
+    }
+    #endregion
+
     #region Dictionary List
     /// <summary>
     /// Adds an addition to a list in the dictionary. Creates the list and adds

@@ -6,11 +6,11 @@ using Newtonsoft.Json.Converters;
 
 /// <summary>
 /// Extensions for <see cref="ISaveLoadable{T}"/> and <see cref="ISaveState"/>.
-///
-/// <br/>
-///
-/// Authors: Ryan Chang (2024)
 /// </summary>
+/// 
+/// <remarks>
+/// Authors: Ryan Chang (2024)
+/// </remarks>
 public static class SaveLoadExt
 {
     #region Variables
@@ -18,6 +18,7 @@ public static class SaveLoadExt
     {
         Converters = {
             new UnityValueConverter(),
+            new RoundingConverter(),
             new StringEnumConverter(),
             new IsoDateTimeConverter(),
             new SaveLoadableConverter(),
@@ -28,6 +29,7 @@ public static class SaveLoadExt
     };
     #endregion
 
+    #region Methods
     /// <summary>
     /// Converts the <see cref="ISaveLoadable{T}"/> directly into a JSON string.
     /// </summary>
@@ -166,4 +168,5 @@ public static class SaveLoadExt
             TypeNameHandling = defaultJsonSettings.TypeNameHandling,
         };
     }
+    #endregion
 }
