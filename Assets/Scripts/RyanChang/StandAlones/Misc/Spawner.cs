@@ -3,13 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+/// <summary>
+/// A spawner for objects.
+/// </summary>
+/// 
+/// <remarks>
+/// Authors: Ryan Chang (2024)
+/// </remarks>
 public class Spawner : MonoBehaviour
 {
+    #region Variables
     /// <summary>
-    /// If true, start spawning immediately when the gameobject is instantiated.
+    /// If true, start spawning as soon as this script is initialized.
     /// </summary>
-    [Tooltip("If true, start spawning immediately when the gameobject is " +
-        "instantiated.")]
+    [Tooltip("If true, start spawning as soon as this script is initialized.")]
     public bool autostart = true;
 
     /// <summary>
@@ -26,22 +33,45 @@ public class Spawner : MonoBehaviour
     [Tooltip("List of objects to spawn.")]
     public List<GameObject> objectsToSpawn = new();
 
+    /// <summary>
+    /// Objects that have been spawned.
+    /// </summary>
+    [Tooltip("Objects that have been spawned.")]
     [HideInInspector]
     public List<GameObject> objectsSpawned = new();
-    public Range spawnNum = new(1);
 
+    /// <summary>
+    /// Number of objects to spawn.
+    /// </summary>
+    [Tooltip("Number of objects to spawn.")]
+    public RNGPattern spawnNum = new(1);
+
+    /// <summary>
+    /// Spawn objects after how many seconds?
+    /// </summary>
     [Tooltip("Spawn objects after how many seconds?")]
     public float spawnTime = 0.1f;
 
-    [Tooltip("Spawn radius")]
+    /// <summary>
+    /// Maximum range of the spawner.
+    /// </summary>
+    [Tooltip("Maximum range of the spawner.")]
     public float spawnRadius;
 
-    [Tooltip("The maximum force to apply to the spawned object.")]
+    /// <summary>
+    /// The force to apply to the spawned object.
+    /// </summary>
+    [Tooltip("The force to apply to the spawned object.")]
     public float maxStartForce;
 
+    /// <summary>
+    /// The rotation to start at.
+    /// </summary>
     [Tooltip("The rotation to start at.")]
-    public Range startRotation;
+    public RNGPattern startRotation;
+    #endregion
 
+    #region Methods
     private void Start()
     {
         if (autostart)
@@ -80,7 +110,7 @@ public class Spawner : MonoBehaviour
         for (int i = 0; i < spawnNum.Select(); i++)
         {
             SpawnObjects();
-    
+
             yield return new WaitForSeconds(spawnTime);
         }
     }
@@ -135,4 +165,5 @@ public class Spawner : MonoBehaviour
             Destroy(obj);
         }
     }
+    #endregion
 }

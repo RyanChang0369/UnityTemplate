@@ -90,9 +90,9 @@ public class RNGPattern
     /// <returns>The value generated.</returns>
     public float Evaluate()
     {
-        var val = model.RandomValue;
-        Seed = BitConverter.SingleToInt32Bits(val);
-        return val;
+        float f = model.RandomValue;
+        Seed = BitConverter.SingleToInt32Bits(f);
+        return f;
     }
 
     /// <summary>

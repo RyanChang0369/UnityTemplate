@@ -254,7 +254,7 @@ public static class AngleExt
         {
             FloatAngle.Units.Degrees => Mathf.Rad2Deg,
             FloatAngle.Units.Radians => Mathf.Deg2Rad,
-            _ => float.NaN
+            _ => throw new NotImplementedException()
         };
     }
 

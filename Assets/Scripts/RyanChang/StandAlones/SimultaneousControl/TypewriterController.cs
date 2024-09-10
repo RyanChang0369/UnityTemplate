@@ -18,8 +18,10 @@ public class TypewriterController : SimultaneousController
     #region Variables
     [HorizontalLine]
     [Tooltip("The delay, in seconds, between each character.")]
-    public Range characterDelay = new(0.05f);
+    public RNGPattern characterDelay = new(0.05f);
+    #endregion
 
+    #region Methods
     private void Reset()
     {
         characterDelay = new(0.05f);
@@ -28,6 +30,6 @@ public class TypewriterController : SimultaneousController
     protected override SimultaneousControl[] CreateControlsList()
     {
         return GetControls<TypewriterText, TextMeshProUGUI>();
-    }    
+    }
     #endregion
 }

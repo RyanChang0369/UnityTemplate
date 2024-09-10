@@ -1,11 +1,17 @@
 using System;
+using Newtonsoft.Json;
 using UnityEngine;
 
 /// <summary>
-/// Represents an angle with greater control than a float
+/// Represents an angle with greater control than a float.
 /// </summary>
+/// 
+/// <remarks>
+/// Authors: Ryan Chang (2024)
+/// </remarks>
+[JsonObject(MemberSerialization.OptIn)]
 [Serializable]
-public class FloatAngle
+public class FloatAngle : IEquatable<FloatAngle>
 {
     #region Constants
     public const float PI = Mathf.PI;
@@ -58,11 +64,14 @@ public class FloatAngle
     /// <summary>
     /// Current unit.
     /// </summary>
+    [JsonProperty]
+    [SerializeField]
     private Units unit;
 
     /// <summary>
     /// The internal value of the angle
     /// </summary>
+    [JsonProperty]
     [SerializeReference]
     private float value;
     #endregion
@@ -74,8 +83,11 @@ public class FloatAngle
         get => unit;
         set
         {
-            this.value = GetConversionFactor(unit);
-            unit = value;
+            if (unit != value)
+            {
+                this.value *= GetConversionFactor(unit);
+                unit = value;
+            }
         }
     }
     #endregion
@@ -91,8 +103,9 @@ public class FloatAngle
         this.value = value;
         this.unit = unit;
     }
-
     #endregion
+
+    #region Methods
     /// <summary>
     /// Returns a float representation of this FloatAngle. Ranges from
     /// [0,360] for degrees and [0,2pi] for radians.
@@ -155,6 +168,14 @@ public class FloatAngle
     }
 
     /// <summary>
+    /// Returns the conversion factor to use to convert this angle's units to
+    /// the units of <paramref name="other"/>.
+    /// </summary>
+    /// <param name="other">The other angle.</param>
+    public float GetConversionFactor(FloatAngle other) =>
+        GetConversionFactor(other.Unit);
+
+    /// <summary>
     /// Returns the current quadrant this angle is in.
     /// </summary>
     /// <returns></returns>
@@ -204,7 +225,8 @@ public class FloatAngle
 
     /// <summary>
     /// Returns true if this angle lies between right and left. The check starts
-    /// at right, then moves counterclockwise until it reaches left.
+    /// at <paramref name="right"/>, then moves counterclockwise until it
+    /// reaches <paramref name="left"/>.
     /// </summary>
     /// <param name="right">The minimum angle.</param>
     /// <param name="left">The maximal angle.</param>
@@ -227,56 +249,53 @@ public class FloatAngle
         return r <= val && val <= l;
     }
 
-    /// <summary>
-    /// Adds 2 angles. If they have the same units, then preserve both units. Otherwise, 
-    /// b will be converted to a's units.
-    /// </summary>
-    /// <param name="a">First angle</param>
-    /// <param name="b">Second angle</param>
-    /// <returns></returns>
-    public static FloatAngle operator +(FloatAngle a, FloatAngle b)
+    #region Operators
+    private float ConvertVal(FloatAngle other)
     {
-        if (a.Unit == b.Unit)
-        {
-            // Like units. Can add directly.
-            return new FloatAngle(a.value + b.value, a.Unit);
-        }
-        else
-        {
-            // Unlike units, convert b to unit of a to get matching units
-            var b_val = b.value * (b.Unit == Units.Degrees ? Mathf.Deg2Rad : Mathf.Rad2Deg);
-            return new FloatAngle(a.value + b_val, a.Unit);
-        }
+        return Unit == other.Unit ?
+            other.value :
+            other.value * other.GetConversionFactor(Unit);
     }
 
     /// <summary>
-    /// Subtracts 2 angles. If they have the same units, then preserve both units. Otherwise, 
-    /// b will be converted to a's units.
+    /// Adds 2 angles.
     /// </summary>
+    /// <remarks>
+    /// If both angles have the same units, then preserve both units. Otherwise,
+    /// <paramref name="b"/> will be converted to <paramref name="a"/>'s units.
+    /// </remarks>
     /// <param name="a">First angle</param>
     /// <param name="b">Second angle</param>
-    /// <returns></returns>
-    public static FloatAngle operator -(FloatAngle a, FloatAngle b)
-    {
-        if (a.Unit == b.Unit)
-        {
-            // Like units. Can subtract directly.
-            return new FloatAngle(a.value - b.value, a.Unit);
-        }
-        else
-        {
-            // Unlike units, convert b to unit of a to get matching units
-            var b_val = b.value * (b.Unit == Units.Degrees ? Mathf.Deg2Rad : Mathf.Rad2Deg);
-            return new FloatAngle(a.value - b_val, a.Unit);
-        }
-    }
+    public static FloatAngle operator +(FloatAngle a, FloatAngle b) =>
+        new(a.value + a.ConvertVal(b), a.Unit);
 
     /// <summary>
-    /// Multiplies a FloatAngle with a float, resulting in a new FloatAngle b times the size.
-    /// Units do not matter.
+    /// Subtracts 2 angles.
+    /// </summary>
+    /// <inheritdoc cref="operator +(FloatAngle, FloatAngle)"/>
+    public static FloatAngle operator -(FloatAngle a, FloatAngle b) =>
+        new(a.value - a.ConvertVal(b), a.Unit);
+
+    /// <summary>
+    /// Multiplies 2 angles.
+    /// </summary>
+    /// <inheritdoc cref="operator +(FloatAngle, FloatAngle)"/>
+    public static FloatAngle operator *(FloatAngle a, FloatAngle b) =>
+        new(a.value * a.ConvertVal(b), a.Unit);
+
+    /// <summary>
+    /// Divide 2 angles.
+    /// </summary>
+    /// <inheritdoc cref="operator +(FloatAngle, FloatAngle)"/>
+    public static FloatAngle operator /(FloatAngle a, FloatAngle b) =>
+        new(a.value / a.ConvertVal(b), a.Unit);
+
+    /// <summary>
+    /// Multiplies a FloatAngle with a float, resulting in a new FloatAngle b
+    /// times the size. Units do not matter.
     /// </summary>
     /// <param name="a">The FloatAngle</param>
-    /// <param name="b">The float to multipy a by</param>
+    /// <param name="b">The float to multiply a by</param>
     /// <returns>The new FloatAngle, units are preserved.</returns>
     public static FloatAngle operator *(FloatAngle a, float b)
     {
@@ -284,8 +303,8 @@ public class FloatAngle
     }
 
     /// <summary>
-    /// Divides a FloatAngle by a float, resulting in a new FloatAngle 1/b times the size.
-    /// Units do not matter.
+    /// Divides a FloatAngle by a float, resulting in a new FloatAngle 1/b times
+    /// the size. Units do not matter.
     /// </summary>
     /// <param name="a">The FloatAngle</param>
     /// <param name="b">The float to divide a by</param>
@@ -294,13 +313,18 @@ public class FloatAngle
     {
         return new FloatAngle(a.value / b, a.Unit);
     }
+    #endregion
 
-    /// <summary>
-    /// Returns the string representation of the angle
-    /// </summary>
-    /// <returns>The string representation of the angle</returns>
-    public override string ToString()
-    {
-        return $"({base.ToString()}) {value} {Unit}";
-    }
+    public override bool Equals(object obj) =>
+        obj is FloatAngle angle && Equals(angle);
+
+    public bool Equals(FloatAngle other) =>
+        value.Approx(other.ConvertVal(this));
+
+    public override int GetHashCode() =>
+        HashCode.Combine(value, Unit);
+
+    public override string ToString() =>
+        $"({base.ToString()}) {value} {Unit}";
+    #endregion
 }

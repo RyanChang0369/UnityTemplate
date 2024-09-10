@@ -17,6 +17,7 @@ using UnityEngine;
 [RequireComponent(typeof(TextMeshProUGUI))]
 public class TypewriterText : SimultaneousControl
 {
+    #region Variables
     [Tooltip("If true, override the character delay set by " +
         "TypewriterController.")]
     [SerializeField]
@@ -25,7 +26,7 @@ public class TypewriterText : SimultaneousControl
     [Tooltip("The overridden character delay.")]
     [ShowIf(nameof(overrideCharacterDelay))]
     [SerializeField]
-    private Range characterDelayOverride = new(0.05f);
+    private RNGPattern characterDelayOverride = new(0.05f);
 
     [Tooltip("The TextMeshPro text that will be used. Autoadded.")]
     [ReadOnly]
@@ -34,7 +35,9 @@ public class TypewriterText : SimultaneousControl
     [Tooltip("What was the original text contained by text?")]
     [ReadOnly]
     public string originalText;
+    #endregion
 
+    #region Method
     public override void Instantiate()
     {
         this.RequireComponent(out text);
@@ -54,7 +57,7 @@ public class TypewriterText : SimultaneousControl
 
     public override IEnumerator DoAction()
     {
-        Range delay = overrideCharacterDelay ? characterDelayOverride :
+        var delay = overrideCharacterDelay ? characterDelayOverride :
             ((TypewriterController)Controller).characterDelay;
 
         foreach (var c in originalText)
@@ -64,4 +67,5 @@ public class TypewriterText : SimultaneousControl
             yield return new WaitForSecondsRealtime(delay.Evaluate());
         }
     }
+    #endregion
 }

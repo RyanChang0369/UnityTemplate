@@ -264,12 +264,22 @@ public struct PerlinRNGModel : IRNGModel
     [SerializeField, JsonProperty]
     private Vector2 crawlDir;
 
+    /// <summary>
+    /// Modifies the output to include a multiplication followed by an addition.
+    /// </summary>
+    [Tooltip("Modifies the output to include a multiplication followed by an " +
+        "addition.")]
+    [SerializeField, JsonProperty]
+    private Modifier outputModifier;
+
     public float RandomValue
     {
         get
         {
             crawlPos += crawlDir * crawlSpeed;
-            return Mathf.PerlinNoise(crawlPos.x, crawlPos.y);
+            return outputModifier.Modify(
+                Mathf.PerlinNoise(crawlPos.x, crawlPos.y)
+            );
         }
     }
     #endregion
@@ -282,18 +292,37 @@ public struct PerlinRNGModel : IRNGModel
     /// at.</param>
     /// <param name="crawlPos">The position of the perlin generation.</param>
     /// <param name="crawlDir">The direction of the perlin generation.</param>
+    /// <param name="outputModifier">Modifies the output to include a
+    /// multiplication followed by an addition.</param>
     [JsonConstructor]
-    public PerlinRNGModel(float crawlSpeed, Vector2 crawlPos, Vector2 crawlDir)
+    public PerlinRNGModel(float crawlSpeed, Vector2 crawlPos, Vector2 crawlDir,
+        Modifier outputModifier)
     {
         this.crawlSpeed = crawlSpeed;
         this.crawlPos = crawlPos;
         this.crawlDir = crawlDir;
+        this.outputModifier = outputModifier;
     }
 
-    /// <inheritdoc cref="PerlinRNGModel(float, Vector2, Vector2)"/>
-    public PerlinRNGModel(float crawlSpeed = 0.1f) : this(crawlSpeed,
+    /// <inheritdoc cref="PerlinRNGModel(float, Vector2, Vector2, Modifier)"/>
+    public PerlinRNGModel(float crawlSpeed = 0.1f) : this(
+        crawlSpeed,
         RNGExt.RandomVector2(1000),
-        RNGExt.OnCircle())
+        RNGExt.OnCircle(),
+        new Modifier())
+    { }
+
+    /// <inheritdoc cref="PerlinRNGModel(float, Vector2, Vector2, Modifier)"/>
+    public PerlinRNGModel(Modifier outputModifier) : this(0.1f)
+    {
+        this.outputModifier = outputModifier;
+    }
+
+    /// <inheritdoc cref="PerlinRNGModel(float, Vector2, Vector2, Modifier)"/>
+    /// <param name="offset">A scalar value that is added to the output.</param>
+    /// <param name="scale">A scalar value that scales the output.</param>
+    public PerlinRNGModel(float offset, float scale) : this(
+        new Modifier(offset, scale))
     { }
     #endregion
 
