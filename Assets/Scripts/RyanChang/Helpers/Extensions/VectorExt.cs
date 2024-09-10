@@ -18,6 +18,7 @@ public static class VectorExt
     public static Vector3 VECTOR3_NAN => new(float.NaN, float.NaN, float.NaN);
     #endregion
 
+    #region Enums
     /// <summary>
     /// The axis on which we convert Vector2 (v2) to Vector3 (v3) and vice
     /// versa.
@@ -40,6 +41,7 @@ public static class VectorExt
         Y,
         Z,
     }
+    #endregion
 
     #region Conversion
     /// <summary>

@@ -5,13 +5,25 @@ using UnityEngine.AI;
 
 public class Spawner : MonoBehaviour
 {
-    [Tooltip("If true, start spawning ")]
+    /// <summary>
+    /// If true, start spawning immediately when the gameobject is instantiated.
+    /// </summary>
+    [Tooltip("If true, start spawning immediately when the gameobject is " +
+        "instantiated.")]
     public bool autostart = true;
 
+    /// <summary>
+    /// If true, then destroy all spawned objects when this spawner is
+    /// destroyed.
+    /// </summary>
     [Tooltip("If true, then destroy all spawned objects when this spawner " +
         "is destroyed.")]
     public bool cleanUpSpawns = false;
 
+    /// <summary>
+    /// List of objects to spawn.
+    /// </summary>
+    [Tooltip("List of objects to spawn.")]
     public List<GameObject> objectsToSpawn = new();
 
     [HideInInspector]

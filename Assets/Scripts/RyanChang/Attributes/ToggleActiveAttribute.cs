@@ -9,18 +9,20 @@ using UnityEngine;
 /// Authors: Ryan Chang (2024)
 /// </remarks>
 [AttributeUsage(AttributeTargets.Field |
-    AttributeTargets.Property |
-    AttributeTargets.Method)]
+    AttributeTargets.Property | AttributeTargets.Method)]
 [Serializable]
 public class ToggleActiveAttribute : PropertyAttribute
 {
+    #region Variables / Properties
     /// <summary>
     /// The name of the attribute that is enabled/disabled by the boolean.
     /// </summary>
     private readonly string toggled;
 
     public string ToggledName => toggled;
+    #endregion
 
+    #region Constructors
     /// <summary>
     /// Creates a toggle active attribute.
     /// </summary>
@@ -30,4 +32,5 @@ public class ToggleActiveAttribute : PropertyAttribute
     {
         this.toggled = toggled;
     }
+    #endregion
 }

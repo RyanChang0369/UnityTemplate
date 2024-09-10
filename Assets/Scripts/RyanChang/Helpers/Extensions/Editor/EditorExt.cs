@@ -19,7 +19,14 @@ using System.Linq;
 /// </remarks>
 public static class EditorExt
 {
-    #region Numbers
+    #region Constants/Pseudo-Constants
+    /// <summary>
+    /// Default binding flags for various reflection operations.
+    /// </summary>
+    private const BindingFlags DEFAULT_BINDING =
+        BindingFlags.Public | BindingFlags.NonPublic |
+        BindingFlags.Instance | BindingFlags.Static;
+    
     /// <summary>
     /// Equal to <see cref="EditorGUIUtility.singleLineHeight"/> +
     /// <see cref="EditorGUIUtility.standardVerticalSpacing"/>.
@@ -29,6 +36,7 @@ public static class EditorExt
     #endregion
 
     #region Reflection
+    #region Get Object
     /// <summary>
     /// Gets the proper object using reflection.
     /// </summary>
@@ -128,7 +136,9 @@ public static class EditorExt
     public static void GetObjectFromReflection<T>(
         this SerializedProperty property, string propertyPath, out T obj) =>
         obj = (T)property.GetObjectFromReflection(propertyPath);
+    #endregion
 
+    #region Seek to Type
     /// <summary>
     /// Calls <see cref="SerializedProperty.Next(bool)"/> until a child is found
     /// of type <paramref name="type"/>. This is useful if your property is
@@ -138,18 +148,22 @@ public static class EditorExt
     /// true, then this will be a serialized property of type <paramref
     /// name="type"/>. Otherwise, it is reset.</param>
     /// <param name="type">The type to look for.</param>
+    /// <param name="visitChildren">If true, then drops down into children
+    /// properties.</param>
     /// <param name="visibleOnly">If true, then calls <see
     /// cref="SerializedProperty.NextVisible(bool)"/> instead.</param>
     /// <return>True on success, false otherwise.</return>
     public static bool SeekToType(this SerializedProperty property,
-        Type type, bool visibleOnly = false)
+        Type type, bool visitChildren = true, bool visibleOnly = false)
     {
         do
         {
             if (property.type == type.Name)
                 return true;
         }
-        while (visibleOnly ? property.NextVisible(true) : property.Next(true));
+        while (visibleOnly ?
+            property.NextVisible(visitChildren) :
+            property.Next(visitChildren));
 
         property.Reset();
         return false;
@@ -158,9 +172,11 @@ public static class EditorExt
     /// <inheritdoc cref="SeekToType(SerializedProperty, Type, bool)"/>
     /// <typeparam name="T">The type.</typeparam>
     public static bool SeekToType<T>(this SerializedProperty property,
-        bool visibleOnly = false) =>
-        SeekToType(property, typeof(T), visibleOnly);
+         bool visitChildren = true, bool visibleOnly = false) =>
+        SeekToType(property, typeof(T), visitChildren, visibleOnly);
+    #endregion
 
+    #region Force Get Member Value
     /// <summary>
     /// Gets the value of a member by its name from some <paramref
     /// name="target"/>, using whatever means nessisary. If such a member cannot
@@ -172,14 +188,14 @@ public static class EditorExt
     /// <param name="memberName">Name of the member.</param>
     /// <returns>The value of the member.</returns>
     public static object ForceGetMemberValue(this object target,
-        Type outputType, string memberName)
+        Type outputType, string memberName,
+        BindingFlags bindingFlags = DEFAULT_BINDING)
     {
         Type targetType = target.GetType();
 
         MemberInfo[] members = targetType.GetMember(
             memberName,
-            BindingFlags.Public | BindingFlags.NonPublic |
-            BindingFlags.Instance | BindingFlags.Static
+            bindingFlags
         );
 
         foreach (var member in members)
@@ -220,7 +236,7 @@ public static class EditorExt
             $"Cannot find member: {memberName}"
         );
     }
-    
+
     /// <inheritdoc cref="ForceGetMemberValue(object, Type, string)"/>
     /// <typeparam name="T">The type of the return value.</typeparam>
     public static T ForceGetMemberValue<T>(this object target,
@@ -228,6 +244,7 @@ public static class EditorExt
     {
         return (T)ForceGetMemberValue(target, typeof(T), memberName);
     }
+    #endregion
     #endregion
 
     #region Drawing

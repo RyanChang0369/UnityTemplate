@@ -1,9 +1,10 @@
 using System;
+using NaughtyAttributes;
 using Newtonsoft.Json;
 using UnityEngine;
 
 /// <summary>
-/// Customizable RNG. Replaces Range.
+/// Customizable RNG that supports seeds. Replaces Range.
 /// </summary>
 /// 
 /// <remarks>
@@ -11,7 +12,6 @@ using UnityEngine;
 /// </remarks>
 [Serializable]
 [JsonObject(MemberSerialization.OptIn)]
-// [JsonConverter(typeof(RNGPatternConverter))]
 public class RNGPattern
 {
     #region Variables
@@ -30,40 +30,57 @@ public class RNGPattern
     private bool selected = false;
 
     /// <summary>
-    /// The selected value.
+    /// The selected (fixed) value.
     /// </summary>
+    [ShowIf(nameof(selected))]
     private float selectedVal = 0;
+    #endregion
+
+    #region Properties
+    /// <summary>
+    /// The current seed value.
+    /// </summary>
+    [JsonProperty]
+    public int Seed { get; private set; }
     #endregion
 
     #region Constructors
     /// <summary>
+    /// Creates a custom RNG using <paramref name="model"/> and a seed.
+    /// </summary>
+    /// <inheritdoc cref="RNGPattern(IRNGModel)"/>
+    /// <param name="seed">The seed value.</param>
+    [JsonConstructor]
+    public RNGPattern(IRNGModel model, int seed)
+    {
+        this.model = model;
+        Seed = seed;
+    }
+
+    /// <summary>
     /// Creates a custom RNG using <paramref name="model"/>.
     /// </summary>
     /// <param name="model">The pattern.</param>
-    [JsonConstructor]
     public RNGPattern(IRNGModel model)
     {
         this.model = model;
+        Seed = new System.Random().Next();
     }
 
     /// <summary>
     /// Creates an RNG pattern using the <see cref="SingleRNGModel"/>.
     /// </summary>
     /// <param name="value">The value used by the model.</param>
-    public RNGPattern(float value)
-    {
-        model = new SingleRNGModel(value);
-    }
+    public RNGPattern(float value) : this(new SingleRNGModel(value))
+    { }
 
     /// <summary>
     /// Creates an RNG pattern using the <see cref="LinearRNGModel"/>
     /// </summary>
     /// <param name="min">The maximal value of the model.</param>
     /// <param name="max">The minimal value of the model.</param>
-    public RNGPattern(float min, float max)
-    {
-        model = new LinearRNGModel(min, max);
-    }
+    public RNGPattern(float min, float max) : this(new LinearRNGModel(min, max))
+    { }
     #endregion
 
     #region Methods
@@ -71,7 +88,12 @@ public class RNGPattern
     /// Evaluates the <see cref="RNGPattern"/> and returns the value generated.
     /// </summary>
     /// <returns>The value generated.</returns>
-    public float Evaluate() => model.RandomValue;
+    public float Evaluate()
+    {
+        var val = model.RandomValue;
+        Seed = BitConverter.SingleToInt32Bits(val);
+        return val;
+    }
 
     /// <summary>
     /// Evaluates the <see cref="RNGPattern"/> once. When this function is called

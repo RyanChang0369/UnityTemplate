@@ -15,7 +15,9 @@ using UnityEngine;
 public interface IRNGModel
 {
     /// <summary>
-    /// The generated random number.
+    /// The generated random number. This does NOT update the seed of the <see
+    /// cref="RNGPattern"/> (if attached). Use <see
+    /// cref="RNGPattern.Evaluate()"/> if such behavior is desired.
     /// </summary>
     public float RandomValue { get; }
 }

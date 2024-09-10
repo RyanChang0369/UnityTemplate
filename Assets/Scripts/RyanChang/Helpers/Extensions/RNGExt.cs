@@ -5,7 +5,9 @@ using UnityEngine;
 
 public static class RNGExt
 {
+    #region Variables
     private static readonly System.Random RNGNum = new();
+    #endregion
 
     #region Integer
     /// <summary>
@@ -145,6 +147,16 @@ public static class RNGExt
 
     #region Vector2
     /// <summary>
+    /// Returns a Vector2 with all components as random values (determined by
+    /// <see cref="RandomFloat()"/>).
+    /// </summary>
+    /// <returns>A random Vector2.</returns>
+    public static Vector2 RandomVector2()
+    {
+        return new(RandomFloat(), RandomFloat());
+    }
+
+    /// <summary>
     /// Returns a Vector2 with all components ranging from -val (inclusive) to
     /// val (exclusive).
     /// </summary>
@@ -210,6 +222,7 @@ public static class RNGExt
             rect.max.y);
     }
 
+    #region Circle
     /// <summary>
     /// Gets a point on the perimeter of a circle.
     /// </summary>
@@ -217,8 +230,7 @@ public static class RNGExt
     /// <returns>A point on the circle.</returns>
     public static Vector2 OnCircle(float radius = 1)
     {
-        return Quaternion.Euler(RandomFloat(0, 360), 0, 0)
-            * new Vector2(0, radius);
+        return RandomVector2().normalized * radius;
     }
 
     /// <summary>
@@ -228,11 +240,51 @@ public static class RNGExt
     /// <returns>A point within the circle.</returns>
     public static Vector2 WithinCircle(float radius = 1)
     {
-        return RandomFloat(radius) * OnCircle();
+        return RandomVector2().normalized * RandomFloat(radius);
     }
     #endregion
 
+    #region Square
+    /// <summary>
+    /// Gets a point on the perimeter of a square.
+    /// </summary>
+    /// <param name="length">The length of one of the square's sides.</param>
+    /// <returns>A point on the square.</returns>
+    public static Vector2 OnSquare(float length = 1)
+    {
+        return RandomVector2().normalized * length;
+    }
+
+    /// <summary>
+    /// Gets a point within a square.
+    /// </summary>
+    /// <param name="length">The length of one of the square's sides.</param>
+    /// <returns>A point within the square.</returns>
+    public static Vector2 WithinSquare(float length = 1)
+    {
+        var vector = RandomVector2();
+        var mag = vector.sqrMagnitude;
+
+        if (mag.Approx(0))
+            return Vector2.zero;
+
+        return vector / mag * length;
+    }
+    #endregion
+    #endregion
+
     #region Vector3
+    #region Vector
+    /// <summary>
+    /// Returns a Vector3 with all components as random values (determined by
+    /// <see cref="RandomFloat()"/>).
+    /// </summary>
+    /// <returns>A random Vector3.</returns>
+    public static Vector3 RandomVector3()
+    {
+        return new(RandomFloat(), RandomFloat(), RandomFloat());
+    }
+
     /// <summary>
     /// Returns a Vector3 with all components ranging from -val (inclusive) to
     /// val (exclusive).
@@ -296,7 +348,9 @@ public static class RNGExt
             RandomFloat(minZ, maxZ)
             );
     }
+    #endregion
 
+    #region Bounds
     /// <summary>
     /// Returns a random Vector3 with its respective components ranging from
     /// bounds.min (inclusive) to bounds.max (exclusive).
@@ -310,7 +364,65 @@ public static class RNGExt
     }
     #endregion
 
+    #region Sphere
+    /// <summary>
+    /// Returns a random Vector3 that lies on the surface of the sphere,
+    /// centered at (0,0,0), with the specified <paramref name="radius"/>.
+    /// </summary>
+    /// <param name="radius">Radius of the sphere.</param>
+    public static Vector3 OnSphere(float radius = 1)
+    {
+        return RandomVector3().normalized * radius;
+    }
+
+    /// <summary>
+    /// Returns a random Vector3 that lies on the surface of the sphere,
+    /// centered at (0,0,0), with the specified <paramref name="radius"/>.
+    /// </summary>
+    /// <param name="radius">Radius of the sphere.</param>
+    public static Vector3 WithinSphere(float radius = 1) =>
+        OnSphere(RandomFloat(radius));
+    #endregion
+
+    #region Cube
+    /// <summary>
+    /// Returns a random Vector3 that lies on the surface of the cube,
+    /// centered at (0,0,0), with the specified <paramref name="length"/>.
+    /// </summary>
+    /// <param name="length">Length of one of the cube's sides.</param>
+    public static Vector3 OnCube(float length = 1)
+    {
+        var vector = RandomVector3();
+        var mag = vector.sqrMagnitude;
+
+        if (mag.Approx(0))
+            return Vector3.zero;
+
+        return vector / mag * length;
+    }
+
+    /// <summary>
+    /// Returns a random Vector3 that lies on the surface of the cube,
+    /// centered at (0,0,0), with the specified <paramref name="length"/>.
+    /// </summary>
+    /// <param name="length">Length of one of the cube's sides.</param>
+    public static Vector3 WithinCube(float length = 1) =>
+        OnCube(RandomFloat(length));
+    #endregion
+    #endregion
+
     #region Vector4
+    #region Vector
+    /// <summary>
+    /// Returns a Vector4 with all components as random values (determined by
+    /// <see cref="RandomFloat()"/>).
+    /// </summary>
+    /// <returns>A random Vector4.</returns>
+    public static Vector4 RandomVector4()
+    {
+        return new(RandomFloat(), RandomFloat(), RandomFloat(), RandomFloat());
+    }
+
     /// <summary>
     /// Returns a Vector4 with all components ranging from -val (inclusive) to
     /// val (exclusive).
@@ -379,6 +491,57 @@ public static class RNGExt
             RandomFloat(minW, maxW)
             );
     }
+    #endregion
+
+    #region Hyper Sphere
+    /// <summary>
+    /// Returns a random Vector4 that lies on the surface of the 4 dimensional
+    /// hyper-sphere, centered at (0,0,0,0), with the specified <paramref
+    /// name="radius"/>.
+    /// </summary>
+    /// <param name="radius">Radius of the hyper-sphere.</param>
+    public static Vector4 OnHyperSphere(float radius = 1)
+    {
+        return RandomVector4().normalized * radius;
+    }
+
+    /// <summary>
+    /// Returns a random Vector4 that lies on the surface of the 4 dimensional
+    /// hyper-sphere, centered at (0,0,0,0), with the specified <paramref
+    /// name="radius"/>.
+    /// </summary>
+    /// <param name="radius">Radius of the hyper-sphere.</param>
+    public static Vector4 WithinHyperSphere(float radius = 1) =>
+        OnHyperSphere(RandomFloat(radius));
+    #endregion
+
+    #region Hyper Cube
+    /// <summary>
+    /// Returns a random Vector4 that lies on the surface of the 4 dimensional
+    /// hyper-cube, centered at (0,0,0,0), with the specified <paramref
+    /// name="length"/>.
+    /// </summary>
+    /// <param name="length">Length of one of the hyper-cube's sides.</param>
+    public static Vector4 OnHyperCube(float length = 1)
+    {
+        var vector = RandomVector4();
+        var mag = vector.sqrMagnitude;
+
+        if (mag.Approx(0))
+            return Vector4.zero;
+
+        return vector / mag * length;
+    }
+
+    /// <summary>
+    /// Returns a random Vector4 that lies on the surface of the 4 dimensional
+    /// hyper-cube, centered at (0,0,0,0), with the specified <paramref
+    /// name="length"/>.
+    /// </summary>
+    /// <param name="length">Length of one of the hyper-cube's sides.</param>
+    public static Vector4 WithinHyperCube(float length = 1) =>
+        OnHyperCube(RandomFloat(length));
+    #endregion
     #endregion
 
     #region Rect
