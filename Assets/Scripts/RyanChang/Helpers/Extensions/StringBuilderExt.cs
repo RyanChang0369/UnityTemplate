@@ -9,6 +9,20 @@ public static class StringBuilderExt
 {
     #region Append Functions
     /// <summary>
+    /// Appends a collection of lines to <paramref name="sb"/>.
+    /// </summary>
+    /// <param name="sb">The string builder.</param>
+    /// <param name="lines">Lines of append.</param>
+    public static void AppendLines(this StringBuilder sb,
+        IEnumerable<string> lines)
+    {
+        foreach (var line in lines)
+        {
+            sb.AppendLine(line);
+        }
+    }
+
+    /// <summary>
     /// Appends a paragraph to the string builder. Automatically breaks the line
     /// if it goes over lineLen.
     /// </summary>

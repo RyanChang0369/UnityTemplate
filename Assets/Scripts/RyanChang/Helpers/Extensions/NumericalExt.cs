@@ -54,35 +54,6 @@ public static class NumericalExt
     #endregion
 
     #region Sign
-    /// <summary>
-    /// How zero is handled by sign-determining functions (ie <see
-    /// cref="IsPositive"/>, <see cref="IsNegative"/>, <see cref="Sign"/>, etc).
-    /// </summary>
-    public enum SignBehavior
-    {
-        /// <summary>
-        /// If number is zero, a boolean function will return false, and an
-        /// integer function will return zero.
-        /// </summary>
-        ZeroIsFalse,
-
-        /// <summary>
-        /// If number is zero, a boolean function will return true, and an
-        /// integer function will return zero.
-        /// </summary>
-        ZeroIsTrue,
-
-        /// <summary>
-        /// If number is zero, this function will treat the number as positive.
-        /// </summary>
-        ZeroIsPositive,
-
-        /// <summary>
-        /// If number is zero, this function will treat the number as negative.
-        /// </summary>
-        ZeroIsNegative
-    }
-
     #region Positive
     /// <summary>
     /// Returns true if <paramref name="number"/> is greater than 0.
@@ -313,6 +284,13 @@ public static class NumericalExt
     /// <returns>The rounded value.</returns>
     public static float Round(this float number, int digits = 0) =>
         (float)Math.Round(number, digits);
+
+    /// <summary>
+    /// Alias for <see cref="Math.Round(decimal, int)"/>
+    /// </summary>
+    /// <inheritdoc cref="Round(float, int)"/>
+    public static decimal Round(this decimal number, int digits = 0) =>
+        Math.Round(number, digits);    
     #endregion
 
     #region Misc Operations
@@ -337,3 +315,34 @@ public static class NumericalExt
     }
     #endregion
 }
+
+#region Enums
+/// <summary>
+/// How zero is handled by sign-determining functions (ie <see
+/// cref="IsPositive"/>, <see cref="IsNegative"/>, <see cref="Sign"/>, etc).
+/// </summary>
+public enum SignBehavior
+{
+    /// <summary>
+    /// If number is zero, a boolean function will return false, and an
+    /// integer function will return zero.
+    /// </summary>
+    ZeroIsFalse,
+
+    /// <summary>
+    /// If number is zero, a boolean function will return true, and an
+    /// integer function will return zero.
+    /// </summary>
+    ZeroIsTrue,
+
+    /// <summary>
+    /// If number is zero, this function will treat the number as positive.
+    /// </summary>
+    ZeroIsPositive,
+
+    /// <summary>
+    /// If number is zero, this function will treat the number as negative.
+    /// </summary>
+    ZeroIsNegative
+}
+#endregion

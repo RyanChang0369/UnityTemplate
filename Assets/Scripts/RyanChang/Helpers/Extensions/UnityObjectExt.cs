@@ -900,6 +900,19 @@ public static class UnityObjectExt
     public static T InstantiateComponent<T>(this T reference, Vector3 position,
         Quaternion rotation, Transform parent) where T : Component
     {
+        if (!reference) throw new ArgumentNullException(
+            nameof(reference),
+            "Reference has been destroyed or is null."
+        );
+        if (!parent) throw new ArgumentNullException(
+            nameof(parent),
+            "Parent has been destroyed or is null."
+        );
+        if (!reference.gameObject) throw new NullReferenceException(
+            $"GameObject of reference ({reference}) has been destroyed or " +
+            $"is null."
+        );
+
         GameObject.Instantiate(
             reference.gameObject,
             position,
@@ -915,6 +928,11 @@ public static class UnityObjectExt
     public static T InstantiateComponent<T>(this GameObject gameobject)
         where T : Component
     {
+        if (!gameobject) throw new ArgumentNullException(
+            nameof(gameobject),
+            "GameObject has been destroyed or is null."
+        );
+
         GameObject.Instantiate(gameobject).RequireComponent(out T instance);
         return instance;
     }
@@ -925,6 +943,11 @@ public static class UnityObjectExt
     public static T InstantiateComponent<T>(this GameObject gameobject,
         Transform parent, bool instantiateInWorldSpace) where T : Component
     {
+        if (!gameobject) throw new ArgumentNullException(
+            nameof(gameobject),
+            "GameObject has been destroyed or is null."
+        );
+
         GameObject.Instantiate(
             gameobject,
             parent,
@@ -933,14 +956,32 @@ public static class UnityObjectExt
         return instance;
     }
 
+    /// <inheritdoc cref="InstantiateComponent{T}(GameObject, Vector3,
+    /// Quaternion)"/>
+    public static T InstantiateComponent<T>(this GameObject gameobject,
+        Vector3 position) where T : Component =>
+        gameobject.InstantiateComponent<T>(position, Quaternion.identity);
+
+    /// <inheritdoc cref="InstantiateComponent{T}(GameObject, Vector3,
+    /// Quaternion)"/>
+    public static T InstantiateComponent<T>(this GameObject gameobject,
+        Quaternion rotation) where T : Component =>
+        gameobject.InstantiateComponent<T>(Vector3.zero, rotation);
+
+
     /// <inheritdoc cref="InstantiateComponent{T}(GameObject)"/>
     /// <inheritdoc cref="UnityEngine.Object.Instantiate(UnityEngine.Object,
     /// Vector3, Quaternion)"/>
-    public static T InstantiateComponent<T>(this GameObject go, Vector3 position,
-        Quaternion rotation) where T : Component
+    public static T InstantiateComponent<T>(this GameObject gameobject,
+        Vector3 position, Quaternion rotation) where T : Component
     {
+        if (!gameobject) throw new ArgumentNullException(
+            nameof(gameobject),
+            "GameObject has been destroyed or is null."
+        );
+
         GameObject.Instantiate(
-            go,
+            gameobject,
             position,
             rotation
         ).RequireComponent(out T instance);
@@ -949,16 +990,136 @@ public static class UnityObjectExt
 
     /// <inheritdoc cref="InstantiateComponent{T}(T)"/>
     /// <inheritdoc cref="UnityEngine.Object.Instantiate(UnityEngine.Object, Vector3, Quaternion, Transform)"/>
-    public static T InstantiateComponent<T>(this GameObject reference, Vector3 position,
+    public static T InstantiateComponent<T>(this GameObject gameobject, Vector3 position,
         Quaternion rotation, Transform parent) where T : Component
     {
+        if (!gameobject) throw new ArgumentNullException(
+            nameof(gameobject),
+            "GameObject has been destroyed or is null."
+        );
+
         GameObject.Instantiate(
-            reference,
+            gameobject,
             position,
             rotation,
             parent
         ).RequireComponent(out T instance);
         return instance;
+    }
+    #endregion
+
+    #region Construction
+    /// <summary>
+    /// Creates a new GameObject named <paramref name="name"/> with one or more
+    /// defined component.
+    /// </summary>
+    /// <typeparam name="T1">The first parameter type.</typeparam>
+    /// <typeparam name="T2">The second parameter type.</typeparam>
+    /// <typeparam name="T3">The third parameter type.</typeparam>
+    /// <typeparam name="T4">The fourth parameter type.</typeparam>
+    /// <typeparam name="T5">The fifth parameter type.</typeparam>
+    /// <typeparam name="T6">The sixth parameter type.</typeparam>
+    /// <param name="name">The name of the new GameObject.</param>
+    /// <param name="component1">The first component.</param>
+    /// <param name="component2">The second component.</param>
+    /// <param name="component3">The third component.</param>
+    /// <param name="component4">The fourth component.</param>
+    /// <param name="component5">The fifth component.</param>
+    /// <param name="component6">The sixth component.</param>
+    /// <returns>The new GameObject.</returns>
+    public static GameObject Create<T1, T2, T3, T4, T5, T6>(string name,
+        out T1 component1, out T2 component2, out T3 component3,
+        out T4 component4, out T5 component5, out T6 component6)
+        where T1 : Component where T2 : Component where T3 : Component
+        where T4 : Component where T5 : Component where T6 : Component
+    {
+        GameObject obj = new(name,
+            typeof(T1), typeof(T2), typeof(T3),
+            typeof(T4), typeof(T5), typeof(T6)
+        );
+        obj.RequireComponent(out component1);
+        obj.RequireComponent(out component2);
+        obj.RequireComponent(out component3);
+        obj.RequireComponent(out component4);
+        obj.RequireComponent(out component5);
+        obj.RequireComponent(out component6);
+        return obj;
+    }
+
+    /// <inheritdoc cref="Create{T1, T2, T3, T4, T5, T6}(string, out T1,
+    /// out T2, out T3, out T4, out T5, out T6)"/>
+    public static GameObject Create<T1, T2, T3, T4, T5>(string name,
+        out T1 component1, out T2 component2, out T3 component3,
+        out T4 component4, out T5 component5)
+        where T1 : Component where T2 : Component where T3 : Component
+        where T4 : Component where T5 : Component
+    {
+        GameObject obj = new(name,
+            typeof(T1), typeof(T2), typeof(T3),
+            typeof(T4), typeof(T5)
+        );
+        obj.RequireComponent(out component1);
+        obj.RequireComponent(out component2);
+        obj.RequireComponent(out component3);
+        obj.RequireComponent(out component4);
+        obj.RequireComponent(out component5);
+        return obj;
+    }
+
+    /// <inheritdoc cref="Create{T1, T2, T3, T4, T5, T6}(string, out T1,
+    /// out T2, out T3, out T4, out T5, out T6)"/>
+    public static GameObject Create<T1, T2, T3, T4>(string name,
+        out T1 component1, out T2 component2,
+        out T3 component3, out T4 component4)
+        where T1 : Component where T2 : Component
+        where T3 : Component where T4 : Component
+    {
+        GameObject obj = new(name,
+            typeof(T1), typeof(T2),
+            typeof(T3), typeof(T4)
+        );
+        obj.RequireComponent(out component1);
+        obj.RequireComponent(out component2);
+        obj.RequireComponent(out component3);
+        obj.RequireComponent(out component4);
+        return obj;
+    }
+
+    /// <inheritdoc cref="Create{T1, T2, T3, T4, T5, T6}(string, out T1,
+    /// out T2, out T3, out T4, out T5, out T6)"/>
+    public static GameObject Create<T1, T2, T3>(string name,
+        out T1 component1, out T2 component2, out T3 component3)
+        where T1 : Component where T2 : Component where T3 : Component
+    {
+        GameObject obj = new(name,
+            typeof(T1), typeof(T2), typeof(T3)
+        );
+        obj.RequireComponent(out component1);
+        obj.RequireComponent(out component2);
+        obj.RequireComponent(out component3);
+        return obj;
+    }
+
+    /// <inheritdoc cref="Create{T1, T2, T3, T4, T5, T6}(string, out T1,
+    /// out T2, out T3, out T4, out T5, out T6)"/>
+    public static GameObject Create<T1, T2>(string name,
+        out T1 component1, out T2 component2)
+        where T1 : Component where T2 : Component
+    {
+        GameObject obj = new(name,
+            typeof(T1), typeof(T2)
+        );
+        obj.RequireComponent(out component1);
+        obj.RequireComponent(out component2);
+        return obj;
+    }
+
+    /// <inheritdoc cref="Create{T1, T2}(string, out T1, out T2)"/>
+    public static GameObject Create<T1>(string name, out T1 component1)
+    {
+        GameObject obj = new(name, typeof(T1));
+        obj.RequireComponent(out component1);
+        return obj;
     }
     #endregion
 

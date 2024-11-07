@@ -13,11 +13,28 @@ using System.Reflection;
 public static class TypeExt
 {
     #region Query
+    #region Type
+    /// <summary>
+    /// Gets the first name in the <see cref="CurrentAssembly"/> with the <see
+    /// cref="Type.Name"/> defined by <paramref name="name"/>.
+    /// </summary>
+    /// <param name="name">Name of the type.</param>
+    public static Type GetTypeByName(string name)
+    {
+        return CurrentAssembly.DefinedTypes.
+            Select(
+                (typeInfo) => typeInfo.AsType()
+            ).First(
+            (t) => t.Name == name
+        );
+    }
+    #endregion
+
     #region Inherited Types
     /// <summary>
     /// Returns all types that can be inherited from <paramref name="type"/>.
     /// </summary>
-    /// <param name="type">The derivitive type.</param>
+    /// <param name="type">The derivative type.</param>
     /// <returns>The derived types.</returns>
     public static IEnumerable<Type> FindInherited(this Type type)
     {
@@ -32,7 +49,7 @@ public static class TypeExt
     /// <summary>
     /// Returns all types that can be derived from <typeparamref name="T"/>.
     /// </summary>
-    /// <typeparam name="T">The derivitive type.</typeparam>
+    /// <typeparam name="T">The derivative type.</typeparam>
     /// <returns>The derived types.</returns>
     public static IEnumerable<Type> FindInherited<T>()
         => FindInherited(typeof(T));

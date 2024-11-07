@@ -5,9 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
-using UnityEngine.Assertions;
 using System;
-using static NumericalExt;
 using System.Linq;
 
 /// <summary>

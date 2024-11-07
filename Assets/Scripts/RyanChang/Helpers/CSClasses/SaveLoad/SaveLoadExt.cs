@@ -102,8 +102,31 @@ public static class SaveLoadExt
     }
 
     /// <inheritdoc cref="LoadFromJson{T}(string, JsonSerializerSettings)"/>
-    public static T LoadFromJson<T>(this string jsonString) =>
-        JsonConvert.DeserializeObject<T>(jsonString, defaultJsonSettings);
+    public static T LoadFromJson<T>(this string jsonString)
+    {
+        jsonString.ThrowIfNullOrWhiteSpace();
+
+        return JsonConvert.DeserializeObject<T>(
+            jsonString,
+            defaultJsonSettings
+        );
+    }
+
+    /// <inheritdoc cref="LoadFromJson{T}(string, JsonSerializerSettings)"/>
+    /// <param name="output">The object loaded from its jsonString.</param>
+    public static void LoadFromJson<T>(this string jsonString,
+        out T output, JsonSerializerSettings settings)
+    {
+        output = LoadFromJson<T>(jsonString, settings);
+    }
+
+    /// <inheritdoc cref="LoadFromJson{T}(string, JsonSerializerSettings)"/>
+    /// <param name="output">The object loaded from its jsonString.</param>
+    public static void LoadFromJson<T>(this string jsonString,
+        out T output)
+    {
+        output = LoadFromJson<T>(jsonString);
+    }
 
     /// <summary>
     /// Populates an object using the specified <paramref name="jsonString"/>.

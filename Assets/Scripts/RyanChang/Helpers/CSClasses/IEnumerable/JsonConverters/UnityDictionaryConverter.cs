@@ -50,7 +50,8 @@ public class UnityDictionaryConverter : JsonConverter
         return value;
     }
 
-    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    public override void WriteJson(JsonWriter writer, object value,
+        JsonSerializer serializer)
     {
         var generics = GetBaseGenericTypeArguments(value.GetType());
 

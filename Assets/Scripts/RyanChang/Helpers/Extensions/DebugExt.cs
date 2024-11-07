@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -445,7 +446,7 @@ public static class DebugExt
         DrawCrossBounds(bounds, Quaternion.identity);
     }
 
-	/// <inheritdoc cref="DrawCrossBounds(Bounds, Quaternion)"/>
+    /// <inheritdoc cref="DrawCrossBounds(Bounds, Quaternion)"/>
     public static void DrawCrossBounds(BoundsInt bounds, Quaternion rotation)
     {
         DrawCrossBounds(bounds.ToBounds(), rotation);
@@ -465,25 +466,33 @@ public static class DebugExt
     /// Only log messages flagged with one of the flags defined in the
     /// whitelist.
     /// </summary>
-    public static DebugGroup Whitelist { get; set; }
+    public static DebugGroup Whitelist => DebugGroup.All;
 
     /// <inheritdoc cref="Whitelist"/>
     [Flags]
     public enum DebugGroup
     {
-        GameState           = 0b00000001,
-        ArtificialPlayer    = 0b00000010,
-        GenomeAndFish       = 0b00001000,
-        Config              = 0b00010000,
-        Tower               = 0b00100000,
-        Briefing            = 0b01000000,
+        GameState = 0b0000_0001,
+        ArtificialPlayer = 0b0000_0010,
+        GenomeAndFish = 0b0000_0100,
+        Config = 0b0000_1000,
+        Tower = 0b0001_0000,
+        Briefing = 0b0010_0000,
+        Addressable = 0b0100_0000,
+        Audio = 0b1000_0000,
+        All = 0b1111_1111
     }
 
-    /// <inheritdoc cref="Debug.Log(object, Object)"/>
+    /// <summary>
+    /// Prints <paramref name="message"/> to the Unity debug console.
+    /// </summary>
+    /// <param name="context">Object to which the message applies.</param>
     /// <param name="grouping">Type of message to log, filtered by <see
     /// cref="Whitelist"/>.</param>
     public static void Log(
-        this UnityEngine.Object context, DebugGroup grouping, string message)
+        this UnityEngine.Object context,
+        DebugGroup grouping,
+        string message)
     {
         if (Whitelist.HasAnyFlag(grouping))
         {
@@ -491,12 +500,31 @@ public static class DebugExt
         }
     }
 
-    /// <inheritdoc cref="Log(Object, DebugGroup, string)"/>
+    /// <inheritdoc cref="Log(UnityEngine.Object, DebugGroup, string)"/>
     public static void Log(DebugGroup grouping, string message) =>
         Log(null, grouping, message);
+
+    /// <summary>
+    /// Prints <paramref name="messages"/> to the debug console. This methods
+    /// mimics the 'print' function from python.
+    /// </summary>
+    /// <param name="context">Object to which the message applies.</param>
+    /// <param name="messages"></param>
+    public static void Print(this UnityEngine.Object context,
+        params object[] messages)
+    {
+        Debug.Log(string.Join(' ', messages), context);
+    }
+
+    /// <inheritdoc cref="Print(UnityEngine.Object, object[])"/>
+    public static void Print(params object[] messages)
+    {
+        Debug.Log(string.Join(' ', messages));
+    }
     #endregion
 
     #region Assertions
+    #region Collection
     /// <summary>
     /// Determines if all elements in <paramref name="collection"/> meets
     /// <paramref name="condition"/>.
@@ -519,5 +547,152 @@ public static class DebugExt
             }
         }
     }
+    #endregion
+
+    #region Not Empty
+    /// <summary>
+    /// Generates the Exception message for the <see cref="AssertNotEmpty"/>
+    /// methods.
+    /// </summary>
+    /// <param name="reason"></param>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    private static string GenEmptyOrNullMessage(string reason, string name)
+    {
+        return string.IsNullOrWhiteSpace(name) ?
+            $"Collection was {reason}" :
+            $"Collection {name.Trim()} was {reason}";
+    }
+
+    /// <summary>
+    /// Asserts that <paramref name="collection"/> is neither null nor empty.
+    /// </summary>
+    /// <param name="collection">The collection.</param>
+    /// <param name="nullMessage">The message to display if the collection was
+    /// null.</param>
+    /// <param name="emptyMessage">The message to display if the collection was
+    /// empty.</param>
+    /// <param name="name">Name of the collection.</param>
+    public static void AssertNotEmpty<T>(this ICollection<T> collection,
+        string nullMessage, string emptyMessage, string name)
+    {
+        if (collection == null)
+            throw new AssertionException(
+                GenEmptyOrNullMessage("null", name),
+                nullMessage
+            );
+        else if (collection.Count <= 0)
+            throw new AssertionException(
+                GenEmptyOrNullMessage("empty", name),
+                emptyMessage
+            );
+    }
+
+    /// <inheritdoc cref="AssertNotEmpty{T}(ICollection{T}, string, string,
+    /// string)"/>
+    /// <param name="message">The message to display if either <paramref
+    /// name="collection"/> is null or empty.</param>
+    public static void AssertNotEmpty<T>(this ICollection<T> collection,
+        string message, string name) =>
+        AssertNotEmpty(collection, message, message, name);
+
+    /// <inheritdoc cref="AssertNotEmpty{T}(ICollection{T}, string, string,
+    public static void AssertNotEmpty<T>(this ICollection<T> collection,
+        string message) =>
+        AssertNotEmpty(collection, message, null);
+
+    /// <inheritdoc cref="AssertNotEmpty{T}(ICollection{T}, string, string,
+    /// string)"/>
+    /// <param name="values">The enumeration to check.</param>
+    public static void AssertNotEmpty<T>(this IEnumerable<T> values,
+        string nullMessage, string emptyMessage, string name)
+    {
+        if (values == null)
+            throw new AssertionException(
+                GenEmptyOrNullMessage("null", name),
+                nullMessage
+            );
+        else if (!values.Any())
+            throw new AssertionException(
+                GenEmptyOrNullMessage("empty", name),
+                emptyMessage
+            );
+    }
+
+    /// <inheritdoc cref="AssertNotEmpty{T}(IEnumerable{T}, string, string,
+    /// string)"/>
+    /// <param name="message">The message to display if either <paramref
+    /// name="collection"/> is null or empty.</param>
+    public static void AssertNotEmpty<T>(this IEnumerable<T> collection,
+        string message, string name) =>
+        AssertNotEmpty(collection, message, message, name);
+
+    /// <inheritdoc cref="AssertNotEmpty{T}(IEnumerable{T}, string, string,
+    public static void AssertNotEmpty<T>(this IEnumerable<T> collection,
+        string message) =>
+        AssertNotEmpty(collection, message, null);
+    #endregion
+
+    #region Nullity
+    #region Not Null
+    /// <summary>
+    /// Asserts that <see cref="value"/> is not null.
+    /// </summary>
+    /// <typeparam name="T">Any nullable value.</typeparam>
+    /// <param name="value">Value to test.</param>
+    /// <param name="message">Message to display if <paramref name="value"/> was
+    /// null.</param>
+    /// <param name="name">Variable name of the <paramref
+    /// name="value"/>.</param>
+    public static void AssertNotNull<T>(this T value,
+        string message, string name) where T : class
+    {
+        if (value == null)
+            throw new AssertionException(
+                $"{name} was null. Expected: not null.",
+                message
+            );
+    }
+
+    /// <inheritdoc cref="AssertNotNull{T}(T, string, string)"/>
+    public static void AssertNotNull<T>(this T value,
+        string message) where T : class =>
+        AssertNotNull(value, message, "Value");
+
+    /// <inheritdoc cref="AssertNotNull{T}(T, string, string)"/>
+    public static void AssertNotNull<T>(this T value) where T : class =>
+        AssertNotNull(value, "", "Value");
+    #endregion
+
+    #region Is Null
+    /// <summary>
+    /// Asserts that <see cref="value"/> is null.
+    /// </summary>
+    /// <typeparam name="T">Any nullable value.</typeparam>
+    /// <param name="value">Value to test.</param>
+    /// <param name="message">Message to display if <paramref name="value"/> was
+    /// not null.</param>
+    /// <param name="name">Variable name of the <paramref
+    /// name="value"/>.</param>
+    public static void AssertIsNull<T>(this T value,
+        string message, string name) where T : class
+    {
+        if (value != null)
+            throw new AssertionException(
+                $"{name} was not null. Expected: null.",
+                message
+            );
+    }
+
+    /// <inheritdoc cref="AssertIsNull{T}(T, string, string)"/>
+    public static void AssertIsNull<T>(this T value,
+        string message) where T : class =>
+        AssertIsNull(value, message, "Value");
+
+    /// <inheritdoc cref="AssertIsNull{T}(T, string, string)"/>
+    public static void AssertIsNull<T>(this T value) where T : class =>
+        AssertIsNull(value, "", "Value");
+    #endregion
+    #endregion
     #endregion
 }

@@ -685,17 +685,17 @@ public static class VectorExt
 
     #region Trig
     /// <summary>
-    /// Rotates a vector by theta degrees
+    /// Rotates a vector by theta radians.
     /// </summary>
-    /// <param name="vec"></param>
-    /// <param name="theta">In degrees</param>
+    /// <param name="vector">The vector to rotate.</param>
+    /// <param name="theta">Angle in radians.</param>
     /// <returns></returns>
-    public static Vector2 RotateVector2(this Vector2 vec, float theta)
+    public static Vector2 RotateVector2(this Vector2 vector, float theta)
     {
-        float sin = Mathf.Sin(theta * Mathf.Deg2Rad);
-        float cos = Mathf.Cos(theta * Mathf.Deg2Rad);
+        float sin = Mathf.Sin(theta);
+        float cos = Mathf.Cos(theta);
 
-        float oldX = vec.x, oldY = vec.y;
+        float oldX = vector.x, oldY = vector.y;
 
         return new Vector2(cos * oldX - sin * oldY, sin * oldX + cos * oldY);
     }

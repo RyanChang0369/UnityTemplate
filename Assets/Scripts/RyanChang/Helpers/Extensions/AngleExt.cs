@@ -6,8 +6,6 @@ using UnityEngine;
 /// </summary>
 public static class AngleExt
 {
-    public const float PI2 = Mathf.PI * 2;
-
     #region Angle Representation Conversion
     /// <summary>
     /// Returns an angle between [-360, 360] degrees
@@ -49,10 +47,10 @@ public static class AngleExt
     public static float AsPositiveRadians(this float theta)
     {
         while (theta < 0)
-            theta += PI2;
+            theta += FloatAngle.PI2;
 
-        while (theta > PI2)
-            theta -= PI2;
+        while (theta > FloatAngle.PI2)
+            theta -= FloatAngle.PI2;
 
         return theta;
     }
@@ -84,7 +82,7 @@ public static class AngleExt
         if (theta == 0)
             return 0;
         else
-            return theta - PI2;
+            return theta - FloatAngle.PI2;
     }
 
     /// <summary>
@@ -110,11 +108,11 @@ public static class AngleExt
     /// <returns>An angle between [-pi, pi] radians</returns>
     public static float AsPlusMinusPi(this float theta)
     {
-        while (theta < -Mathf.PI)
-            theta += PI2;
+        while (theta < -FloatAngle.PI)
+            theta += FloatAngle.PI2;
 
-        while (theta > Mathf.PI)
-            theta -= PI2;
+        while (theta > FloatAngle.PI)
+            theta -= FloatAngle.PI2;
 
         return theta;
     }

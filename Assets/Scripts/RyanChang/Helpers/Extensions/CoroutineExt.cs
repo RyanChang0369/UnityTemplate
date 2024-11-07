@@ -63,6 +63,7 @@ public static class CoroutineExt
     #endregion
 
     #region Callbacks
+    #region Predicate
     /// <summary>
     /// Creates a callback coroutine that will perform <paramref
     /// name="callback"/> once <paramref name="predicate"/> is satisfied.
@@ -92,6 +93,12 @@ public static class CoroutineExt
 
         behaviour.StartCoroutine(enumerator);
     }
+
+    /// <inheritdoc cref="AfterPredicate(MonoBehaviour, Func{bool}, Action)"/>
+    /// <remarks>Uses the <see cref="GameObjectHandle.Instance"/>.</remarks>
+    public static void AfterPredicate(Func<bool> predicate, Action callback) =>
+        GameObjectHandle.Instance.AfterPredicate(predicate, callback);
+    #endregion
 
     #region Time
     /// <summary>
@@ -126,6 +133,12 @@ public static class CoroutineExt
 
         behaviour.StartCoroutine(enumerator);
     }
+
+    /// <inheritdoc cref="AfterSeconds(MonoBehaviour, float, bool, Action)"/>
+    /// <remarks>Uses the <see cref="GameObjectHandle.Instance"/>.</remarks>
+    public static void AfterSeconds(float seconds, bool realTime,
+        Action callback) =>
+        GameObjectHandle.Instance.AfterSeconds(seconds, realTime, callback);
     #endregion
 
     #region Fixed Update
@@ -153,6 +166,45 @@ public static class CoroutineExt
         var enumerator = WaitForFixedUpdate(callback);
         behaviour.StartCoroutine(enumerator);
     }
+
+    /// <inheritdoc cref="AfterFixedUpdate(Action)(MonoBehaviour, float, bool,
+    /// Action)"/>
+    /// <remarks>Uses the <see cref="GameObjectHandle.Instance"/>.</remarks>
+    public static void AfterFixedUpdate(Action callback) =>
+        GameObjectHandle.Instance.AfterFixedUpdate(callback);
+    #endregion
+
+    #region Update
+    /// <summary>
+    /// Creates a callback coroutine that will perform <paramref
+    /// name="callback"/> after one update.
+    /// </summary>
+    /// <inheritdoc cref="AfterPredicate(MonoBehaviour, Func{bool}, Action)"/>
+    public static void AfterEndOfFrame(this MonoBehaviour behaviour,
+        Action callback)
+    {
+        static IEnumerator WaitForUpdate(Action callback)
+        {
+            yield return new WaitForEndOfFrame();
+            callback();
+        }
+
+        if (!Application.isPlaying)
+        {
+            throw new InvalidOperationException(
+                "FixedUpdate not updated in edit mode."
+            );
+        }
+
+        var enumerator = WaitForUpdate(callback);
+        behaviour.StartCoroutine(enumerator);
+    }
+
+    /// <inheritdoc cref="AfterEndOfFrame(Action)(MonoBehaviour, float, bool,
+    /// Action)"/>
+    /// <remarks>Uses the <see cref="GameObjectHandle.Instance"/>.</remarks>
+    public static void AfterEndOfFrame(Action callback) =>
+        GameObjectHandle.Instance.AfterEndOfFrame(callback);
     #endregion
     #endregion
 }

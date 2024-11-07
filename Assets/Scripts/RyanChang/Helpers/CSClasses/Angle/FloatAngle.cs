@@ -18,9 +18,9 @@ public class FloatAngle : IEquatable<FloatAngle>
 
     public const float PI2 = Mathf.PI * 2;
 
-    public const float PI1OVER2 = PI / 2f;
+    public const float PI1_2 = PI / 2f;
 
-    public const float PI3OVER2 = PI2 + PI1OVER2;
+    public const float PI3_2 = PI2 + PI1_2;
     #endregion
 
     #region Enums
@@ -151,7 +151,7 @@ public class FloatAngle : IEquatable<FloatAngle>
     /// </summary>
     /// <param name="other">The other angle you are comparing.</param>
     public int GetDirectionTo(FloatAngle other,
-        NumericalExt.SignBehavior signBehavior)
+        SignBehavior signBehavior)
     {
         return (this - other).AsCentered().Sign(signBehavior);
     }
@@ -206,17 +206,17 @@ public class FloatAngle : IEquatable<FloatAngle>
         {
             if (val.Approx(0) || val.Approx(PI2))
                 return Quadrant.Right;
-            else if (val < PI1OVER2)
+            else if (val < PI1_2)
                 return Quadrant.Q1;
-            else if (val.Approx(PI1OVER2))
+            else if (val.Approx(PI1_2))
                 return Quadrant.Up;
             else if (val < PI)
                 return Quadrant.Q2;
             else if (val.Approx(PI))
                 return Quadrant.Left;
-            else if (val < PI3OVER2)
+            else if (val < PI3_2)
                 return Quadrant.Q3;
-            else if (val.Approx(PI3OVER2))
+            else if (val.Approx(PI3_2))
                 return Quadrant.Down;
             else
                 return Quadrant.Q4;

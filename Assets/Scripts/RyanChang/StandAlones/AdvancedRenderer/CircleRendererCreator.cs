@@ -36,7 +36,7 @@ public class CircleRendererCreator : AdvancedLineRendererCreator
     {
         radius = newRadius;
 
-        float deltaAngle = 360 / points;
+        float deltaAngle = FloatAngle.PI2 / points;
         Vector2 topPosition = new(radius, 0);
 
         foreach (var child in alr.transforms)

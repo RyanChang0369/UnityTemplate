@@ -1,42 +1,17 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public static class RNGExt
 {
-    #region Variables
-    private static readonly System.Random RNGNum = new();
-    #endregion
+    #region Variables/Properties
+    private static System.Random rand = new();
 
-    #region Integer
-    /// <summary>
-    /// Returns an integer ranging from minValue, inclusive, to maxValue,
-    /// exclusive.
-    /// </summary>
-    /// <returns>An integer ranging from minValue to maxValue - 1.</returns>
-    public static int RandomInt(int minVal, int maxVal)
+    public static int Seed
     {
-        return RNGNum.Next(minVal, maxVal);
-    }
-
-    /// <summary>
-    /// Returns an integer ranging from 0, inclusive, to maxValue, exclusive.
-    /// </summary>
-    /// <returns>An integer ranging from 0 to maxValue - 1.</returns>
-    public static int RandomInt(int maxVal)
-    {
-        return RandomInt(0, maxVal);
-    }
-
-    /// <summary>
-    /// Alias for <see cref="System.Random.Next"/>.
-    /// </summary>
-    /// <returns>An integer ranging from 0 to <see
-    /// cref="Int32.MaxValue"/>.</returns>
-    public static int RandomInt()
-    {
-        return RNGNum.Next();
+        set => rand = new(value);
     }
     #endregion
 
@@ -44,74 +19,16 @@ public static class RNGExt
     /// <summary>
     /// Returns a random boolean value.
     /// </summary>
-    /// <returns>The random boolean value, either true (1) or false
-    /// (0).</returns>
     public static bool RandomBool()
     {
-        return RandomInt() % 2 == 0;
-    }
-    #endregion
-
-    #region Double
-    /// <summary>
-    /// Returns a double ranging from minValue, inclusive, to maxValue, exclusive.
-    /// </summary>
-    /// <returns>An integer ranging from minValue to maxValue - 1.</returns>
-    public static double RandomDouble(double minVal, double maxVal)
-    {
-        return RNGNum.NextDouble() * (maxVal - minVal) + minVal;
+        return rand.NextDouble() >= 0.5;
     }
 
-    /// <summary>
-    /// Returns a double ranging from 0, inclusive, to maxValue, exclusive.
-    /// </summary>
-    /// <returns>A double ranging from 0, inclusive, to maxValue,
-    /// exclusive.</returns>
-    public static double RandomDouble(double maxVal)
-    {
-        return RandomDouble(0, maxVal);
-    }
+    /// <inheritdoc cref="RandomBool()"/>
+    public static bool NextBool => RandomBool();
 
-    /// <summary>
-    /// Returns a double ranging from 0, inclusive, to 1, exclusive.
-    /// </summary>
-    /// <returns>A double ranging from 0 to 1.</returns>
-    public static double RandomDouble()
-    {
-        return RNGNum.NextDouble();
-    }
-    #endregion
-
-    #region Float
-    /// <summary>
-    /// Returns a float ranging from minValue, inclusive, to maxValue,
-    /// exclusive.
-    /// </summary>
-    /// <returns>A float ranging from minValue, inclusive, to maxValue,
-    /// exclusive.</returns>
-    public static float RandomFloat(float minVal, float maxVal)
-    {
-        return (float)(RNGNum.NextDouble() * (maxVal - minVal) + minVal);
-    }
-
-    /// <summary>
-    /// Returns a float ranging from 0, inclusive, to maxValue, exclusive.
-    /// </summary>
-    /// <returns>A float ranging from minValue, inclusive, to maxValue,
-    /// exclusive.</returns>
-    public static float RandomFloat(float maxVal)
-    {
-        return RandomFloat(0, maxVal);
-    }
-
-    /// <summary>
-    /// Returns a float ranging from 0, inclusive, to 1, exclusive.
-    /// </summary>
-    /// <returns>A float ranging from 0 to 1.</returns>
-    public static float RandomFloat()
-    {
-        return (float)RNGNum.NextDouble();
-    }
+    /// <inheritdoc cref="RandomBool()"/>
+    public static bool CoinFlip() => RandomBool();
 
     /// <summary>
     /// Returns true based on percent chance given.
@@ -120,7 +37,7 @@ public static class RNGExt
     /// <returns>True based on percent chance given.</returns>
     public static bool PercentChance(float percentChance)
     {
-        return RandomFloat() < percentChance;
+        return rand.NextDouble() < percentChance;
     }
     #endregion
 
@@ -130,45 +47,287 @@ public static class RNGExt
     /// </summary>
     /// <param name="bytes">How many bytes of RNG to generate?</param>
     /// <returns></returns>
-    public static byte[] RandomHash(int bytes = 16)
+    public static byte[] RandomBytes(int bytes = 16)
     {
         byte[] arr = new byte[bytes];
-        RNGNum.NextBytes(arr);
+        rand.NextBytes(arr);
         return arr;
     }
 
-    /// <inheritdoc cref="RandomHash(int)"/>
+    /// <inheritdoc cref="RandomInt(int, int)"/>
+    public static byte RandomByte(byte min, byte max) =>
+        (byte)(rand.Next() * (max - min) + min);
+
+    /// <inheritdoc cref="RandomInt(int)"/>
+    public static byte RandomByte(byte max) => RandomByte(0, max);
+
+    /// <inheritdoc cref="RandomInt()"/>
+    public static byte RandomByte() => RandomByte(byte.MaxValue);
+
+    /// <inheritdoc cref="RandomByte()"/>
+    public static byte NextByte => RandomByte();
+
+    /// <inheritdoc cref="RandomBytes(int)"/>
+    /// <param name="buffer">The buffer to fill with bytes.</param>
+    public static void RandomBytes(byte[] buffer) =>
+        rand.NextBytes(buffer);
+
+    /// <inheritdoc cref="RandomBytes(byte[])"/>
+    public static void RandomBytes(Span<byte> buffer) =>
+        rand.NextBytes(buffer);
+
+    #region Hash String
+    [Flags]
+    public enum HashStringOptions
+    {
+        None = 0b0000,
+        /// <summary>
+        /// Include the dashes within the hash string.
+        /// </summary>
+        WithDashes = 0b0001,
+        /// <summary>
+        /// Surround the hash string with brackets "{}".
+        /// </summary>
+        Bracketed = 0b0010
+    }
+
+    /// <inheritdoc cref="RandomBytes(int)"/>
     /// <summary>
     /// Gets a random byte string as a hexadecimal hash.
     /// </summary>
-    public static string RandomHashString(int bytes = 16) =>
-        BitConverter.ToString(RandomHash(bytes)).Replace("-", "");
+    /// <param name="options">Options for string formatting.</param>
+    public static string RandomHashString(int bytes = 16,
+        HashStringOptions options = HashStringOptions.None)
+    {
+        string hash = BitConverter.ToString(RandomBytes(bytes));
+
+        if (options.HasFlag(HashStringOptions.WithDashes))
+            hash = hash.Replace("-", "");
+        if (options.HasFlag(HashStringOptions.Bracketed))
+            hash = '{' + hash + '}';
+
+        return hash;
+    }
+    #endregion
+    #endregion
+
+    #region Integer
+    /// <summary>
+    /// Returns a int ranging from <paramref name="min"/>, inclusive, to
+    /// <paramref name="max"/>, exclusive.
+    /// </summary>
+    /// <param name="min">The minimal value, inclusive.</param>
+    /// <param name="max">The maximal value, exclusive.</param>
+    public static int RandomInt(int min, int max) =>
+        rand.Next(min, max);
+
+    /// <summary>
+    /// Returns a int ranging from 0, inclusive, to <paramref name="max"/>,
+    /// exclusive.
+    /// </summary>
+    /// <inheritdoc cref="RandomInt(int, int)"/>
+    public static int RandomInt(int max) => rand.Next(max);
+
+    /// <summary>
+    /// Returns a int ranging from 0, inclusive, to the maximum value of the
+    /// data type, exclusive.
+    /// </summary>
+    public static int RandomInt() => rand.Next();
+
+    /// <inheritdoc cref="RandomInt()"/>
+    public static int NextInt => RandomInt();
+
+    #region Dice
+    /// <summary>
+    /// Rolls a 4 sided dice (bounded by [1, 4]).
+    /// </summary>
+    public static int D4 => NSidedDice(4);
+
+    /// <summary>
+    /// Rolls a 6 sided dice (bounded by [1, 6]).
+    /// </summary>
+    public static int D6 => NSidedDice(6);
+
+    /// <summary>
+    /// Rolls a 8 sided dice (bounded by [1, 8]).
+    /// </summary>
+    public static int D8 => NSidedDice(8);
+
+    /// <summary>
+    /// Rolls a 10 sided dice (bounded by [1, 10]).
+    /// </summary>
+    public static int D10 => NSidedDice(10);
+
+    /// <summary>
+    /// Rolls a 12 sided dice (bounded by [1, 12]).
+    /// </summary>
+    public static int D12 => NSidedDice(12);
+
+    /// <summary>
+    /// Rolls a 20 sided dice (bounded by [1, 20]).
+    /// </summary>
+    public static int D20 => NSidedDice(20);
+
+    /// <summary>
+    /// Rolls a dice with the specified number of <paramref name="sides"/>
+    /// (bounded by [1, <paramref name="sides"/>]).
+    /// </summary>
+    /// <param name="sides">Number of sides of the dice.</param>
+    public static int NSidedDice(int sides) => RandomInt(sides) + 1;
+    #endregion
+    #endregion
+
+    #region Long
+    /// <inheritdoc cref="RandomInt(int, int)"/>
+    public static long RandomLong(long min, long max) =>
+        rand.Next() * (max - min) + min;
+
+    /// <inheritdoc cref="RandomInt(int)"/>
+    public static long RandomLong(long max) => RandomLong(0, max);
+
+    /// <inheritdoc cref="RandomInt()"/>
+    public static long RandomLong() => RandomLong(long.MaxValue);
+
+    /// <inheritdoc cref="RandomLong()"/>
+    public static long NextLong => RandomLong();
+    #endregion
+
+    #region Float
+    /// <summary>
+    /// Returns a value ranging from <paramref name="min"/>, inclusive, to
+    /// <paramref name="max"/>, exclusive.
+    /// </summary>
+    public static float RandomFloat(float min, float max) =>
+        ((float)rand.NextDouble() * (max - min)) + min;
+
+    /// <summary>
+    /// Returns a value ranging from 0, inclusive, to <paramref name="max"/>,
+    /// exclusive.
+    /// </summary>
+    public static float RandomFloat(float max) => RandomFloat(0, max);
+
+    /// <summary>
+    /// Returns a value ranging from 0, inclusive, to 1, exclusive.
+    /// </summary>
+    public static float RandomFloat() => (float)rand.NextDouble();
+
+    /// <inheritdoc cref="RandomFloat()"/>
+    public static float NextFloat => RandomFloat();
+
+    /// <summary>
+    /// Returns a value ranging from 0, exclusive, to 1, exclusive.
+    /// </summary>
+    public static float NextExclusiveFloat
+    {
+        get
+        {
+            float r;
+            do
+            {
+                r = NextFloat;
+                return r;
+            } while (r == 0);
+        }
+    }
+
+    /// <summary>
+    /// Returns a value ranging from 0, exclusive, to 1, inclusive.
+    /// </summary>
+    public static float NextFloatInclusive => 1f - NextFloat;
+
+    #region Angle
+    /// <summary>
+    /// Returns a random angle.
+    /// </summary>
+    /// <param name="unit">The unit of the angle.</param>
+    public static float RandomAngle(FloatAngle.Units unit) => unit switch
+    {
+        FloatAngle.Units.Degrees => RandomFloat(0, 360),
+        FloatAngle.Units.Radians => RandomFloat(0, FloatAngle.PI2),
+        _ => throw new NotImplementedException()
+    };
+    #endregion
+
+    #region Standard Deviation
+    /// <summary>
+    /// Uses the Box-Muller Transform to estimate a normally-distributed random
+    /// value.
+    /// </summary>
+    /// <param name="mean">The mean (center) of the normal distribution.</param>
+    /// <param name="deviation">The standard deviation of the normal
+    /// distribution.</param>
+    /// <remarks>
+    /// Source: https://w.wiki/BkRg
+    /// </remarks>
+    public static Tuple<float, float> BoxMuller(float mean, float deviation)
+    {
+        float r = Mathf.Sqrt(-2 * Mathf.Log(NextExclusiveFloat));
+        float t = FloatAngle.PI2 * NextExclusiveFloat;
+        return new(
+            r * Mathf.Cos(t) * deviation + mean,
+            r * Mathf.Sin(t) * deviation + mean
+        );
+    }
+
+    /// <summary>
+    /// Uses the Box-Muller Transform to estimate a normally-distributed random
+    /// value. Discards one of the generated random values.
+    /// </summary>
+    /// <inheritdoc cref="BoxMuller(float, float)"/>
+    public static float BoxMullerSingular(float mean, float deviation)
+    {
+        float r = Mathf.Sqrt(-2 * Mathf.Log(NextExclusiveFloat));
+        float t = FloatAngle.PI2 * NextExclusiveFloat;
+        return r * Mathf.Cos(t) * deviation + mean;
+    }
+    #endregion
+    #endregion
+
+    #region Double
+    /// <inheritdoc cref="RandomFloat(float, float)"/>
+    public static double RandomDouble(double min, double max) =>
+        (rand.NextDouble() * (max - min)) + min;
+
+    /// <inheritdoc cref="RandomFloat(float)"/>
+    public static double RandomDouble(double max) => RandomDouble(0, max);
+
+    /// <inheritdoc cref="RandomFloat()"/>
+    public static double RandomDouble() => rand.NextDouble();
+
+    /// <inheritdoc cref="RandomDouble()"/>
+    public static double NextDouble => RandomDouble();
+    #endregion
+
+    #region Decimal
+    /// <inheritdoc cref="RandomFloat(float, float)"/>
+    public static decimal RandomDecimal(decimal min, decimal max) =>
+        (decimal)rand.NextDouble() * (max - min) + min;
+
+    /// <inheritdoc cref="RandomFloat(float)"/>
+    public static decimal RandomDecimal(decimal max) =>
+        RandomDecimal(0, max);
+
+    /// <inheritdoc cref="RandomFloat()"/>
+    public static decimal RandomDecimal() => RandomDecimal(0, 1);
+
+    /// <inheritdoc cref="RandomDecimal()"/>
+    public static decimal NextDecimal => RandomDecimal();
     #endregion
 
     #region Vector2
     /// <summary>
-    /// Returns a Vector2 with all components as random values (determined by
-    /// <see cref="RandomFloat()"/>).
-    /// </summary>
-    /// <returns>A random Vector2.</returns>
-    public static Vector2 RandomVector2()
-    {
-        return new(RandomFloat(), RandomFloat());
-    }
-
-    /// <summary>
-    /// Returns a Vector2 with all components ranging from -val (inclusive) to
-    /// val (exclusive).
+    /// Returns a Vector2 with all components ranging from -<paramref
+    /// name="val"/> (inclusive) to <paramref name="val"/> (exclusive).
     /// </summary>
     /// <param name="val">The bounds of the Vector2.</param>
-    /// <returns>A random Vector2.</returns>
     public static Vector2 RandomVector2(float val)
     {
         return RandomVector2(-val, val);
     }
 
     /// <summary>
-    /// Returns a Vector2 with both components ranging from min to max.
+    /// Returns a Vector2 with both components ranging from <paramref
+    /// name="min"/> to <paramref name="max"/>.
     /// </summary>
     /// <param name="min">Minimum value of the x and y components,
     /// inclusive.</param>
@@ -182,22 +341,22 @@ public static class RNGExt
 
     /// <summary>
     /// Returns a random Vector2 with components ranging between the respective
-    /// components of min and max.
+    /// components of <paramref name="min"/> and <paramref name="max"/>.
     /// </summary>
     /// <param name="min">The lower bound of the random Vector2,
     /// inclusive.</param>
     /// <param name="max">The upper bound of the random Vector2,
     /// exclusive.</param>
-    /// <returns>A random Vector2.</returns>
+    /// <inheritdoc cref="RandomVector2(float, float, float, float)"/>
     public static Vector2 RandomVector2(Vector2 min, Vector2 max)
     {
         return RandomVector2(min.x, min.y, max.x, max.y);
     }
 
     /// <summary>
-    /// Returns a random Vector2 with
-    /// the x component ranging from minX to maxX and
-    /// the y component ranging from minY to maxY.
+    /// Returns a random Vector2 with the x component ranging from <paramref
+    /// name="minX"/> to <paramref name="maxX"/> and the y component ranging
+    /// from <paramref name="minY"/> to <paramref name="maxY"/>.
     /// </summary>
     /// <param name="minX">Minimum value of the x component, inclusive.</param>
     /// <param name="minY">Minimum value of the y component, inclusive.</param>
@@ -209,72 +368,9 @@ public static class RNGExt
     {
         return new Vector2(RandomFloat(minX, maxX), RandomFloat(minY, maxY));
     }
-
-    /// <summary>
-    /// Returns a random Vector2 with its respective components ranging from
-    /// rect.min (inclusive) to rect.max (exclusive).
-    /// </summary>
-    /// <param name="rect">The bounds.</param>
-    /// <returns></returns>
-    public static Vector2 WithinRect(this Rect rect)
-    {
-        return RandomVector2(rect.min.x, rect.min.y, rect.max.x,
-            rect.max.y);
-    }
-
-    #region Circle
-    /// <summary>
-    /// Gets a point on the perimeter of a circle.
-    /// </summary>
-    /// <param name="radius">The radius of the circle.</param>
-    /// <returns>A point on the circle.</returns>
-    public static Vector2 OnCircle(float radius = 1)
-    {
-        return RandomVector2().normalized * radius;
-    }
-
-    /// <summary>
-    /// Gets a point within a circle.
-    /// </summary>
-    /// <param name="radius">The radius of the circle.</param>
-    /// <returns>A point within the circle.</returns>
-    public static Vector2 WithinCircle(float radius = 1)
-    {
-        return RandomVector2().normalized * RandomFloat(radius);
-    }
-    #endregion
-
-    #region Square
-    /// <summary>
-    /// Gets a point on the perimeter of a square.
-    /// </summary>
-    /// <param name="length">The length of one of the square's sides.</param>
-    /// <returns>A point on the square.</returns>
-    public static Vector2 OnSquare(float length = 1)
-    {
-        return RandomVector2().normalized * length;
-    }
-
-    /// <summary>
-    /// Gets a point within a square.
-    /// </summary>
-    /// <param name="length">The length of one of the square's sides.</param>
-    /// <returns>A point within the square.</returns>
-    public static Vector2 WithinSquare(float length = 1)
-    {
-        var vector = RandomVector2();
-        var mag = vector.sqrMagnitude;
-
-        if (mag.Approx(0))
-            return Vector2.zero;
-
-        return vector / mag * length;
-    }
-    #endregion
     #endregion
 
     #region Vector3
-    #region Vector
     /// <summary>
     /// Returns a Vector3 with all components as random values (determined by
     /// <see cref="RandomFloat()"/>).
@@ -350,69 +446,7 @@ public static class RNGExt
     }
     #endregion
 
-    #region Bounds
-    /// <summary>
-    /// Returns a random Vector3 with its respective components ranging from
-    /// bounds.min (inclusive) to bounds.max (exclusive).
-    /// </summary>
-    /// <param name="bounds">The bounds.</param>
-    /// <returns></returns>
-    public static Vector3 WithinBounds(Bounds bounds)
-    {
-        return RandomVector3(bounds.min.x, bounds.min.y, bounds.max.z,
-            bounds.max.x, bounds.max.y, bounds.max.z);
-    }
-    #endregion
-
-    #region Sphere
-    /// <summary>
-    /// Returns a random Vector3 that lies on the surface of the sphere,
-    /// centered at (0,0,0), with the specified <paramref name="radius"/>.
-    /// </summary>
-    /// <param name="radius">Radius of the sphere.</param>
-    public static Vector3 OnSphere(float radius = 1)
-    {
-        return RandomVector3().normalized * radius;
-    }
-
-    /// <summary>
-    /// Returns a random Vector3 that lies on the surface of the sphere,
-    /// centered at (0,0,0), with the specified <paramref name="radius"/>.
-    /// </summary>
-    /// <param name="radius">Radius of the sphere.</param>
-    public static Vector3 WithinSphere(float radius = 1) =>
-        OnSphere(RandomFloat(radius));
-    #endregion
-
-    #region Cube
-    /// <summary>
-    /// Returns a random Vector3 that lies on the surface of the cube,
-    /// centered at (0,0,0), with the specified <paramref name="length"/>.
-    /// </summary>
-    /// <param name="length">Length of one of the cube's sides.</param>
-    public static Vector3 OnCube(float length = 1)
-    {
-        var vector = RandomVector3();
-        var mag = vector.sqrMagnitude;
-
-        if (mag.Approx(0))
-            return Vector3.zero;
-
-        return vector / mag * length;
-    }
-
-    /// <summary>
-    /// Returns a random Vector3 that lies on the surface of the cube,
-    /// centered at (0,0,0), with the specified <paramref name="length"/>.
-    /// </summary>
-    /// <param name="length">Length of one of the cube's sides.</param>
-    public static Vector3 WithinCube(float length = 1) =>
-        OnCube(RandomFloat(length));
-    #endregion
-    #endregion
-
     #region Vector4
-    #region Vector
     /// <summary>
     /// Returns a Vector4 with all components as random values (determined by
     /// <see cref="RandomFloat()"/>).
@@ -493,58 +527,28 @@ public static class RNGExt
     }
     #endregion
 
-    #region Hyper Sphere
+    #region Rectangle
+    #region Point Within
     /// <summary>
-    /// Returns a random Vector4 that lies on the surface of the 4 dimensional
-    /// hyper-sphere, centered at (0,0,0,0), with the specified <paramref
-    /// name="radius"/>.
+    /// Returns a random Vector2 with its respective components ranging from
+    /// rect.min (inclusive) to rect.max (exclusive).
     /// </summary>
-    /// <param name="radius">Radius of the hyper-sphere.</param>
-    public static Vector4 OnHyperSphere(float radius = 1)
-    {
-        return RandomVector4().normalized * radius;
-    }
-
-    /// <summary>
-    /// Returns a random Vector4 that lies on the surface of the 4 dimensional
-    /// hyper-sphere, centered at (0,0,0,0), with the specified <paramref
-    /// name="radius"/>.
-    /// </summary>
-    /// <param name="radius">Radius of the hyper-sphere.</param>
-    public static Vector4 WithinHyperSphere(float radius = 1) =>
-        OnHyperSphere(RandomFloat(radius));
+    /// <param name="rect">The bounds.</param>
+    /// <returns></returns>
+    public static Vector2 WithinRect(Rect rect) =>
+        RandomVector2(rect.min.x, rect.min.y, rect.max.x, rect.max.y);
     #endregion
 
-    #region Hyper Cube
+    #region Point On
     /// <summary>
-    /// Returns a random Vector4 that lies on the surface of the 4 dimensional
-    /// hyper-cube, centered at (0,0,0,0), with the specified <paramref
-    /// name="length"/>.
+    /// Gets a point on the perimeter of a rectangle.
     /// </summary>
-    /// <param name="length">Length of one of the hyper-cube's sides.</param>
-    public static Vector4 OnHyperCube(float length = 1)
-    {
-        var vector = RandomVector4();
-        var mag = vector.sqrMagnitude;
-
-        if (mag.Approx(0))
-            return Vector4.zero;
-
-        return vector / mag * length;
-    }
-
-    /// <summary>
-    /// Returns a random Vector4 that lies on the surface of the 4 dimensional
-    /// hyper-cube, centered at (0,0,0,0), with the specified <paramref
-    /// name="length"/>.
-    /// </summary>
-    /// <param name="length">Length of one of the hyper-cube's sides.</param>
-    public static Vector4 WithinHyperCube(float length = 1) =>
-        OnHyperCube(RandomFloat(length));
-    #endregion
+    /// <param name="rect">The rectangle in question.</param>
+    /// <returns>A point on the rectangle.</returns>
+    public static Vector2 OnRect(Rect rect) => rect.AlongEdge(NextFloat);
     #endregion
 
-    #region Rect
+    #region Value
     /// <summary>
     /// Generates a rectangle with random components.
     /// </summary>
@@ -600,6 +604,144 @@ public static class RNGExt
     /// <param name="bound">The bounds of the random rectangle.</param>
     public static Rect RandomRect(Rect bound) =>
         RandomRect(bound.min, bound.max);
+    #endregion
+    #endregion
+
+    #region Square
+    #region Point On
+    /// <summary>
+    /// Gets a point on the perimeter of a square, centered on <paramref
+    /// name="origin"/>.
+    /// </summary>
+    /// <param name="origin">The center of the square.</param>
+    /// <param name="length">The length of one of the square's sides.</param>
+    /// <returns>A point on the square.</returns>
+    public static Vector2 OnSquare(Vector2 origin, float length = 1) =>
+        RectExt.CenteredAt(origin, length, length).AlongEdge(NextFloat);
+
+    /// <summary>
+    /// Gets a point on the perimeter of a square centered at (0, 0).
+    /// </summary>
+    /// <inheritdoc cref="OnSquare(float, Vector2)"/>
+    public static Vector2 OnSquare(float length = 1) =>
+        OnSquare(Vector2.zero, length);
+    #endregion
+
+    #region Point Within
+    /// <summary>
+    /// Gets a point within a square centered on <paramref name="origin"/>.
+    /// </summary>
+    /// <param name="origin">The center of the square.</param>
+    /// <param name="length">The length of one of the square's sides.</param>
+    /// <returns>A point within the square.</returns>
+    public static Vector2 WithinSquare(Vector2 origin, float length = 1) =>
+        RandomVector2(length / 2f) + origin;
+
+    /// <summary>
+    /// Gets a point within a square centered at (0, 0).
+    /// </summary>
+    /// <inheritdoc cref="WithinSquare(float)"/>
+    public static Vector2 WithinSquare(float length = 1) =>
+        WithinSquare(Vector2.zero, length);
+    #endregion
+    #endregion
+
+    #region Circle
+    #region Point On
+    /// <summary>
+    /// Gets a random point on the perimeter of a circle.
+    /// </summary>
+    /// <param name="radius">The radius of the circle.</param>
+    /// <param name="center">The center of the circle.</param>
+    /// <returns>An uniformly distributed point on the circle.</returns>
+    public static Vector2 OnCircle(Vector2 center, float radius = 1) =>
+        OnCircle(radius) + center;
+
+    /// <inheritdoc cref="OnCircle(Vector2, float)"/>
+    public static Vector2 OnCircle(float radius = 1)
+    {
+        float theta = RandomAngle(FloatAngle.Units.Radians);
+
+        return new(
+            radius * Mathf.Cos(theta),
+            radius * Mathf.Sin(theta)
+        );
+    }
+    #endregion
+
+    #region Point Within
+    /// <summary>
+    /// Gets a point within a circle.
+    /// </summary>
+    /// <returns>An uniformly distributed point within the circle.</returns>
+    /// <inheritdoc cref="OnCircle(Vector2, float)"/>
+    public static Vector2 WithinCircle(Vector2 center, float radius = 1) =>
+        WithinCircle(radius) + center;
+
+    /// <inheritdoc cref="WithinCircle(Vector2, float)"/>
+    public static Vector2 WithinCircle(float radius = 1) =>
+        OnCircle(radius * Mathf.Sqrt(NextFloat));
+    #endregion
+    #endregion
+
+    #region Bounds
+    /// <summary>
+    /// Returns a random Vector3 with its respective components ranging from
+    /// bounds.min (inclusive) to bounds.max (exclusive).
+    /// </summary>
+    /// <param name="bounds">The bounds.</param>
+    public static Vector3 RandomWithinBounds(Bounds bounds)
+    {
+        return RandomVector3(bounds.max, bounds.min);
+    }
+    #endregion
+
+    #region Cube
+    /// <summary>
+    /// Returns a random Vector3 that lies on the surface of the cube,
+    /// centered at (0,0,0), with the specified <paramref name="length"/>.
+    /// </summary>
+    /// <param name="length">Length of one of the cube's sides.</param>
+    public static Vector3 OnCube(float length = 1)
+    {
+        var vector = RandomVector3();
+        var mag = vector.sqrMagnitude;
+
+        if (mag.Approx(0))
+            return Vector3.zero;
+
+        return vector / mag * length;
+    }
+
+    /// <summary>
+    /// Returns a random Vector3 that lies on the surface of the cube,
+    /// centered at (0,0,0), with the specified <paramref name="length"/>.
+    /// </summary>
+    /// <param name="length">Length of one of the cube's sides.</param>
+    public static Vector3 WithinCube(float length = 1) =>
+        OnCube(RandomFloat(length));
+    #endregion
+
+    #region Sphere
+    #region Point On
+    /// <summary>
+    /// Returns a random Vector3 that lies on the surface of the sphere centered
+    /// at (0,0,0), with the specified <paramref name="radius"/>.
+    /// </summary>
+    /// <inheritdoc cref="OnSphere(Vector3, float)"/>
+    public static Vector3 OnSphere(float radius = 1) =>
+        RandomVector3().normalized * radius;
+
+    /// <summary>
+    /// Returns a random Vector3 that lies on the surface of the sphere centered
+    /// at <paramref name="origin"/>, with the specified <paramref
+    /// name="radius"/>.
+    /// </summary>
+    /// <param name="origin">The center of the sphere.</param>
+    /// <param name="radius">The radius of the sphere.</param>
+    public static Vector3 OnSphere(Vector3 origin, float radius = 1) =>
+        OnSphere(radius) + origin;
+    #endregion
     #endregion
 
     #region Curve
@@ -771,7 +913,7 @@ public static class RNGExt
     /// </summary>
     /// <typeparam name="T">Any type.</typeparam>
     /// <param name="list">List to shuffle.</param>
-    public static void Shuffle<T>(this IList<T> list)
+    public static void ShuffleInPlace<T>(this IList<T> list)
     {
         int n = list.Count;
         while (n > 1)

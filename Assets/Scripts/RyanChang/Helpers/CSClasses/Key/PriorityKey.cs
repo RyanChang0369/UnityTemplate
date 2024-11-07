@@ -60,13 +60,17 @@ public class PriorityKey<TPriority> : IComparable<PriorityKey<TPriority>>
     /// priority.</param>
     /// <param name="id">ID of the key. See <see cref="id"/>.</param>
     /// <param name="tag">Optional tag to distinguish between different keys
-    /// with the same ID. See <see cref="tag"/>.</param>
+    /// with the same ID. See <see cref="tag"/>. If not provided or null,
+    /// generates a random hash string to be used as the tag.</param>
     [JsonConstructor]
-    public PriorityKey(TPriority priority, int id, string tag = "default")
+    public PriorityKey(TPriority priority, int id, string tag = null)
     {
         this.priority = priority;
         this.id = id;
-        this.tag = tag;
+        this.tag = tag ?? RNGExt.RandomHashString(
+            16,
+            RNGExt.HashStringOptions.WithDashes
+        );
     }
 
     /// <summary>
@@ -76,7 +80,7 @@ public class PriorityKey<TPriority> : IComparable<PriorityKey<TPriority>>
     /// cref="id"/>.</param>
     /// <inheritdoc cref="PriorityKey{TPriority}(TPriority, int, string)"/>
     public PriorityKey(TPriority priority, UnityEngine.Object unityObject,
-        string tag = "default") :
+        string tag = null) :
         this(priority, unityObject.GetInstanceID(), tag)
     { }
 
@@ -85,7 +89,7 @@ public class PriorityKey<TPriority> : IComparable<PriorityKey<TPriority>>
     /// with the default priority.
     /// </summary>
     /// <inheritdoc cref="PriorityKey(TPriority, UnityEngine.Object, string)"/>
-    public PriorityKey(UnityEngine.Object unityObject, string tag = "default") :
+    public PriorityKey(UnityEngine.Object unityObject, string tag = null) :
         this(default, unityObject.GetInstanceID(), tag)
     { }
     #endregion

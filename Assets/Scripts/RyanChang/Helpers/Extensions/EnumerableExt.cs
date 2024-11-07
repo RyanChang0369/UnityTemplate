@@ -22,6 +22,40 @@ public static class EnumerableExt
     public static bool IsNullOrEmpty<T>(this ICollection<T> values) =>
         values == null || values.Count == 0;
 
+    /// <inheritdoc cref="IsNullOrEmpty{T}(IEnumerable{T})"/>
+    public static bool IsNullOrEmpty(this string values) =>
+        string.IsNullOrEmpty(values);
+
+    /// <summary>
+    /// Returns true if <paramref name="values"/> is null or contains only
+    /// whitespace characters.
+    /// </summary>
+    /// <inheritdoc cref="IsNullOrEmpty{T}(IEnumerable{T})"/>
+    public static bool IsNullOrWhiteSpace(this string values) =>
+        string.IsNullOrWhiteSpace(values);
+
+    /// <summary>
+    /// Throws <see cref="ArgumentNullException"/> or <see
+    /// cref="ArgumentException"/> depending if <paramref name="values"/> is
+    /// null or consists entirely of whitespace.
+    /// </summary>
+    /// <param name="values"></param>
+    public static void ThrowIfNullOrWhiteSpace(this string values)
+    {
+        if (values.IsNullOrWhiteSpace())
+        {
+            throw values == null ?
+                new ArgumentNullException(
+                    nameof(values),
+                    "String argument cannot be null."
+                ) :
+                new ArgumentException(
+                    nameof(values),
+                    $"String argument '{values}' cannot be empty."
+                );
+        }
+    }
+
     /// <summary>
     /// Determines whether <paramref name="values"/> contains any elements.
     /// </summary>
@@ -255,6 +289,17 @@ public static class EnumerableExt
         );
     }
     #endregion
+
+    #region String
+    /// <summary>
+    /// Return string representation of the <paramref name="collection"/>.
+    /// </summary>
+    /// <param name="collection">The collection.</param>
+    public static string PrintElements<T>(this IEnumerable<T> collection)
+    {
+        return $"[{string.Join(", ", collection)}]";
+    }
+    #endregion
     #endregion
 
     #region List
@@ -272,7 +317,7 @@ public static class EnumerableExt
     }
 
     /// <summary>
-    /// Removes everything past (and including) index from.
+    /// Removes everything past (and including) index <paramref name="from"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="list">List to modify.</param>
@@ -299,7 +344,8 @@ public static class EnumerableExt
     /// name="list"/>, or the value of <paramref name="defaultValue"/> if it is
     /// not. 
     /// </summary>
-    public static T AtIndexOrValue<T>(this IList<T> list, int index, T defaultValue)
+    public static T AtIndexOrValue<T>(this IList<T> list, int index,
+        T defaultValue)
     {
         if (list == null || !list.IndexInRange(index))
         {
@@ -421,13 +467,19 @@ public static class EnumerableExt
     /// <param name="defaultValue">The value to use if <paramref name="key"/> is
     /// not in <paramref name="dict"/> or if the value at <paramref name="key"/>
     /// is null.</param>
-    public static void SetIfKeyUndefined<TKey, TValue>(
+    /// <returns>True if value is not undefined, false otherwise.</returns>
+    public static bool SetIfUndefined<TKey, TValue>(
         this IDictionary<TKey, TValue> dict,
         TKey key,
-        TValue defaultValue) where TKey : class
+        TValue defaultValue)
     {
         if (!dict.ContainsKey(key) || dict[key] == null)
+        {
             dict[key] = defaultValue;
+            return true;
+        }
+
+        return false;
     }
     #endregion
 

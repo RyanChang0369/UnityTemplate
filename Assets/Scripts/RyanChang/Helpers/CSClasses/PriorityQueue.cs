@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using System.Linq;
 
 /// <summary>
 /// Priority queue with a min heap. Allows for updates to any priority.
@@ -235,6 +236,41 @@ public class PriorityQueue<TKey, TVal> where TKey : IComparable<TKey>
     public TVal DequeueValue() => Dequeue().value;
 
     /// <summary>
+    /// Tries to dequeue an element.
+    /// </summary>
+    /// <param name="element">The retrieved priority element if an element was
+    /// able to be dequeued; otherwise undetermined.</param>
+    /// <returns>True if dequeue was successful, false otherwise. If false, the
+    /// value of <paramref name="element"/> is undefined.</returns>
+    public bool TryDequeue(out PriorityElement element)
+    {
+        if (Count > 0)
+        {
+            element = Dequeue();
+            return true;
+        }
+        else
+        {
+            element = default;
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Tries to dequeue a value.
+    /// </summary>
+    /// <param name="value">The retrieved value if an element was able to be
+    /// dequeued; otherwise undetermined.</param>
+    /// <returns>True if dequeue was successful, false otherwise. If false, the
+    /// value of <paramref name="value"/> is undefined.</returns>
+    public bool TryDequeue(out TVal value)
+    {
+        bool retVal = TryDequeue(out PriorityElement elem);
+        value = elem.value;
+        return retVal;
+    }
+
+    /// <summary>
     /// Updates the key.
     /// </summary>
     /// <param name="newPriority">The new priority to assign.</param>
@@ -266,6 +302,29 @@ public class PriorityQueue<TKey, TVal> where TKey : IComparable<TKey>
         PercolateUp(swapLocator.index);
 
         return true;
+    }
+
+    /// <summary>
+    /// Continuously dequeues values until there's no values left.
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerable<TVal> Expunge()
+    {
+        while (TryDequeue(out TVal value))
+            yield return value;
+    }
+
+    /// <summary>
+    /// Given an <paramref name="input"/>, create a <see
+    /// cref="PriorityQueue{TKey, TVal}"/>, then immediately dequeues the sorted
+    /// values until there's no values left.
+    /// </summary>
+    /// <param name="input">The input.</param>
+    /// <returns></returns>
+    public IEnumerable<TVal> Slurp(IEnumerable<Tuple<TKey, TVal>> input)
+    {
+        PriorityQueue<TKey, TVal> pq = new(input);
+        return pq.Expunge();
     }
     #endregion
 
@@ -401,6 +460,7 @@ public class PriorityQueue<TKey, TVal> where TKey : IComparable<TKey>
                 (data[parentI], data[index]) = (data[index], data[parentI]);
 
                 // Update locators.
+                var lastK = locator.Keys.Last();
                 var parentLocator = locator[data[parentI].value];
                 var currentLocator = locator[data[index].value];
                 parentLocator.index = parentI;

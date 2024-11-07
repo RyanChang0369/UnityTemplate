@@ -334,3 +334,48 @@ public struct PerlinRNGModel : IRNGModel
     #endregion
 }
 #endregion
+
+#region Box Muller 
+/// <summary>
+/// A <see cref="IRNGModel"/> that generates a random value that lies on an
+/// approximation of the normal distribution centered at <see cref="mean"/> with
+/// a standard deviation of <see cref="std"/>.
+/// </summary>
+///
+/// <remarks>
+/// Authors: Ryan Chang (2024)
+/// </remarks>
+[Serializable]
+[JsonObject(MemberSerialization.OptIn)]
+public readonly struct BoxMullerRNGModel : IRNGModel
+{
+    #region Variables
+    /// <summary>
+    /// The center of the distribution.
+    /// </summary>
+    private readonly float mean;
+
+    /// <summary>
+    /// The standard deviation of the distribution.
+    /// </summary>
+    private readonly float std;
+    #endregion
+
+    #region Constructors
+    /// <summary>
+    /// Creates a new Box-Muller normal distribution approximation model.
+    /// </summary>
+    /// <param name="mean">The value at which the distribution is centered
+    /// at.</param>
+    /// <param name="std">The standard deviation of the deviation.</param>
+    public BoxMullerRNGModel(float mean = 0,
+        float std = 1)
+    {
+        this.mean = mean;
+        this.std = std;
+    }
+    #endregion
+
+    public readonly float RandomValue => RNGExt.BoxMullerSingular(mean, std);
+}
+#endregion

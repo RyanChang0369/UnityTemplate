@@ -33,7 +33,7 @@ public static class EnumExt
     /// <typeparam name="TEnum">Any enum type.</typeparam>
     /// <returns></returns>
     public static string GetName<TEnum>(this TEnum enumValue)
-        where TEnum : struct, Enum => Enum.GetName(typeof(TEnum), enumValue);
+        where TEnum : Enum => Enum.GetName(typeof(TEnum), enumValue);
 
     /// <summary>
     /// Retrieves the values from the <typeparamref name="TEnum"/> enum type.
@@ -41,6 +41,13 @@ public static class EnumExt
     /// <typeparam name="TEnum">Any enum type.</typeparam>
     /// <returns></returns>
     public static TEnum[] GetValues<TEnum>()
-        where TEnum : struct, Enum => (TEnum[])Enum.GetValues(typeof(TEnum));
+        where TEnum : Enum
+    {
+        Type enumType = typeof(TEnum);
+        return (TEnum[])Enum.GetValues(enumType);
+    }
+
+    public static int CountValues<TEnum>()
+        where TEnum : Enum => Enum.GetValues(typeof(TEnum)).Length;
     #endregion
 }

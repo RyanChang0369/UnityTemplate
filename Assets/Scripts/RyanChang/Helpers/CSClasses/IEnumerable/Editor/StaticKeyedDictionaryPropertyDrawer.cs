@@ -1,3 +1,4 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -12,8 +13,7 @@ public class StaticKeyedDictionaryPropertyDrawer : PropertyDrawer
         {
             // Fix the enum dictionary if needed.
             property.GetObjectFromReflection(out IStaticKeyedDictionary dict);
-            dict.GenerateStaticKeys(property.serializedObject.targetObject);
-            dict.ResetInspectorKVPs();
+            dict.Component = (Component)property.serializedObject.targetObject;
 
             // Check if the base property is expanded or not. If not, don't draw
             // anything.
@@ -25,6 +25,8 @@ public class StaticKeyedDictionaryPropertyDrawer : PropertyDrawer
 
             if (property.isExpanded)
             {
+                // Inspector key value pairs changed checking boolean.
+                bool ikvpChanged = false;
                 // Collapsable section
                 EditorGUI.indentLevel++;
 
@@ -33,7 +35,9 @@ public class StaticKeyedDictionaryPropertyDrawer : PropertyDrawer
                 property = property.FindPropertyRelative(
                     "editorDict.keyValuePairs"
                 );
-                Assert.IsNotNull(property, "Could not locate editorDict.keyValuePairs");
+                property.AssertNotNull(
+                    "Could not locate editorDict.keyValuePairs"
+                );
 
                 foreach (SerializedProperty child in property)
                 {
@@ -46,12 +50,14 @@ public class StaticKeyedDictionaryPropertyDrawer : PropertyDrawer
                     // Drop into the Value field and draw that property.
                     if (key.Next(false))
                     {
+                        EditorGUI.BeginChangeCheck();
                         EditorGUILayout.PropertyField(
                             key,
                             new GUIContent(keyName),
                             GUILayout.ExpandHeight(true),
                             GUILayout.ExpandWidth(true)
                         );
+                        ikvpChanged |= EditorGUI.EndChangeCheck();
                     }
                     else
                     {
@@ -61,13 +67,28 @@ public class StaticKeyedDictionaryPropertyDrawer : PropertyDrawer
                     }
                 }
 
+                if (ikvpChanged)
+                {
+                    // Thing has changed.
+                    dict.ResetInspectorKVPs();
+                }
+
                 // Exit collapsible section.
                 EditorGUI.indentLevel--;
             }
         }
-        catch (System.ArgumentException)
+        catch (ArgumentException e)
         {
-            base.OnGUI(position, property, label);
+            EditorGUI.LabelField(
+                position,
+                new GUIContent(
+                    "<color=red><b>Cannot display dictionary:</b></color> " +
+                    $"<color=white>{e.Message}</color>"),
+                new GUIStyle()
+                {
+                    richText = true
+                }
+            );
             return;
         }
     }
